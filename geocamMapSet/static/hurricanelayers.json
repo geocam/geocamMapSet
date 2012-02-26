@@ -1,0 +1,30 @@
+{
+  "mapsetjson": "0.1",
+  "type": "Document",
+  "extensions": {
+    "kml": "http://mapmixer.org/mapsetjson/ext/kml/0.1/",
+    "geojson": "http://mapmixer.org/mapsetjson/ext/geojson/0.1/"
+  },
+  "children": [
+    {
+      "type": "kml.KML",
+      "name": "US Significant River Flood Outlook",
+      "url": "http://www.hpc.ncep.noaa.gov/kml/fop/fopbody.kml"
+    },
+    {
+      "type": "kml.KML",
+      "name": "Significant Wave Events - Atlantic, Gulf of Mexico",
+      "url": "http://neptune.baruch.sc.edu/xenia/feeds/events/events.kmz"
+    },
+    {
+      "type": "kml.KML",
+      "name": "USGS Real-Time Streamflow - New England",
+      "url": "http://water.usgs.gov/waterwatch/?regions=01&m=real&w=kml"
+    },
+    {
+      "type": "kml.KML",
+      "name": "USGS Real-Time Streamflow - Mid-Atlantic",
+      "url": "http://water.usgs.gov/waterwatch/?regions=02&m=real&w=kml"
+    }
+  ]
+}

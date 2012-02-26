@@ -4,24 +4,15 @@
 # All Rights Reserved.
 # __END_LICENSE__
 
-from django.conf.urls.defaults import patterns, include
+from django.conf.urls.defaults import patterns, include, url
 from django.conf import settings
 
-# Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Example:
-    # (r'^example/', include('example.foo.urls')),
-
-    # Uncomment the admin/doc line below and add 'django.contrib.admindocs'
-    # to INSTALLED_APPS to enable admin documentation:
-    # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
-
+    (r'^mixer/', include('geocamMapSet.urls')),
 )
 
 urlpatterns = urlpatterns + patterns('',
@@ -29,4 +20,4 @@ urlpatterns = urlpatterns + patterns('',
         {'document_root': settings.MEDIA_ROOT}),
 #    (r'^data/(?P<path>.*)$', 'django.views.static.serve',
 #        {'document_root': settings.DATA_ROOT}),
-    )
+)

@@ -6,6 +6,6 @@
 
 from django.conf.urls.defaults import url, patterns
 
-urlpatterns = patterns('',
-    url(r'^$', 'views.index', name='index'),
+urlpatterns = patterns('geocamMapSet.views',
+    url(r'^$', 'index'),
 )

@@ -20,6 +20,14 @@
           height: 480px;
           border: 1px solid black;
       }
+
+      .layerEntry {
+          margin-left: 10px;
+      }
+
+      .layerEntry label {
+          margin-left: 5px;
+      }
     </style>
 
     <script type="text/javascript" src="{{ STATIC_URL }}jquery-1.7.1.min.js"></script>
@@ -36,7 +44,7 @@
               mapTypeId: google.maps.MapTypeId.ROADMAP
           };
           var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-          var mapLayers = new Array();
+          var mapLayers = [];
 
           $.getJSON('{{ STATIC_URL }}hurricanelayers.json', function (obj) {
               mapSet = obj;
@@ -47,20 +55,39 @@
                   console.log(layer.url)
                   
                   // create mapset viewer content
-                  mapSetViewHtml.push('<b>' + layer.name + '</b>' 
+                  //
+                  mapSetViewHtml.push('<div class="layerEntry">'
+                                     +'<input type="checkbox" id="showLayer_' + i +'"></input>'
+                                     +'<label for="showLayer_' + i + '"><b>' + layer.name + '</b></label>' 
                                      +'<ul>'
                                      + '<li>Type: ' + layer.type + '</li>'
-                                     +'<li>Url: <a href=' + layer.url + '>' 
-                                     + layer.url + '</a></li>'
-                                     + '</ul>');
+                                     +'<li>Url: <a href=' + layer.url + '>' + layer.url + '</a></li>'
+                                     + '</ul></div>');
 
-                  mapLayers[i] = new google.maps.KmlLayer(layer.url);
-                  mapLayers[i].setMap(map);
+                  // add map layer to global array for map management
+                  //
+                  mapLayers[i] = new google.maps.KmlLayer(layer.url, {preserveViewport: true});
               });
 
               $('#mapset_canvas').html(mapSetViewHtml.join(''));
-          });
-      }
+        
+              // attach handlers to each layer's checkbox in the mapset viewer. The handler
+              // will run the layer's setMap function to add/remove it from the map
+              //
+              $.each(mapSet.children, function (i, layer) {
+                  $('#showLayer_' + i).change(function (layer) {
+                      return function () {
+                          var show = $(this).attr('checked');
+                          if (show) {
+                              mapLayers[i].setMap(map);
+                          } else {
+                              mapLayers[i].setMap(null);
+                          }
+                      }
+                  }(layer));
+              });
+        });
+    }
     </script>
 
 </head>

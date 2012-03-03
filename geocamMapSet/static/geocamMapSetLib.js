@@ -70,4 +70,3 @@ geocamMapSetLib.MapSet = function (spec, map, manageDivId, opts) {
         });
     });
 }
-

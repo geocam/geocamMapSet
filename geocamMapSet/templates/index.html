@@ -15,7 +15,7 @@
           height: 480px;
           border: 1px solid black;
       }
-      #maplibrary_canvas {
+      #mapsetjson_dump {
           width: 320px;
           height: 480px;
           border: 1px solid black;
@@ -53,14 +53,13 @@
           
           var myMapSet = geocamMapSetLib.MapSet(spec, map, $('#mapset_canvas'))
           var myMapSetHtml = []
-          document.getElementById('dump_mapset').innerHTML = '<p>' + myMapSet.mapsetjson + '</p>';
-
-//              '<table>' + 
-//              '<tr> <td> member </td> <td> value </td> </tr>'+
-//              '<tr> <td> mapsetjson </td> <td>' + myMapSet.mapsetjson + '</td></tr>' +
-//	      '<tr> <td> url </td> <td>' + myMapSet.url + '</td></tr>' +
-//              '</table>'          
-
+          document.getElementById('mapsetjson_dump').innerHTML =
+              '<table border="1">' + 
+              '<th> member </th> <th> value </th>'+
+              '<tr> <td> mapsetjson </td> <td>' + myMapSet.mapsetjson + '</td></tr>' +
+	      '<tr> <td> url </td> <td> <a href=' + myMapSet.url + '>' + myMapSet.url + '</a></td></tr>' +
+              '</table>';
+          
       }
     </script>
 
@@ -68,7 +67,7 @@
   <body onload="initialize()">
     <table>
       <tr>
-        <td><div id="dump_mapset"></div></td>
+        <td><div id="mapsetjson_dump"></div></td>
         <td><div id="mapset_canvas"></div></td>
         <td><div id="map_canvas"></div></td>
       </tr>

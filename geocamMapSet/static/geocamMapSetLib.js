@@ -22,13 +22,25 @@ geocamMapSetLib.MapSet = function (spec, map, manageDivId, opts) {
     // checking', 'javascript function args', 'javascript typeof')
     //
     
-    var url = spec;
-    var mapsetjson = "something";
+
+    // setup MapSet object attributes      
+    mapSetObj = new Object();
+    mapSetObj.url = spec;
+    mapSetObj.view = map;
 
     var mapLayers = [];
 
-    $.getJSON(spec, function (obj) {
+    // disable async to ensure sequential execution flow
+    $.ajax({url: spec, 
+      dataType: 'json',
+      async: false,
+      success: function(obj) {
+
         mapSet = obj;
+
+        // flesh out the wrapper object
+        mapSetObj.mapsetjson = mapSet.mapsetjson;
+
         var mapSetViewHtml = [];
 
         $.each(mapSet.children, function (i, layer) {
@@ -71,5 +83,7 @@ geocamMapSetLib.MapSet = function (spec, map, manageDivId, opts) {
                 }
             }(layer));
         });
-    });
+    }});
+
+    return mapSetObj;
 }

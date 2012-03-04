@@ -21,6 +21,9 @@ geocamMapSetLib.MapSet = function (spec, map, manageDivId, opts) {
     // TODO: input validation (google search 'javascript function type
     // checking', 'javascript function args', 'javascript typeof')
     //
+    
+    var url = spec;
+    var mapsetjson = "something";
 
     var mapLayers = [];
 

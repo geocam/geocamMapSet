@@ -14,7 +14,7 @@
 
 .. note::
 
-                Maintenance of the mapSetJSON specification and
+                Maintanence of the mapSetJSON specification and
                 development on this application is managed by NASA and
                 Carnegie Mellon University, as part of the larger
                 ``geocam`` disaster response management initiative.

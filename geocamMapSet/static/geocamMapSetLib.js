@@ -16,7 +16,7 @@ var geocamMapSetLib = geocamMapSetLib || {};
  * TODO: is map layer construction for the map supposed to happen here? or
  *       somewhere else?
  */
-geocamMapSetLib.MapSet = function (spec, map, manageDivId, opts) {
+geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
 
     // TODO: input validation (google search 'javascript function type
     // checking', 'javascript function args', 'javascript typeof')
@@ -24,22 +24,19 @@ geocamMapSetLib.MapSet = function (spec, map, manageDivId, opts) {
     
 
     // setup MapSet object attributes      
-    mapSetObj = new Object();
-    mapSetObj.url = spec;
-    mapSetObj.view = map;
+    mapSetManager = new Object();
+    mapSetManager.status = 'LOADING';
+    mapSetManager.url = spec;
 
     var mapLayers = [];
 
     // disable async to ensure sequential execution flow
-    $.ajax({url: spec, 
-      dataType: 'json',
-      async: false,
-      success: function(obj) {
-
+    $.getJSON(spec, function(obj) {
         mapSet = obj;
 
         // flesh out the wrapper object
-        mapSetObj.mapsetjson = mapSet.mapsetjson;
+        mapSetManager.mapSet = mapSet;
+        mapSetManager.status = 'FINISHED_LOADING';
 
         var mapSetViewHtml = [];
 
@@ -83,7 +80,7 @@ geocamMapSetLib.MapSet = function (spec, map, manageDivId, opts) {
                 }
             }(layer));
         });
-    }});
+    });
 
-    return mapSetObj;
+    return mapSetManager;
 }

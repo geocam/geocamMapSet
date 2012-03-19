@@ -1,8 +1,10 @@
 var geocamMapSetLib = geocamMapSetLib || {};
 
-/* MapSet(spec, map, manageDivId, opts)
+/* MapSetManager(spec, map, manageDivId, opts)
  *
- * Constructor that creates and displays a map set.
+ * Constructor that creates and displays a map set. It returns a MapSetManager
+ * object, the status attribute of which indicates whether the mapSetJSON has
+ * loaded.
  *
  * @spec is MapSetJSON document url string
  * @map is a Google API v3 map

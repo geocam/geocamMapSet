@@ -32,7 +32,7 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
 
     var mapLayers = [];
 
-    // disable async to ensure sequential execution flow
+    // load the mapSetJSON asynchrously
     $.getJSON(spec, function(obj) {
         mapSet = obj;
 

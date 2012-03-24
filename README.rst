@@ -31,8 +31,11 @@ You can get ``geocamMapSet`` via ``Github`` by saying::
 
         git clone git@github.com:geocam/geocamMapSet.git
 
-To run the application with the integrated items, do the following::
+To run the application with the integrated items, do the following
+(assuming your git clone is in /home/user/python/geocamMapSet)::
 
+        cd /home/user/python/geocamMapSet
+        export PYTHONPATH=$PYTHONPATH:$PWD/geocamMapSet
         python example/manage.py syncdb
         python example/manage.py runserver
 
@@ -47,7 +50,14 @@ The ``geocamMapSet`` git repository integrates the following:
 
 Add the simple mapset viewer to your page::
 
-        map = new mxn.Mapstraction('mapdiv','googlev3');
+        var mapOptions = {
+            center: new google.maps.LatLng(35, -95),
+            zoom: 4,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+
+        map = new google.maps.Map(document.getElementById('mapDiv'), 
+                                      mapOptions);
         mgr = new geocamMapSet.MapSetManager(“/mymapset.json”, map, 
                                              ‘manageDiv’);
 

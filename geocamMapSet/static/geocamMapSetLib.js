@@ -51,7 +51,12 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
         mapSetManager.status = 'FINISHED_LOADING';
 
         var mapSetViewHtml = [];
-        mapSetViewHtml.push('<div id="mapLayerList">');
+        mapSetViewHtml.push('<div id="mapLayerList">'
+                            + '<div class="metadataHeader" style="visibility:hidden" title=\''
+                            + '"mapsetjson":"' + mapSet.mapsetjson + '",'
+                            + '"type":"' + mapSet.type + '",'
+                            + '"extensions":' + JSON.stringify(mapSet.extensions)
+                            + '\'></div>');
 
         $.each(mapSet.children, function (i, layer) {
             console.log(i)
@@ -64,9 +69,12 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
                  + '<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>'         
                  + '<input type="checkbox" id="showLayer_' + i +'"></input>'
                  + '<label for="showLayer_' + i + '">' + layer.name + '</label>'                         
+                 + '<div class="metadataChild" style="visibility:hidden" title=\''
+                 + '"type":"' + layer.type + '",'
+                 + '"url":"' + layer.url + '"'
+                 + '\'></div>' 
                  + '</div>');
 
-            
             // add map layer to global array for map management
             //
             mapLayers[i] = new google.maps.KmlLayer(layer.url, {preserveViewport: true});
@@ -111,7 +119,26 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
             $('#mapLayerList').sortable({disabled: false});
             $('#mapLayerList span').addClass('ui-icon');
         }
- 
+        
+        mapSetManager.getMapsetState = function () {
+            // TODO: make this more legitimate, eg to handle more complicated
+            // documents - like nested hierarchies of layers
+            //
+            var docStr = '{' + $('.metadataHeader').attr("title");
+            docStr+=',"children":[';
+
+            $('.layerEntry').each(function (i, obj) {
+                    if (i !=0 ) docStr+=',';
+                    docStr+='{"name":"' + $(obj).find('.layerName').text() + '"';
+                    docStr+=',' + $(obj).find('.metadataChild').attr("title") + '}';
+                });
+
+            docStr+="]}";
+
+            console.log(docStr);
+
+            return JSON.parse(docStr);
+        }
     });
 
     return mapSetManager;

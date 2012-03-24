@@ -109,6 +109,8 @@
               myMapSetManager.enableEditing();
           }
       }
+
+      
     </script>
 
 </head>
@@ -122,5 +124,6 @@
     </table>
     <input type="button" value="Read MapSet Object" onclick="checkMapSetManager(myMapSetManager)">
     <input type="button" value="ToggleEditingMode" onclick="testToggle(myMapSetManager)">
+    <input type="button" value="Save" onclick="mapSetManager.getMapsetState()"">
   </body>
 </html>

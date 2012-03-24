@@ -8,7 +8,9 @@
 
 var geocamMapSetLib = geocamMapSetLib || {};
 
-
+geocamMapSetLib.dataMap = new Array();
+geocamMapSetLib.sortableStartLoc;
+geocamMapSetLib.sortableStopLoc;
 
 /* MapSetManager(spec, map, manageDivId, opts)
  *
@@ -33,9 +35,8 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
     // TODO: input validation (google search 'javascript function type
     // checking', 'javascript function args', 'javascript typeof')
     //
-    
 
-    // setup MapSet object attributes      
+    // setup MapSet object attributes
     mapSetManager = new Object();
     mapSetManager.status = 'LOADING';
     mapSetManager.url = spec;
@@ -51,28 +52,28 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
         mapSetManager.status = 'FINISHED_LOADING';
 
         var mapSetViewHtml = [];
-        mapSetViewHtml.push('<div id="mapLayerList">'
-                            + '<div class="metadataHeader" style="visibility:hidden" title=\''
-                            + '"mapsetjson":"' + mapSet.mapsetjson + '",'
-                            + '"type":"' + mapSet.type + '",'
-                            + '"extensions":' + JSON.stringify(mapSet.extensions)
-                            + '\'></div>');
+
+        mapSetViewHtml.push('<div id="mapLayerList">');
 
         $.each(mapSet.children, function (i, layer) {
-            console.log(i)
-            console.log(layer.url)
+            // initially, there will be a direct relationship between the JSON
+            // order and the html display order
+            //
+            var htmlId = i;
+            var jsonId = i;
+            geocamMapSetLib.dataMap[htmlId] = jsonId;
+
+            console.log(i, jsonId, htmlId);
+            console.log(layer.url);
 
             // create mapset viewer content
             //
             mapSetViewHtml.push
-                ('<div class="layerEntry ui-state-default">'                 
-                 + '<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>'         
-                 + '<input type="checkbox" id="showLayer_' + i +'"></input>'
-                 + '<label for="showLayer_' + i + '">' + layer.name + '</label>'                         
-                 + '<div class="metadataChild" style="visibility:hidden" title=\''
-                 + '"type":"' + layer.type + '",'
-                 + '"url":"' + layer.url + '"'
-                 + '\'></div>' 
+                ('<div class="layerEntry ui-state-default">'
+                 + '<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>'
+                 + '<input type="checkbox" id="showLayer_' + jsonId + '"></input>'
+                 + '<label for="showLayer_' + jsonId + '">' + layer.name + '</label>'
+                 + '<div class="metadata" id="' + jsonId + '" style="visibility:hidden"' + '></div>'
                  + '</div>');
 
             // add map layer to global array for map management
@@ -82,9 +83,19 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
 
         mapSetViewHtml.push('</div>');
         manageDivId.html(mapSetViewHtml.join(''));
-  
-        // make the layer list sortable 
-        $('#mapLayerList').sortable();
+
+        // make the layer list sortable
+        $('#mapLayerList').sortable({
+            stop: function(event, ui) {
+
+                $('.layerEntry').each(function (i, obj) {
+                    var jsonId = $(obj).find('.metadata').attr("id");
+                    geocamMapSetLib.dataMap[i] = jsonId;
+                })
+
+                dumpDataMap(geocamMapSetLib.dataMap);
+            }
+        });
 
         // attach handlers to each layer's checkbox in the mapset
         // viewer. The handler will run the layer's setMap function to
@@ -119,18 +130,18 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
             $('#mapLayerList').sortable({disabled: false});
             $('#mapLayerList span').addClass('ui-icon');
         }
-        
+
         mapSetManager.getMapsetState = function () {
             // TODO: make this more legitimate, eg to handle more complicated
             // documents - like nested hierarchies of layers
             //
-            var docStr = '{' + $('.metadataHeader').attr("title");
-            docStr+=',"children":[';
+            // var docStr = '{' + $('.metadataHeader').attr("title");
+            // docStr+=',"children":[';
 
             $('.layerEntry').each(function (i, obj) {
-                    if (i !=0 ) docStr+=',';
-                    docStr+='{"name":"' + $(obj).find('.layerName').text() + '"';
-                    docStr+=',' + $(obj).find('.metadataChild').attr("title") + '}';
+                    // if (i !=0 ) docStr+=',';
+                    // docStr+='{"name":"' + $(obj).find('.layerName').text() + '"';
+                    // docStr+=',' + $(obj).find('.metadataChild').attr("title") + '}';
                 });
 
             docStr+="]}";
@@ -143,3 +154,11 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
 
     return mapSetManager;
 }
+
+
+    function dumpDataMap(dataMap) {
+        for (i=0; i < dataMap.length; i++) {
+            console.log("dataMap[" + i + "] = " + dataMap[i]);
+        }
+    }
+

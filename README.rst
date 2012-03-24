@@ -5,7 +5,7 @@
 | __END_LICENSE__
 
 ===============================================================================
-``geocamMapSet`` -- django app for managing multi-layer mapsets with mapSetJSON
+``geocamMapSet`` -- Django app for managing multi-layer mapsets with mapSetJSON
 ===============================================================================
 
                 The ``geocamMapSet`` Python/Django app provides a map
@@ -14,28 +14,22 @@
 
 .. note::
 
-                Maintanence of the mapSetJSON specification and
+                Maintenance of the mapSetJSON specification and
                 development on this application is managed by NASA and
                 Carnegie Mellon University, as part of the larger
                 ``geocam`` disaster response management initiative.
                 However, third-party development and use is strongly
                 encouraged.
 
-``geocamMapSet`` is licensed under the NASA OPEN SOURCE AGREEMENT
-VERSION 1.3, see the file ``LICENSE`` for more information.
-
-You can get ``geocamMapSet`` via ``github`` by saying::
-
-        git clone git@github.com:geocam/geocamMapSet.git
-
+                ``geocamMapSet`` is licensed under the NASA OPEN
+                SOURCE AGREEMENT VERSION 1.3, see the file ``LICENSE``
+                for more information.
 
 Setting up
 ==========
-The ``geocamMapSet`` git repository integrates the following:
+You can get ``geocamMapSet`` via ``Github`` by saying::
 
-- the actual geocamMapSet DJango app, in subtree ``geocamMapSet``
-- the mapSetJSON management libaries, in subtree ``geocamMapSet/static``
-- an example django site, in subtree ``example``
+        git clone git@github.com:geocam/geocamMapSet.git
 
 To run the application with the integrated items, do the following::
 
@@ -45,9 +39,38 @@ To run the application with the integrated items, do the following::
 
 Using the libraries in your web pages
 =====================================
-< TBD >
+The ``geocamMapSet`` git repository integrates the following:
+
+- the actual geocamMapSet Django app, in subtree ``geocamMapSet``
+- the mapSetJSON management libraries, in subtree ``geocamMapSet/static``
+- an example Django site, in subtree ``example``
+
+Add the simple mapset viewer to your page::
+
+        map = new mxn.Mapstraction('mapdiv','googlev3');
+        mgr = new geocamMapSet.MapSetManager(“/mymapset.json”, map, 
+                                             ‘manageDiv’);
+
+Now add the mapset editor to your page::
+
+        mgr.enableEditing(“/save/mymapset”);
+        mgr.showLibrary(“/library?q={{ searchString }}&n={{ maxNumLayers }}”, 
+                        “libraryDiv”);
 
 
 Hosting the libraries on your web site
 ======================================
-< TBD >
+The mapSetJSON management library ``geocamMapSetLib.js`` can be hosted on
+your site.  To get a copy, clone the geocamMapSet project or download the
+latest source from the Github project page.  Then copy the library to the
+location of your Javascript files for your site.
+
+You will additionally need to include ``jQuery`` in your app, as it is
+required by the geocamMapset library.  If you are not already using 
+``jQuery`` you can use the version that is included with the ``geocamMapSet``
+application.
+
+The library is located within the project hierarchy here::
+
+        geocamMapSet/geocamMapset/static/geocamMapSetLib.js
+

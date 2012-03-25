@@ -79,7 +79,12 @@
       }
 
       function testToggle(myMapSetManager) {
-          myMapSetManager.disableEditing();
+          var editable = myMapSetManager.isEditable();
+          if (editable) {
+              myMapSetManager.disableEditing();
+          } else {
+              myMapSetManager.enableEditing();
+          }
       }
     </script>
 
@@ -93,6 +98,6 @@
       </tr>
     </table>
     <input type="button" value="Read MapSet Object" onclick="checkMapSetManager(myMapSetManager)">
-    <input type="button" value="Toggle" onclick="testToggle(myMapSetManager)">
+    <input type="button" value="ToggleEditingMode" onclick="testToggle(myMapSetManager)">
   </body>
 </html>

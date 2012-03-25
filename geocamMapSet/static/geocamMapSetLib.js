@@ -88,6 +88,12 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
             }(layer));
         });
 
+        // add the editing mode switch
+        mapSetManager.isEditable = function() {
+            return !$('#mapLayerList').sortable("option", "disabled");
+
+        }
+
         mapSetManager.disableEditing = function () {
             $('#mapLayerList').sortable({disabled: true});
         }

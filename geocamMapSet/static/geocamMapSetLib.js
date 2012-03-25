@@ -1,5 +1,7 @@
 var geocamMapSetLib = geocamMapSetLib || {};
 
+
+
 /* MapSetManager(spec, map, manageDivId, opts)
  *
  * Constructor that creates and displays a map set. It returns a MapSetManager
@@ -41,6 +43,7 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
         mapSetManager.status = 'FINISHED_LOADING';
 
         var mapSetViewHtml = [];
+        mapSetViewHtml.push('<div id="mapLayerList">');
 
         $.each(mapSet.children, function (i, layer) {
             console.log(i)
@@ -51,18 +54,20 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
             mapSetViewHtml.push
                 ('<div class="layerEntry">'
                  +'<input type="checkbox" id="showLayer_' + i +'"></input>'
-                 +'<label for="showLayer_' + i + '"><b>' + layer.name + '</b></label>'
-                 +'<ul>'
-                 + '<li>Type: ' + layer.type + '</li>'
-                 +'<li>Url: <a href=' + layer.url + '>' + layer.url + '</a></li>'
+                 +'<label for="showLayer_' + i + '"><b>' + layer.name + '</b> (KML)[<a href=' + layer.url +'>SRC</a>]'+ '</label>'
                  + '</ul></div>');
 
+            
             // add map layer to global array for map management
             //
             mapLayers[i] = new google.maps.KmlLayer(layer.url, {preserveViewport: true});
         });
 
+        mapSetViewHtml.push('</div>');
         manageDivId.html(mapSetViewHtml.join(''));
+  
+        // make the layer list sortable 
+        $('#mapLayerList').sortable();
 
         // attach handlers to each layer's checkbox in the mapset
         // viewer. The handler will run the layer's setMap function to
@@ -82,6 +87,15 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
                 }
             }(layer));
         });
+
+        mapSetManager.disableEditing = function () {
+            $('#mapLayerList').sortable({disabled: true});
+        }
+
+        mapSetManager.enableEditing = function (savedUrl) {
+            $('#mapLayerList').sortable({disabled: false});
+        }
+ 
     });
 
     return mapSetManager;

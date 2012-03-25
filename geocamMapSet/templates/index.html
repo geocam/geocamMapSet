@@ -30,7 +30,12 @@
       }
     </style>
 
-    <script type="text/javascript" src="{{ STATIC_URL }}jquery-1.7.1.min.js">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/ui-lightness/jquery-ui-1.8.18.custom.css"></link>
+
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.7.1.min.js">
+    </script>
+
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.18.custom.min.js">
     </script>
 
     <script type="text/javascript"
@@ -39,6 +44,8 @@
 
     <script type="text/javascript" src="{{ STATIC_URL }}geocamMapSetLib.js">
     </script>
+
+   
 
     <script type="text/javascript">
       var myMapSetManager;
@@ -70,6 +77,10 @@
               document.getElementById('mapsetjson_dump').innerHTML = 'MapSet JSON status is "' + mapSetManager.status +'".';
           }
       }
+
+      function testToggle(myMapSetManager) {
+          myMapSetManager.disableEditing();
+      }
     </script>
 
 </head>
@@ -82,5 +93,6 @@
       </tr>
     </table>
     <input type="button" value="Read MapSet Object" onclick="checkMapSetManager(myMapSetManager)">
+    <input type="button" value="Toggle" onclick="testToggle(myMapSetManager)">
   </body>
 </html>

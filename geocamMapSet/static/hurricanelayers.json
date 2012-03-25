@@ -14,7 +14,8 @@
     {
       "type": "kml.KML",
       "name": "Significant Wave Events - Atlantic, Gulf of Mexico",
-      "url": "http://neptune.baruch.sc.edu/xenia/feeds/events/events.kmz"
+      "url": "http://neptune.baruch.sc.edu/xenia/feeds/events/events.kmz",
+      "show": "true"
     },
     {
       "type": "kml.KML",

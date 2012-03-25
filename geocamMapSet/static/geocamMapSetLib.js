@@ -37,6 +37,7 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
     //
 
     // setup MapSet object attributes
+    //
     mapSetManager = new Object();
     mapSetManager.status = 'LOADING';
     mapSetManager.url = spec;
@@ -44,10 +45,12 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
     var mapLayers = [];
 
     // load the mapSetJSON asynchrously
+    //
     $.getJSON(spec, function(obj) {
         mapSet = obj;
 
         // flesh out the wrapper object
+        //
         mapSetManager.mapSet = mapSet;
         mapSetManager.status = 'FINISHED_LOADING';
 
@@ -61,17 +64,28 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
             //
             var htmlId = i;
             var jsonId = i;
+            var checkbox;
+
             geocamMapSetLib.dataMap[htmlId] = jsonId;
 
             console.log(i, jsonId, htmlId);
             console.log(layer.url);
+
+            // if the layer is set to 'show' by default, the layer
+            // should be selected on the mapset viewer
+            //
+            if (layer.show == 'true') {
+                checkbox = '<input type="checkbox" id="showLayer_' + jsonId + '" checked="checked"></input>';
+            } else {
+                checkbox = '<input type="checkbox" id="showLayer_' + jsonId + '"></input>';
+            }
 
             // create mapset viewer content
             //
             mapSetViewHtml.push
                 ('<div class="layerEntry ui-state-default">'
                  + '<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>'
-                 + '<input type="checkbox" id="showLayer_' + jsonId + '"></input>'
+                 + checkbox
                  + '<label for="showLayer_' + jsonId + '">' + layer.name + '</label>'
                  + '<div class="metadata" id="' + jsonId + '" style="visibility:hidden"' + '></div>'
                  + '</div>');
@@ -79,20 +93,28 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
             // add map layer to global array for map management
             //
             mapLayers[i] = new google.maps.KmlLayer(layer.url, {preserveViewport: true});
+            
+            // also load the layer on the map if it is enabled
+            //
+            if (layer.show == 'true') {
+                mapLayers[i].setMap(map);
+            }
         });
 
         mapSetViewHtml.push('</div>');
         manageDivId.html(mapSetViewHtml.join(''));
 
         // make the layer list sortable
+        //
         $('#mapLayerList').sortable({
+            // when the user 'drops' a ui element in the list, update
+            // the state of the ui map
+            //
             stop: function(event, ui) {
-
                 $('.layerEntry').each(function (i, obj) {
                     var jsonId = $(obj).find('.metadata').attr("id");
                     geocamMapSetLib.dataMap[i] = jsonId;
                 })
-
                 dumpDataMap(geocamMapSetLib.dataMap);
             }
         });
@@ -117,6 +139,7 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
         });
 
         // add the editing mode switch
+        //
         mapSetManager.isEditable = function() {
             return !$('#mapLayerList').sortable("option", "disabled");
         }
@@ -132,23 +155,37 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
         }
 
         mapSetManager.getMapsetState = function () {
-            // TODO: make this more legitimate, eg to handle more complicated
-            // documents - like nested hierarchies of layers
+            var uiLayers = new Array();
+
+            for (htmlIdx = 0; htmlIdx < geocamMapSetLib.dataMap.length; htmlIdx++) {
+                // id of the json child in the ui 
+                //
+                var jsonIdx = geocamMapSetLib.dataMap[htmlIdx];
+
+                // add the child at its new position based on the ui
+                //
+                uiLayers[htmlIdx] = mapSet.children[jsonIdx];
+
+                // save the show status if enabled
+                //
+                if ($('#showLayer_' + jsonIdx).attr('checked')) {
+                    uiLayers[htmlIdx].show = 'true';
+                }
+            }
+
+            // update the mapset json object with the new layer content
             //
-            // var docStr = '{' + $('.metadataHeader').attr("title");
-            // docStr+=',"children":[';
+            mapSet.children = uiLayers;
 
+            // reset the map now that everything is synced
+            //
             $('.layerEntry').each(function (i, obj) {
-                    // if (i !=0 ) docStr+=',';
-                    // docStr+='{"name":"' + $(obj).find('.layerName').text() + '"';
-                    // docStr+=',' + $(obj).find('.metadataChild').attr("title") + '}';
-                });
+                $(obj).find('.metadata').attr("id", i);
+                geocamMapSetLib.dataMap[i] = i;
+            })
 
-            docStr+="]}";
-
-            console.log(docStr);
-
-            return JSON.parse(docStr);
+            console.log("new json content: " + JSON.stringify(mapSet));
+            return mapSet;
         }
     });
 
@@ -156,9 +193,11 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
 }
 
 
-    function dumpDataMap(dataMap) {
-        for (i=0; i < dataMap.length; i++) {
-            console.log("dataMap[" + i + "] = " + dataMap[i]);
-        }
+// utility function to dump the current state of the ui for debugging
+//
+function dumpDataMap(dataMap) {
+    for (i=0; i < dataMap.length; i++) {
+        console.log("htmlID=" + i + " jsonId="+ dataMap[i]);
     }
+}
 

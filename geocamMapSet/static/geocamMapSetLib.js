@@ -9,8 +9,6 @@
 var geocamMapSetLib = geocamMapSetLib || {};
 
 geocamMapSetLib.dataMap = new Array();
-geocamMapSetLib.sortableStartLoc;
-geocamMapSetLib.sortableStopLoc;
 
 /* MapSetManager(spec, map, manageDivId, opts)
  *

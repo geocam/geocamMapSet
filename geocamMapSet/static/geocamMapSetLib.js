@@ -60,10 +60,11 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
             // create mapset viewer content
             //
             mapSetViewHtml.push
-                ('<div class="layerEntry">'
-                 +'<input type="checkbox" id="showLayer_' + i +'"></input>'
-                 +'<label for="showLayer_' + i + '"><b>' + layer.name + '</b> (KML)[<a href=' + layer.url +'>SRC</a>]'+ '</label>'
-                 + '</ul></div>');
+                ('<div class="layerEntry ui-state-default">'                 
+                 + '<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>'         
+                 + '<input type="checkbox" id="showLayer_' + i +'"></input>'
+                 + '<label for="showLayer_' + i + '">' + layer.name + '</label>'                         
+                 + '</div>');
 
             
             // add map layer to global array for map management
@@ -99,15 +100,16 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
         // add the editing mode switch
         mapSetManager.isEditable = function() {
             return !$('#mapLayerList').sortable("option", "disabled");
-
         }
 
         mapSetManager.disableEditing = function () {
             $('#mapLayerList').sortable({disabled: true});
+            $('#mapLayerList span').removeClass('ui-icon');
         }
 
         mapSetManager.enableEditing = function (savedUrl) {
             $('#mapLayerList').sortable({disabled: false});
+            $('#mapLayerList span').addClass('ui-icon');
         }
  
     });

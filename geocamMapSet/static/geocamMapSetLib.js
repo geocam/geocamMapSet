@@ -168,7 +168,9 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
                 //
                 if ($('#showLayer_' + jsonIdx).attr('checked')) {
                     uiLayers[htmlIdx].show = 'true';
-                }
+                } else {
+                    delete uiLayers[htmlIdx]["show"];
+                }                
             }
 
             // update the mapset json object with the new layer content

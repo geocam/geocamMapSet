@@ -143,13 +143,23 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
         }
 
         mapSetManager.disableEditing = function () {
+            // disable sorting and checkboxes
             $('#mapLayerList').sortable({disabled: true});
-            $('#mapLayerList span').removeClass('ui-icon');
+            $('#mapLayerList :checkbox').attr('disabled', true);
+
+            // remove arrow-icon and draggable frame to each entry
+            $('#mapLayerList span').removeClass('ui-icon ui-icon-arrowthick-2-n-s');
+            $('.layerEntry').removeClass('ui-state-default');
         }
 
         mapSetManager.enableEditing = function (savedUrl) {
+            // enable sorting and checkboxes
             $('#mapLayerList').sortable({disabled: false});
-            $('#mapLayerList span').addClass('ui-icon');
+            $('#mapLayerList :checkbox').attr('disabled', false);
+
+            // Add arrow-icon and draggable frame to each entry
+            $('#mapLayerList span').addClass('ui-icon ui-icon-arrowthick-2-n-s');
+            $('.layerEntry').addClass('ui-state-default');
         }
 
         mapSetManager.getMapsetState = function () {

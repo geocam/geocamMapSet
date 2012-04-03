@@ -143,9 +143,8 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
         }
 
         mapSetManager.disableEditing = function () {
-            // disable sorting and checkboxes
+            // disable sorting
             $('#mapLayerList').sortable({disabled: true});
-            $('#mapLayerList :checkbox').attr('disabled', true);
 
             // remove arrow-icon and draggable frame to each entry
             $('#mapLayerList span').removeClass('ui-icon ui-icon-arrowthick-2-n-s');
@@ -153,9 +152,8 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
         }
 
         mapSetManager.enableEditing = function (savedUrl) {
-            // enable sorting and checkboxes
+            // enable sorting 
             $('#mapLayerList').sortable({disabled: false});
-            $('#mapLayerList :checkbox').attr('disabled', false);
 
             // Add arrow-icon and draggable frame to each entry
             $('#mapLayerList span').addClass('ui-icon ui-icon-arrowthick-2-n-s');

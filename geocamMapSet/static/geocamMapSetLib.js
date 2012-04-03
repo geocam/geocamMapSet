@@ -39,6 +39,7 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
     mapSetManager = new Object();
     mapSetManager.status = 'LOADING';
     mapSetManager.url = spec;
+    mapSetManager.manageDivId = manageDivId;
 
     var mapLayers = [];
 
@@ -100,7 +101,7 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
         });
 
         mapSetViewHtml.push('</div>');
-        manageDivId.html(mapSetViewHtml.join(''));
+        $(manageDivId).html(mapSetViewHtml.join(''));
 
         // make the layer list sortable
         //

@@ -113,11 +113,20 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
             //
             mapSet.children = uiLayers;
            
+            // preserve the editable state
+            //
+            var isEditableMode = this.isEditable();         
+  
 	    // re-draw the ManageDiv and GoogleMap so that everything
             // is in synced with the new JSON object.
             // Note: dataMap{htmlIdx:jsonIdx} also gets reset.
             //
             this.drawManageDivAndMapCanvas();
+            if (isEditableMode) {
+                this.enableEditing();
+            } else {
+                this.disableEditing();
+            }
 
             console.log("new json content: " + JSON.stringify(mapSet));
             return mapSet;

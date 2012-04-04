@@ -40,8 +40,10 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
     mapSetManager.status = 'LOADING';
     mapSetManager.url = spec;
     mapSetManager.manageDivId = manageDivId;
+    mapSetManager.googleMap = map;
+    mapSetManager.mapLayers = [];
 
-    var mapLayers = [];
+    //    var mapLayers = [];
 
     // load the mapSetJSON asynchrously
     //
@@ -53,96 +55,16 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
         mapSetManager.mapSet = mapSet;
         mapSetManager.status = 'FINISHED_LOADING';
 
-        var mapSetViewHtml = [];
+        mapSetManager.drawManageDivAndMapCanvas();
 
-        mapSetViewHtml.push('<div id="mapLayerList">');
-
-        $.each(mapSet.children, function (i, layer) {
-            // initially, there will be a direct relationship between the JSON
-            // order and the html display order
-            //
-            var htmlId = i;
-            var jsonId = i;
-            var checkbox;
-
-            geocamMapSetLib.dataMap[htmlId] = jsonId;
-
-            console.log(i, jsonId, htmlId);
-            console.log(layer.url);
-
-            // if the layer is set to 'show' by default, the layer
-            // should be selected on the mapset viewer
-            //
-            if (layer.show == 'true') {
-                checkbox = '<input type="checkbox" id="showLayer_' + jsonId + '" checked="checked"></input>';
-            } else {
-                checkbox = '<input type="checkbox" id="showLayer_' + jsonId + '"></input>';
-            }
-
-            // create mapset viewer content
-            //
-            mapSetViewHtml.push
-                ('<div class="layerEntry ui-state-default">'
-                 + '<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>'
-                 + checkbox
-                 + '<label for="showLayer_' + jsonId + '">' + layer.name + '</label>'
-                 + '<div class="metadata" id="' + jsonId + '" style="visibility:hidden"' + '></div>'
-                 + '</div>');
-
-            // add map layer to global array for map management
-            //
-            mapLayers[i] = new google.maps.KmlLayer(layer.url, {preserveViewport: true});
-            
-            // also load the layer on the map if it is enabled
-            //
-            if (layer.show == 'true') {
-                mapLayers[i].setMap(map);
-            }
-        });
-
-        mapSetViewHtml.push('</div>');
-        $(manageDivId).html(mapSetViewHtml.join(''));
-
-        // make the layer list sortable
-        //
-        $('#mapLayerList').sortable({
-            // when the user 'drops' a ui element in the list, update
-            // the state of the ui map
-            //
-            stop: function(event, ui) {
-                $('.layerEntry').each(function (i, obj) {
-                    var jsonId = $(obj).find('.metadata').attr("id");
-                    geocamMapSetLib.dataMap[i] = jsonId;
-                })
-                dumpDataMap(geocamMapSetLib.dataMap);
-            }
-        });
-
-        // attach handlers to each layer's checkbox in the mapset
-        // viewer. The handler will run the layer's setMap function to
-        // add/remove it from the map
-        //
-        $.each(mapSet.children, function (i, layer) {
-            $('#showLayer_' + i).change(function (layer) {
-                return function () {
-                    var show = $(this).attr('checked');
-                    if (show) {
-                        console.log("showing layer " + layer.name);
-                        mapLayers[i].setMap(map);
-                    } else {
-                        console.log("hiding layer " + layer.name);
-                        mapLayers[i].setMap(null);
-                    }
-                }
-            }(layer));
-        });
-
-        // add the editing mode switch
+        // function to check editable mode status
         //
         mapSetManager.isEditable = function() {
             return !$('#mapLayerList').sortable("option", "disabled");
         }
 
+        // function to disable the editable mode
+        //
         mapSetManager.disableEditing = function () {
             // disable sorting
             $('#mapLayerList').sortable({disabled: true});
@@ -152,6 +74,8 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
             $('.layerEntry').removeClass('ui-state-default');
         }
 
+        // function to enable the editable mode
+        //
         mapSetManager.enableEditing = function (savedUrl) {
             // enable sorting 
             $('#mapLayerList').sortable({disabled: false});
@@ -161,6 +85,9 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
             $('.layerEntry').addClass('ui-state-default');
         }
 
+        // function to create mapSetJSON from the current state
+        // (i.e., after editing). "You See Is What You Get"
+        //
         mapSetManager.getMapsetState = function () {
             var uiLayers = new Array();
 
@@ -185,22 +112,145 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
             // update the mapset json object with the new layer content
             //
             mapSet.children = uiLayers;
-
-            // reset the map now that everything is synced
+           
+	    // re-draw the ManageDiv and GoogleMap so that everything
+            // is in synced with the new JSON object.
+            // Note: dataMap{htmlIdx:jsonIdx} also gets reset.
             //
-            $('.layerEntry').each(function (i, obj) {
-                $(obj).find('.metadata').attr("id", i);
-                geocamMapSetLib.dataMap[i] = i;
-            })
+            this.drawManageDivAndMapCanvas();
 
             console.log("new json content: " + JSON.stringify(mapSet));
             return mapSet;
         }
-    });
+    });  // end of asynchronous execution, i.e., $.getJSON() method.
+
+
+    // bind the function drawManageDivAndMapCanvas() needed in
+    // initialization.
+    mapSetManager.drawManageDivAndMapCanvas = drawManageDivAndMapCanvas;
 
     return mapSetManager;
 }
 
+
+// mapSetManager.drawManageDivAndMapCanvas()
+//
+// Clean the manageDiv and draw the html content based on the jsonObj
+//
+// @status is the indicator whether the @mapSet is loaded.
+// @mapSet is the object representation of the MapSetJson document
+// @manageDivId is the ID of the manageDiv. Usually, it will be used with
+// the mapSetManager.mangeDivId.
+// @googleMap is the GoogleMap map object
+// @mapLayers is the array of map layers binding to the @googleMap
+//
+// This function also writes the following global variables
+//     geocamMapSetLib.dataMap[];
+//
+function drawManageDivAndMapCanvas() {
+
+    // return if mapSet is not ready
+    if (this.status != 'FINISHED_LOADING') {
+        console.log('Fail to execute drawManageDivAndMapCanvas. mapSetManager.status is ' + this.status);
+        return;
+    }
+
+    var mapLayers = this.mapLayers;
+    var map = this.googleMap;
+
+    // unpopulate all layers on the map
+    while (mapLayers.length>0) {
+        var m = mapLayers.pop();
+        m.setMap(null);
+        //console.log('Clearing layer ' + (mapLayers.length));
+    }
+
+    var mapSetViewHtml = [];
+
+    mapSetViewHtml.push('<div id="mapLayerList">');
+
+    $.each(this.mapSet.children, function (i, layer) {
+        // initially, there will be a direct relationship between the JSON
+        // order and the html display order
+        //
+        var htmlId = i;
+        var jsonId = i;
+        var checkbox;
+
+        // build the { htmlId : jsonId } mapping to track reordering
+        // editing.
+        geocamMapSetLib.dataMap[htmlId] = jsonId;
+
+        console.log(i, jsonId, htmlId);
+        console.log(layer.url);
+
+        // if the layer is set to 'show' by default, the layer
+        // should be selected on the mapset viewer
+        //
+        if (layer.show == 'true') {
+            checkbox = '<input type="checkbox" id="showLayer_' + jsonId + '" checked="checked"></input>';
+        } else {
+            checkbox = '<input type="checkbox" id="showLayer_' + jsonId + '"></input>';
+        }
+
+        // create mapset viewer content
+        //
+        mapSetViewHtml.push
+            ('<div class="layerEntry ui-state-default">'
+             + '<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>'
+             + checkbox
+             + '<label for="showLayer_' + jsonId + '">' + layer.name + '</label>'
+             + '<div class="metadata" id="' + jsonId + '" style="visibility:hidden"' + '></div>'
+             + '</div>');
+
+        // add map layer to global array for map management
+        //
+        mapLayers[i] = new google.maps.KmlLayer(layer.url, {preserveViewport: true});
+            
+        // also load the layer on the map if it is enabled
+        //
+        if (layer.show == 'true') {
+            mapLayers[i].setMap(map);
+        }
+    });  // end of .each() loop
+
+    mapSetViewHtml.push('</div>');
+    $(this.manageDivId).html(mapSetViewHtml.join(''));
+
+    // make the layer list sortable
+    //
+    $('#mapLayerList').sortable({
+        // when the user 'drops' a ui element in the list, update
+        // the state of the ui map
+        //
+        stop: function(event, ui) {
+            $('.layerEntry').each(function (i, obj) {
+                var jsonId = $(obj).find('.metadata').attr("id");
+                geocamMapSetLib.dataMap[i] = jsonId;
+            })
+            dumpDataMap(geocamMapSetLib.dataMap);
+        }
+    });
+
+    // attach handlers to each layer's checkbox in the mapset
+    // viewer. The handler will run the layer's setMap function to
+    // add/remove it from the map
+    //
+    $.each(mapSet.children, function (i, layer) {
+        $('#showLayer_' + i).change(function (layer) {
+            return function () {
+                var show = $(this).attr('checked');
+                if (show) {
+                    console.log("showing layer " + layer.name);
+                    mapLayers[i].setMap(map);
+                } else {
+                    console.log("hiding layer " + layer.name);
+                    mapLayers[i].setMap(null);
+                }
+            }
+        }(layer));
+    });
+}
 
 // utility function to dump the current state of the ui for debugging
 //

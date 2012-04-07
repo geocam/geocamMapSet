@@ -5,8 +5,13 @@
 # __END_LICENSE__
 
 from django.conf.urls.defaults import url, patterns
-
+from django.contrib import databrowse
+from geocamMapSet.models import MapSet, Extension, MapSetLayer
 from geocamMapSet import settings
+
+databrowse.site.register(MapSet)
+databrowse.site.register(Extension)
+databrowse.site.register(MapSetLayer)
 
 urlpatterns = patterns(
     'geocamMapSet.views',
@@ -29,6 +34,9 @@ urlpatterns = patterns(
     url(r'^library/(?P<layer_id>\d+)/$', 'libraryView'),
 
     url(r'^library/$', 'libraryIndex'),
+
+    url(r'^databrowse/(.*)', databrowse.site.root),
+
 )
 
 mapMixerPatterns = patterns(

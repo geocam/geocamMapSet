@@ -32,17 +32,29 @@ class LibraryLayer(models.Model):
 class MapSet(models.Model):
     name = models.CharField(max_length=255, blank=True)
     description = models.CharField(max_length=255, blank=True)
-    mapsetjson = models.DecimalField(max_digits=5, decimal_places=2)
     url = models.URLField(blank=True)
+    mapsetjson = models.DecimalField(max_digits=5, decimal_places=2)
     json = models.TextField()
-    # extensions held in separate table
-    # mapsetlayer held in separate table
 
     def __unicode__(self):
         return self.name
 
+    @classmethod     
+    def fromJSON(cls, json):
+        vals = {}
+        vals['json'] = json
+        if 'name' in json: 
+            vals['name'] = json['name']
+        if 'description' in json:
+            vals['description'] = json['description']
+        if 'url' in json: 
+            vals['url'] = json['url']
+        if 'mapsetjson' in json: 
+            vals['mapsetjson'] = json['mapsetjson']
+        return MapSet(**vals)
 
 
+            
 class MapSetLayer(models.Model):
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=255)
@@ -54,6 +66,20 @@ class MapSetLayer(models.Model):
     def __unicode__(self):
         return self.name
 
+    @classmethod     
+    def fromJSON(cls, json):
+        vals = {}
+        vals['json'] = json
+        if 'name' in json: 
+            vals['name'] = json['name']
+        if 'type' in json: 
+            vals['type'] = json['type']
+        if 'url' in json: 
+            vals['url'] = json['url']
+        if 'show' in json: 
+            vals['show'] = json['show']
+        return MapSetLayer(**vals)
+
 
 
 class Extension(models.Model):
@@ -63,6 +89,15 @@ class Extension(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    @classmethod     
+    def fromJSON(cls, json):
+        vals = {}
+        if 'name' in json: 
+            vals['name'] = json['name']
+        if 'url' in json: 
+            vals['url'] = json['url']
+        return Extension(**vals)
 
 
 

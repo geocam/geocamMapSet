@@ -20,7 +20,7 @@ class LibraryLayer(models.Model):
 
     @classmethod 
     def getAllLayersInJson(cls):
-        layer_list = Layer.objects.all()
+        layer_list = LibraryLayer.objects.all()
         json_list = []
         for layer in layer_list:
             json_list.append(layer.json)    

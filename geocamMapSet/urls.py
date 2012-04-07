@@ -11,17 +11,20 @@ from geocamMapSet import settings
 urlpatterns = patterns(
     'geocamMapSet.views',
 
+    url(r'^createSet/$', 'mapSetCreate', {},
+        'geocamMapSet_create'),
+
     url(r'^(?P<user_name>[^/]+)/(?P<set_id>[^/]+)/$', 'mapSetView', {},
         'geocamMapSet_view'),
 
     url(r'^(?P<user_name>[^/]+)/(?P<set_id>[^/]+)/edit/$', 'mapSetEdit', {},
         'geocamMapSet_edit'),
 
+    url(r'^sets/new$', 'mapSetSave', {},
+        'geocamMapSet_save'),
+
     url(r'^sets/$', 'mapSetIndex', {},
         'geocamMapSet_index'),
-
-    url(r'^createSet/$', 'mapSetCreate', {},
-        'geocamMapSet_create'),
 
     url(r'^library/(?P<layer_id>\d+)/$', 'libraryView'),
 

@@ -1,6 +1,6 @@
 [
     {      
-        "model": "geocamMapSet.layer",
+        "model": "geocamMapSet.librarylayer",
         "pk": 1,
         "fields": {
             "type": "kml.KML",
@@ -11,7 +11,7 @@
     },
 
     {   
-        "model": "geocamMapSet.layer",
+        "model": "geocamMapSet.librarylayer",
         "pk": 2,
         "fields": {
             "type": "kml.KML",
@@ -23,7 +23,7 @@
     },
 
     {   
-        "model": "geocamMapSet.layer",
+        "model": "geocamMapSet.librarylayer",
         "pk": 3,
         "fields": {
             "type": "kml.KML",
@@ -35,7 +35,7 @@
     },
 
     {   
-        "model": "geocamMapSet.layer",
+        "model": "geocamMapSet.librarylayer",
         "pk": 4,
         "fields": {
             "type": "kml.KML",
@@ -195,5 +195,47 @@
             "json": "{\"type\": \"kml.KML\", \"name\": \"NOAA National Metar Obs\", \"url\" : \"http://www.srh.noaa.gov/gis/kml/metar/metarlink.kml\" }"
 
         }
+    },
+
+    {   
+        "model": "geocamMapSet.mapset",
+        "pk": 1,
+        "fields": {
+            "mapsetjson": "0.1",
+            "name": "Hurricane Layers",
+            "json": "{ \"mapsetjson\": \"0.1\",\"type\": \"Document\",\"extensions\": {\"kml\": \"http://mapmixer.org/mapsetjson/ext/kml/0.1/\",\"geojson\": \"http://mapmixer.org/mapsetjson/ext/geojson/0.1/\"},\"children\": [{ \"type\": \"kml.KML\", \"name\": \"US Significant River Flood Outlook\", \"url\": \"http://www.hpc.ncep.noaa.gov/kml/fop/fopbody.kml\", \"show\": \"True\" } ]}"
+        }
+    },
+
+    {
+        "model": "geocamMapSet.extension",
+        "pk": 1,
+        "fields": {
+            "mapset": 1,
+            "name": "kml",
+            "url": "http://mapmixer.org/mapsetjson/ext/kml/0.1/"
+        }
+    },
+    {
+        "model": "geocamMapSet.extension",
+        "pk": 2,
+        "fields": {
+            "mapset": 1,
+            "name": "geojson",
+            "url": "http://mapmixer.org/mapsetjson/ext/geojson/0.1/"
+        } 
+    },
+
+    {
+        "model": "geocamMapSet.mapsetlayer",
+        "pk": 1,
+        "fields": {
+            "mapset": 1,
+            "type": "kml.KML",
+            "name": "US Significant River Flood Outlook",
+            "url": "http://www.hpc.ncep.noaa.gov/kml/fop/fopbody.kml",
+            "show": "True",
+            "json": "{ \"type\": \"kml.KML\", \"name\": \"US Significant River Flood Outlook\", \"url\" : \"http://www.hpc.ncep.noaa.gov/kml/fop/fopbody.kml\" }"
+            }
     }
 ]

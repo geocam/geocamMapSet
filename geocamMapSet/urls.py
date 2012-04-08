@@ -8,4 +8,6 @@ from django.conf.urls.defaults import url, patterns
 
 urlpatterns = patterns('geocamMapSet.views',
     url(r'^$', 'index'),
+    url(r'^library/(?P<layer_id>\d+)/$', 'library_detail'),
+    url(r'^library/$', 'library_index'),
 )

@@ -5,6 +5,7 @@
 # __END_LICENSE__
 
 from django.db import models
+from django.utils import simplejson
 
 
 
@@ -43,7 +44,7 @@ class MapSet(models.Model):
     def fromJSON(cls, json):
         # json is literally a simplejson object
         vals = {}
-        vals['json'] = json
+        vals['json'] = simplejson.dumps(json)
         if 'name' in json: 
             vals['name'] = json['name']
         if 'description' in json:
@@ -73,7 +74,7 @@ class MapSetLayer(models.Model):
     def fromJSON(cls, json):
         # json is literally a simplejson object
         vals = {}
-        vals['json'] = json
+        vals['json'] = simplejson.dumps(json)
         if 'name' in json: 
             vals['name'] = json['name']
         if 'type' in json: 

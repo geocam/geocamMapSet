@@ -102,32 +102,26 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
 
                 // save the show status if enabled
                 //
-                if ($('#showLayer_' + jsonIdx).attr('checked')) {
+                if ($('.layerEntry > input').get(htmlIdx).checked) {
                     uiLayers[htmlIdx].show = 'true';
                 } else {
-                    delete uiLayers[htmlIdx]["show"];
+                    delete uiLayers[htmlIdx].show;
                 }                
             }
 
             // update the mapset json object with the new layer content
             //
             mapSet.children = uiLayers;
-           
-            // preserve the editable state
-            //
-            var isEditableMode = this.isEditable();         
+                            
   
-	    // re-draw the ManageDiv and GoogleMap so that everything
-            // is in synced with the new JSON object.
-            // Note: dataMap{htmlIdx:jsonIdx} also gets reset.
+	    // reset the ID of the metadata tag and the 
+            // dataMap{htmlIdx:jsonIdx}.
             //
-            this.drawManageDivAndMapCanvas();
-            if (isEditableMode) {
-                this.enableEditing();
-            } else {
-                this.disableEditing();
-            }
-
+            $('.layerEntry').each(function (i, obj) {
+                $(obj).find('.metadata').attr('id',i);
+                geocamMapSetLib.dataMap[i] = i;
+            })
+           
             console.log("new json content: " + JSON.stringify(mapSet));
             return mapSet;
         }

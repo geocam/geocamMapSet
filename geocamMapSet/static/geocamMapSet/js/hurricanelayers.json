@@ -1,4 +1,6 @@
 {
+  "name": "Hurricane TestSet 1",
+  "id": "1",
   "mapsetjson": "0.1",
   "type": "Document",
   "extensions": {

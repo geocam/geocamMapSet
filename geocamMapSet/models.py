@@ -41,22 +41,25 @@ class MapSet(models.Model):
 
     @classmethod     
     def fromJSON(cls, json):
+        # json is literally a simplejson object
         vals = {}
         vals['json'] = json
         if 'name' in json: 
             vals['name'] = json['name']
         if 'description' in json:
             vals['description'] = json['description']
+        if 'id' in json:
+            vals['id'] = json['id']
         if 'url' in json: 
             vals['url'] = json['url']
         if 'mapsetjson' in json: 
             vals['mapsetjson'] = json['mapsetjson']
         return MapSet(**vals)
 
-
             
+
 class MapSetLayer(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(primary_key=True, max_length=255)
     type = models.CharField(max_length=255)
     url = models.URLField()
     show = models.BooleanField(default=False)
@@ -68,6 +71,7 @@ class MapSetLayer(models.Model):
 
     @classmethod     
     def fromJSON(cls, json):
+        # json is literally a simplejson object
         vals = {}
         vals['json'] = json
         if 'name' in json: 
@@ -83,7 +87,7 @@ class MapSetLayer(models.Model):
 
 
 class Extension(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(primary_key=True, max_length=255)
     url = models.URLField()
     mapset = models.ForeignKey(MapSet)
 

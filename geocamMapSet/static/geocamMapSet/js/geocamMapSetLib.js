@@ -108,7 +108,7 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, 
         }
 
         // function to create mapSetJSON from the current state
-        // (i.e., after editing). "You See Is What You Get"
+        // (i.e., after editing). "What You See Is What You Get"
         //
         mapSetManager.getMapsetState = function () {
             var uiLayers = new Array();
@@ -422,6 +422,16 @@ function drawEditorDivAndMapCanvas() {
 
     var mapSetViewHtml = [];
 
+    //
+    // XXX ADD BUTTONS AND NAME HERE
+    //
+    var mapSetName = "Unnamed Mapset";
+    if (this.mapSet.hasOwnProperty('name')) {
+        mapSetName = this.mapSet.name;
+    }
+    mapSetViewHtml.push('<label>' + mapSetName + '</label>');
+    mapSetViewHtml.push('<button id="saveMapSet" type="button">Save</button>');
+
     mapSetViewHtml.push('<div id="mapLayerList">');
 
     $.each(this.mapSet.children, function (i, layer) {
@@ -458,6 +468,15 @@ function drawEditorDivAndMapCanvas() {
     mapSetViewHtml.push('</div>');
     $(this.editorDivId).html(mapSetViewHtml.join(''));
 
+    // XXX add callback for button click here
+    //
+    $('#saveMapSet').click(function() {
+        m = geocamMapSetLib.managerRef.getMapsetState();
+        $.post('/mixer/sets/new', JSON.stringify(m), function(data) {
+            alert('save completed');
+        })
+    })
+    
     // make the layer list sortable
     //
     $('#mapLayerList').sortable({

@@ -544,7 +544,7 @@ function drawLibraryDiv() {
     // iterate through the mapLibraryList and create the html entries
     //
     $.each(mapLibraryList, function (i, layer) {
-        mapLibraryViewHtml.push('<div class="libraryEntry ui-state-default">' 
+        mapLibraryViewHtml.push('<div class="libraryEntry">' 
             + layer.name
             + '<div class="metadata" id="' + i + '" style="visibility:hidden"' + '></div>'
             + '</div>');

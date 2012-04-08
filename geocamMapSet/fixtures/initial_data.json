@@ -4,9 +4,9 @@
         "pk": 1,
         "fields": {
             "type": "kml.KML",
-            "name": "Example US Significant River Flood Outlook",
+            "name": "US Significant River Flood Outlook",
             "url" : "http://www.hpc.ncep.noaa.gov/kml/fop/fopbody.kml",
-            "json": "{ \"type\": \"kml.KML\", \"name\": \"Example US Significant River Flood Outlook\", \"url\" : \"http://www.hpc.ncep.noaa.gov/kml/fop/fopbody.kml\" }"
+            "json": "{ \"type\": \"kml.KML\", \"name\": \"US Significant River Flood Outlook\", \"url\" : \"http://www.hpc.ncep.noaa.gov/kml/fop/fopbody.kml\" }"
         }
     },
 
@@ -15,11 +15,10 @@
         "pk": 2,
         "fields": {
             "type": "kml.KML",
-            "name": "Example Significant Wave Events - Atlantic, Gulf of Mexico",
+            "name": "Significant Wave Events - Atlantic, Gulf of Mexico",
             "url" : "http://neptune.baruch.sc.edu/xenia/feeds/events/events.kmz",
             "show": "True",
-            "json": "{\"type\": \"kml.KML\", \"name\": \"Example Significant Wave Events - Atlantic, Gulf of Mexico\", \"url\" : \"http://neptune.baruch.sc.edu/xenia/feeds/events/events.kmz\", \"show\": \"True\" }"
-
+            "json": "{\"type\": \"kml.KML\", \"name\": \"Significant Wave Events - Atlantic, Gulf of Mexico\", \"url\" : \"http://neptune.baruch.sc.edu/xenia/feeds/events/events.kmz\", \"show\": \"True\" }"
         }
     },
 
@@ -28,11 +27,10 @@
         "pk": 3,
         "fields": {
             "type": "kml.KML",
-            "name": "Example SUSGS Real-Time Streamflow - New England",
+            "name": "SUSGS Real-Time Streamflow - New England",
             "url" : "http://water.usgs.gov/waterwatch/?regions=01&m=real&w=kml",
             "show": "True",
-            "json": "{\"type\": \"kml.KML\", \"name\": \"Example USGS Real-Time Streamflow - New England\", \"url\" : \"http://water.usgs.gov/waterwatch/?regions=01&m=real&w=kml\" }"
-
+            "json": "{\"type\": \"kml.KML\", \"name\": \"USGS Real-Time Streamflow - New England\", \"url\" : \"http://water.usgs.gov/waterwatch/?regions=01&m=real&w=kml\" }"
         }
     },
 
@@ -41,12 +39,161 @@
         "pk": 4,
         "fields": {
             "type": "kml.KML",
-            "name": "Example USGS Real-Time Streamflow - Mid-Atlantic",
+            "name": "USGS Real-Time Streamflow - Mid-Atlantic",
             "url" : "http://water.usgs.gov/waterwatch/?regions=02&m=real&w=kml",
             "show": "True",
-            "json": "{\"type\": \"kml.KML\", \"name\": \"Example USGS Real-Time Streamflow - Mid-Atlantic\", \"url\" : \"http://water.usgs.gov/waterwatch/?regions=02&m=real&w=kml\" }"
+            "json": "{\"type\": \"kml.KML\", \"name\": \"USGS Real-Time Streamflow - Mid-Atlantic\", \"url\" : \"http://water.usgs.gov/waterwatch/?regions=02&m=real&w=kml\" }"
+        }
+    },
+
+    {   
+        "model": "geocamMapSet.layer",
+        "pk": 5,
+        "fields": {
+            "type": "kml.KML",
+            "name": "Fire Updates and Road Closures in Santa Clarita",
+            "url" : "http://maps.google.com/maps/ms?ie=UTF8&authuser=0&msa=0&output=kml&msid=211709450220015285310.00043d17488896182acd3",
+            "show": "False",
+            "json": "{\"type\": \"kml.KML\", \"name\": \"Fire Updates and Road Closures in Santa Clarita\", \"url\" : \"http://maps.google.com/maps/ms?ie=UTF8&authuser=0&msa=0&output=kml&msid=211709450220015285310.00043d17488896182acd3\" }"
+        }
+    },
+
+    {   
+        "model": "geocamMapSet.layer",
+        "pk": 6,
+        "fields": {
+            "type": "kml.KML",
+            "name": "San Bruno Gas Explosion and Fire Map",
+            "url" : "http://maps.google.com/maps/ms?ie=UTF8&authuser=0&msa=0&output=kml&msid=209726524314865854320.00048fdfe759741e3afd2",
+            "show": "False",
+            "json": "{\"type\": \"kml.KML\", \"name\": \"San Bruno Gas Explosion and Fire Map\", \"url\" : \"http://maps.google.com/maps/ms?ie=UTF8&authuser=0&msa=0&output=kml&msid=209726524314865854320.00048fdfe759741e3afd2\" }"
+
+        }
+    },
+
+    {   
+        "model": "geocamMapSet.layer",
+        "pk": 7,
+        "fields": {
+            "type": "kml.KML",
+            "name": "Gulf Oil Spill: Oil Slick Overview",
+            "url" : "http://mw1.google.com/mw-earth-vectordb/disaster/oil_slick_042010/2/oil_slick_maps.kml",
+            "show": "False",
+            "json": "{\"type\": \"kml.KML\", \"name\": \"Gulf Oil Spill: Oil Slick Overview\", \"url\" : \"http://mw1.google.com/mw-earth-vectordb/disaster/oil_slick_042010/2/oil_slick_maps.kml\" }"
+        }
+    },
+
+    {   
+        "model": "geocamMapSet.layer",
+        "pk": 8,
+        "fields": {
+            "type": "kml.KML",
+            "name": "Gulf Oil Spill: Spill Impacts and Projects",
+            "url" : "http://sites.google.com/site/gulfoilspillrecoverydata/projects_and_impacts.kml",
+            "show": "False",
+            "json": "{\"type\": \"kml.KML\", \"name\": \"Gulf Oil Spill: Spill Impacts and Projects\", \"url\" : \"http://sites.google.com/site/gulfoilspillrecoverydata/projects_and_impacts.kml\" }"
+
+        }
+    },
+
+    {   
+        "model": "geocamMapSet.layer",
+        "pk": 9,
+        "fields": {
+            "type": "kml.KML",
+            "name": "Gulf Oil Spill: Youtube Videos",
+            "url" : "http://mw1.google.com/mw-earth-vectordb/disaster/gulf_oil_spill/kml/youtube/root.kmz",
+            "show": "False",
+            "json": "{\"type\": \"kml.KML\", \"name\": \"Gulf Oil Spill: Youtube Videos\", \"url\" : \"http://mw1.google.com/mw-earth-vectordb/disaster/gulf_oil_spill/kml/youtube/root.kmz\" }"
+        }
+    },
+
+    {   
+        "model": "geocamMapSet.layer",
+        "pk": 10,
+        "fields": {
+            "type": "kml.KML",
+            "name": "Gulf Oil Spill: Oil Spill Points of Interest",
+            "url" : "http://mw1.google.com/mw-earth-vectordb/disaster/gulf_oil_spill/kml/labucketbrigade/root.kmz",
+            "show": "False",
+            "json": "{\"type\": \"kml.KML\", \"name\": \"Gulf Oil Spill: Oil Spill Points of Interest\", \"url\" : \"http://mw1.google.com/mw-earth-vectordb/disaster/gulf_oil_spill/kml/labucketbrigade/root.kmz\" }"
+        }
+    },
+
+    {   
+        "model": "geocamMapSet.layer",
+        "pk": 11,
+        "fields": {
+            "type": "kml.KML",
+            "name": "Gulf Oil Spill: Booms",
+            "url" : "http://mw1.google.com/mw-earth-vectordb/disaster/gulf_oil_spill/kml/BoomsMay12010_1415.kml",
+            "show": "False",
+            "json": "{\"type\": \"kml.KML\", \"name\": \"Gulf Oil Spill: Booms\", \"url\" : \"http://mw1.google.com/mw-earth-vectordb/disaster/gulf_oil_spill/kml/BoomsMay12010_1415.kml\" }"
+        }
+    },
+
+    {   
+        "model": "geocamMapSet.layer",
+        "pk": 12,
+        "fields": {
+            "type": "kml.KML",
+            "name": "San Diego Fire Stations",
+            "url" : "http://maps.google.com/maps/ms?hl=en&gl=US&ptab=2&ie=UTF8&oe=UTF8&authuser=0&msa=0&output=kml&msid=217734534330274243556.000480ebf06ecfe6cef00",
+            "show": "False",
+            "json": "{\"type\": \"kml.KML\", \"name\": \"San Diego Fire Stations\", \"url\" : \"http://maps.google.com/maps/ms?hl=en&gl=US&ptab=2&ie=UTF8&oe=UTF8&authuser=0&msa=0&output=kml&msid=217734534330274243556.000480ebf06ecfe6cef00\" }"
+
+        }
+    },
+
+    {   
+        "model": "geocamMapSet.layer",
+        "pk": 13,
+        "fields": {
+            "type": "kml.KML",
+            "name": "2007 San Diego County Fires - KPBS Online",
+            "url" : "http://maps.google.com/maps/ms?ie=UTF8&authuser=0&msa=0&output=kml&msid=217734534330274243556.00043d08ac31fe3357571",
+            "show": "False",
+            "json": "{\"type\": \"kml.KML\", \"name\": \"2007 San Diego County Fires - KPBS Online\", \"url\" : \"http://maps.google.com/maps/ms?ie=UTF8&authuser=0&msa=0&output=kml&msid=217734534330274243556.00043d08ac31fe3357571\" }"
+
+        }
+    },
+
+    {   
+        "model": "geocamMapSet.layer",
+        "pk": 14,
+        "fields": {
+            "type": "kml.KML",
+            "name": "Where Can I Get My Swine Flu Vaccine in San Diego?",
+            "url" : "http://maps.google.com/maps/ms?hl=en&gl=US&ptab=2&ie=UTF8&oe=UTF8&authuser=0&msa=0&output=kml&msid=217734534330274243556.000476eed7910c457a47a",
+            "show": "False",
+            "json": "{\"type\": \"kml.KML\", \"name\": \"\", \"url\" : \"http://maps.google.com/maps/ms?hl=en&gl=US&ptab=2&ie=UTF8&oe=UTF8&authuser=0&msa=0&output=kml&msid=217734534330274243556.000476eed7910c457a47a\" }"
+
+        }
+    },
+
+    {   
+        "model": "geocamMapSet.layer",
+        "pk": 15,
+        "fields": {
+            "type": "kml.KML",
+            "name": "Swine Flu Activity In San Diego County Schools",
+            "url" : "http://maps.google.com/maps/ms?hl=en&gl=US&ptab=2&ie=UTF8&oe=UTF8&authuser=0&msa=0&output=kml&msid=217734534330274243556.0004768c21830f67ac488",
+            "show": "False",
+            "json": "{\"type\": \"kml.KML\", \"name\": \"Swine Flu Activity In San Diego County Schools\", \"url\" : \"http://maps.google.com/maps/ms?hl=en&gl=US&ptab=2&ie=UTF8&oe=UTF8&authuser=0&msa=0&output=kml&msid=217734534330274243556.0004768c21830f67ac488\" }"
+
+        }
+    },
+
+    {   
+        "model": "geocamMapSet.layer",
+        "pk": 16,
+        "fields": {
+            "type": "kml.KML",
+            "name": "NOAA National Metar Obs",
+            "url" : "http://www.srh.noaa.gov/gis/kml/metar/metarlink.kml",
+            "show": "False",
+            "json": "{\"type\": \"kml.KML\", \"name\": \"NOAA National Metar Obs\", \"url\" : \"http://www.srh.noaa.gov/gis/kml/metar/metarlink.kml\" }"
 
         }
     }
-
 ]

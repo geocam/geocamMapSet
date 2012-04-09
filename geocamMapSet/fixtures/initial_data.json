@@ -5,7 +5,8 @@
         "fields": {
             "type": "kml.KML",
             "name": "Example 1 US Significant River Flood Outlook",
-            "url" : "http://www.hpc.ncep.noaa.gov/kml/fop/fopbody.kml"
+            "url" : "http://www.hpc.ncep.noaa.gov/kml/fop/fopbody.kml",
+            "json": "{ \"type\": \"kml.KML\", \"name\": \"Example 1 US Significant River Flood Outlook\", \"url\" : \"http://www.hpc.ncep.noaa.gov/kml/fop/fopbody.kml\" }"
         }
     },
 
@@ -16,7 +17,9 @@
             "type": "kml.KML",
             "name": "Example 2 US Significant River Flood Outlook",
             "url" : "http://neptune.baruch.sc.edu/xenia/feeds/events/events.kmz",
-            "show": "True"
+            "show": "True",
+            "json": "{\"type\": \"kml.KML\", \"name\": \"Example 2 US Significant River Flood Outlook\", \"url\" : \"http://neptune.baruch.sc.edu/xenia/feeds/events/events.kmz\", \"show\": \"True\" }"
+
         }
     }
 

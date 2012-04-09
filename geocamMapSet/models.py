@@ -16,3 +16,14 @@ class Layer(models.Model):
     def __unicode__(self):
         return self.name
 
+    @classmethod 
+    def getAllLayersInJson(cls):
+        layer_list = Layer.objects.all()
+        json_list = []
+        for layer in layer_list:
+            json_list.append(layer.json)    
+                
+        return "[" +  ",".join(json_list) + "]"
+
+
+

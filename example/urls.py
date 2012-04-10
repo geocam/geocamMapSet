@@ -10,10 +10,12 @@ from django.conf import settings
 from django.contrib import admin
 admin.autodiscover()
 
+from geocamMapSet.urls import mapMixerPatterns
+
 urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
     (r'^mixer/', include('geocamMapSet.urls')),
-)
+) + mapMixerPatterns
 
 urlpatterns = urlpatterns + patterns('',
     (r'^static/(?P<path>.*)$', 'django.views.static.serve',

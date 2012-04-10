@@ -10,13 +10,35 @@ from geocamMapSet.models import Layer
 from django.utils import simplejson
 from django.http import HttpResponse
 
-def index(request):
-    return render_to_response('index.html', None, context_instance=RequestContext(request))
+######################################################################
+# views for generic map set viewing and editing
 
-def library_index(request):    
+def mapSetEdit(request, userName, setName):
+    return render_to_response('geocamMapSet/mapSetEdit.html', {},
+                              context_instance=RequestContext(request))
+
+def mapSetView(request, userName, setName):
+    return 'implement me'
+
+def mapSetIndex(request):
+    return 'implement me'
+
+def mapSetCreate(request):
+    return 'implement me'
+
+def libraryView(request, layer_id):
+    layer = get_object_or_404(Layer, pk=layer_id)    
+    return HttpResponse(layer.json, 'application/json')
+
+def libraryIndex(request):    
     json_str = Layer.getAllLayersInJson()
     return HttpResponse(json_str, 'application/json')
                       
-def library_detail(request, layer_id):
-    layer = get_object_or_404(Layer, pk=layer_id)    
-    return HttpResponse(layer.json, 'application/json')
+######################################################################
+# views specific to mapmixer.org site
+
+# these will be refactored into a separate repo later
+
+def welcome(request):
+    return render_to_response('mixer/welcome.html', {},
+                              context_instance=RequestContext(request))

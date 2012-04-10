@@ -5,11 +5,17 @@
 | All Rights Reserved.
 | __END_LICENSE__
 -->
+{% extends "base.html" %}
 
-<!DOCTYPE html>
-<html>
-<head>
+{% block head %}
+   {{ block.super }}
+
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+{% endblock head %}
+
+{% block style %}
+    {{ block.super }}
+
     <style type="text/css">
       html { height: 100% }
       body { height: 100%; margin: 0; padding: 0 }
@@ -57,26 +63,40 @@
       }
     </style>
 
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/ui-lightness/jquery-ui-1.8.18.custom.css"></link>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}external/css/ui-lightness/jquery-ui-1.8.18.custom.css"></link>
 
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.7.1.min.js">
-    </script>
+{% endblock style %}
 
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.18.custom.min.js">
-    </script>
+{% block scripts %}
+   {{ block.super }}
 
-    <script type="text/javascript"
-      src="http://maps.googleapis.com/maps/api/js?sensor=false">
-    </script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}geocamMapSetLib.js">
-    </script>
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}external/js/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}external/js/jquery-ui-1.8.18.custom.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}geocamMapSet/js/geocamMapSetLib.js"></script>
+{% endblock scripts %}
    
+{% block contents %}
+    <table>
+      <th>Map Layer Library<br>(pick and drag to your map set)</th>
+      <th>Your map set<br>(check or reorder layers)</th>
+      <th>Google Map</th>
+      <tr>
+        <td><div id="mapsetlib_canvas"></div></td>
+        <td><div id="mapset_canvas"></div></td>
+        <td><div id="map_canvas"></div></td>
+      </tr>
+    </table>    
+    <input type="button" value="ToggleEditingMode" onclick="testToggle(myMapSetManager)">
+    <input type="button" value="Save" onclick="mapSetManager.getMapsetState()">
+{% endblock contents %}
 
-    <script type="text/javascript">
+{% block jsInit %}
+      {{ block.super }}
+
       var myMapSetManager;
       function initialize() {
-          spec='{{ STATIC_URL }}hurricanelayers.json';
+          spec='{{ STATIC_URL }}geocamMapSet/js/hurricanelayers.json';
 
           var myOptions = {
               center: new google.maps.LatLng(35, -95),
@@ -98,22 +118,5 @@
           }
       }
 
-      
-    </script>
-
-</head>
-  <body onload="initialize()">
-    <table>
-      <th>Map Layer Library<br>(pick and drag to your map set)</th>
-      <th>Your map set<br>(check or reorder layers)</th>
-      <th>Google Map</th>
-      <tr>
-        <td><div id="mapsetlib_canvas"></div></td>
-        <td><div id="mapset_canvas"></div></td>
-        <td><div id="map_canvas"></div></td>
-      </tr>
-    </table>    
-    <input type="button" value="ToggleEditingMode" onclick="testToggle(myMapSetManager)">
-    <input type="button" value="Save" onclick="mapSetManager.getMapsetState()"">
-  </body>
-</html>
+      $(initialize());
+{% endblock jsInit %}

@@ -4,7 +4,7 @@
         "pk": 1,
         "fields": {
             "type": "kml.KML",
-            "name": "Example 1 US Significant River Flood Outlook",
+            "name": "US Significant River Flood Outlook",
             "url" : "http://www.hpc.ncep.noaa.gov/kml/fop/fopbody.kml",
             "json": "{ \"type\": \"kml.KML\", \"name\": \"Example 1 US Significant River Flood Outlook\", \"url\" : \"http://www.hpc.ncep.noaa.gov/kml/fop/fopbody.kml\" }"
         }
@@ -15,10 +15,36 @@
         "pk": 2,
         "fields": {
             "type": "kml.KML",
-            "name": "Example 2 US Significant River Flood Outlook",
+            "name": "Significant Wave Events - Atlantic, Gulf of Mexico",
             "url" : "http://neptune.baruch.sc.edu/xenia/feeds/events/events.kmz",
             "show": "True",
-            "json": "{\"type\": \"kml.KML\", \"name\": \"Example 2 US Significant River Flood Outlook\", \"url\" : \"http://neptune.baruch.sc.edu/xenia/feeds/events/events.kmz\", \"show\": \"True\" }"
+            "json": "{\"type\": \"kml.KML\", \"name\": \"Significant Wave Events - Atlantic, Gulf of Mexico\", \"url\" : \"http://neptune.baruch.sc.edu/xenia/feeds/events/events.kmz\", \"show\": \"True\" }"
+
+        }
+    },
+
+    {   
+        "model": "geocamMapSet.layer",
+        "pk": 3,
+        "fields": {
+            "type": "kml.KML",
+            "name": "SUSGS Real-Time Streamflow - New England",
+            "url" : "http://water.usgs.gov/waterwatch/?regions=01&m=real&w=kml",
+            "show": "True",
+            "json": "{\"type\": \"kml.KML\", \"name\": \"USGS Real-Time Streamflow - New England\", \"url\" : \"http://water.usgs.gov/waterwatch/?regions=01&m=real&w=kml\" }"
+
+        }
+    },
+
+    {   
+        "model": "geocamMapSet.layer",
+        "pk": 4,
+        "fields": {
+            "type": "kml.KML",
+            "name": "USGS Real-Time Streamflow - Mid-Atlantic",
+            "url" : "http://water.usgs.gov/waterwatch/?regions=02&m=real&w=kml",
+            "show": "True",
+            "json": "{\"type\": \"kml.KML\", \"name\": \"USGS Real-Time Streamflow - Mid-Atlantic\", \"url\" : \"http://water.usgs.gov/waterwatch/?regions=02&m=real&w=kml\" }"
 
         }
     }

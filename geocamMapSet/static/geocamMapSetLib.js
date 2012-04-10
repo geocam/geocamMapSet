@@ -8,9 +8,13 @@
 
 var geocamMapSetLib = geocamMapSetLib || {};
 
+// TODO: point the default to mapmixer.org
+//
+var mapLibraryURL = "/mixer/library/";
+
 geocamMapSetLib.dataMap = new Array();
 
-/* MapSetManager(spec, map, manageDivId, opts)
+/* MapSetManager(spec, map, editorDivId, libraryDivId, opts)
  *
  * Constructor that creates and displays a map set. It returns a MapSetManager
  * object, the status attribute of which indicates whether the mapSetJSON has
@@ -18,17 +22,16 @@ geocamMapSetLib.dataMap = new Array();
  *
  * @spec is MapSetJSON document url string
  * @map is a Google API v3 map
- * @manageDivId is the id of an HTML div where the layer management interface
+ * @editorDivId is the id of an HTML div where the layer editor interface
  * widget will be displayed.
+ * @libraryDivId
  * @opts passes in customization options (to be defined later).
  *
  * TODO: @spec can also be the eval’d JavaScript object for a MapSetJSON document
  * TODO: @map is a *Mapstraction* map
  * TODO: can we include css tags here? css styling here?
- * TODO: is map layer construction for the map supposed to happen here? or
- *       somewhere else?
  */
-geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
+geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, opts) {
 
     // TODO: input validation (google search 'javascript function type
     // checking', 'javascript function args', 'javascript typeof')
@@ -39,9 +42,11 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
     mapSetManager = new Object();
     mapSetManager.status = 'LOADING';
     mapSetManager.url = spec;
-    mapSetManager.manageDivId = manageDivId;
+    mapSetManager.editorDivId = editorDivId;
+    mapSetManager.libraryDivId = libraryDivId;
     mapSetManager.googleMap = map;
     mapSetManager.mapLayers = [];
+
 
     //    var mapLayers = [];
 
@@ -55,7 +60,7 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
         mapSetManager.mapSet = mapSet;
         mapSetManager.status = 'FINISHED_LOADING';
 
-        mapSetManager.drawManageDivAndMapCanvas();
+        mapSetManager.drawEditorDivAndMapCanvas();
 
         // function to check editable mode status
         //
@@ -127,34 +132,44 @@ geocamMapSetLib.MapSetManager = function (spec, map, manageDivId, opts) {
         }
     });  // end of asynchronous execution, i.e., $.getJSON() method.
 
+    // Initialize the libraryDiv
+    //
+    $.getJSON(mapLibraryURL, function(obj) {
 
-    // bind the function drawManageDivAndMapCanvas() needed in
-    // initialization.
-    mapSetManager.drawManageDivAndMapCanvas = drawManageDivAndMapCanvas;
+        mapSetManager.mapLibraryList = obj;
+        
+        mapSetManager.drawLibraryDiv();
+    });
+
+    // bind the function drawEditorDivAndMapCanvas() and drawLibraryDiv() 
+    // needed in the asynchronous part of the initialization.
+    mapSetManager.drawEditorDivAndMapCanvas = drawEditorDivAndMapCanvas;
+
+    mapSetManager.drawLibraryDiv = drawLibraryDiv;
 
     return mapSetManager;
 }
 
 
-// mapSetManager.drawManageDivAndMapCanvas()
+// mapSetManager.drawEditorDivAndMapCanvas()
 //
-// Clean the manageDiv and draw the html content based on the jsonObj
+// Clean the editorDiv and draw the html content based on the jsonObj
 //
 // @status is the indicator whether the @mapSet is loaded.
 // @mapSet is the object representation of the MapSetJson document
-// @manageDivId is the ID of the manageDiv. Usually, it will be used with
-// the mapSetManager.mangeDivId.
+// @editorDivId is the ID of the editorDiv. Usually, it will be used with
+// the mapSetManager.editorDivId.
 // @googleMap is the GoogleMap map object
 // @mapLayers is the array of map layers binding to the @googleMap
 //
 // This function also writes the following global variables
 //     geocamMapSetLib.dataMap[];
 //
-function drawManageDivAndMapCanvas() {
+function drawEditorDivAndMapCanvas() {
 
     // return if mapSet is not ready
     if (this.status != 'FINISHED_LOADING') {
-        console.log('Fail to execute drawManageDivAndMapCanvas. mapSetManager.status is ' + this.status);
+        console.log('Fail to execute drawEditorDivAndMapCanvas. mapSetManager.status is ' + this.status);
         return;
     }
 
@@ -218,7 +233,7 @@ function drawManageDivAndMapCanvas() {
     });  // end of .each() loop
 
     mapSetViewHtml.push('</div>');
-    $(this.manageDivId).html(mapSetViewHtml.join(''));
+    $(this.editorDivId).html(mapSetViewHtml.join(''));
 
     // make the layer list sortable
     //
@@ -255,6 +270,46 @@ function drawManageDivAndMapCanvas() {
     });
 }
 
+
+
+// mapSetManager.drawLibraryDiv 
+// 
+// Clean the libraryDiv and draw the html content based on the map layer
+// library in JSON format
+//
+// @mapLibraryList is the object representation of a set of map layers.
+// @libraryDivId is the ID of the libraryDiv. 
+//
+function drawLibraryDiv() {
+    
+    var mapLibraryList = this.mapLibraryList;
+    var mapLibraryViewHtml = [];
+
+    mapLibraryViewHtml.push('<div id="mapLibraryList">');
+
+    // iterate through the mapLibraryList and create the html entries
+    //
+    $.each(mapLibraryList, function (i, layer) {
+        mapLibraryViewHtml.push('<div class="libraryEntry ui-state-default">' 
+            + layer.name
+            + '<div class="metadata" id="' + i + '" style="visibility:hidden"' + '></div>'
+            + '</div>');
+        console.log( "library layer " + i + ": " + layer.name );
+    });
+
+    mapLibraryViewHtml.push('</div>');
+
+    // inject the html content to the libraryDiv
+    //
+    $(this.libraryDivId).html(mapLibraryViewHtml.join(''));
+
+    // assign draggable attribute to each libraryEntry 
+    //
+    $('.libraryEntry').draggable({revert:'invalid', revertDuration:100});
+}
+
+
+
 // utility function to dump the current state of the ui for debugging
 //
 function dumpDataMap(dataMap) {
@@ -262,4 +317,7 @@ function dumpDataMap(dataMap) {
         console.log("htmlID=" + i + " jsonId="+ dataMap[i]);
     }
 }
+
+
+
 

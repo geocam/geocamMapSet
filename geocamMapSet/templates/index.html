@@ -23,7 +23,7 @@
           height: 480px;
           border: 1px solid black;
       }
-      #mapsetjson_dump {
+      #mapsetlib_canvas {
           width: 320px;
           height: 480px;
           border: 1px solid black;
@@ -46,10 +46,14 @@
           height: 18px;
       }
     
-
       .layerEntry span {
           position: absolute;
           margin-left: -1.0em;
+      }
+
+      .libraryEntry {
+          margin: 5px;
+          padding-left: 15px;
       }
     </style>
 
@@ -67,7 +71,6 @@
 
     <script type="text/javascript" src="{{ STATIC_URL }}geocamMapSetLib.js">
     </script>
-
    
 
     <script type="text/javascript">
@@ -82,25 +85,10 @@
           };
           var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
           
-          myMapSetManager = geocamMapSetLib.MapSetManager(spec, map, '#mapset_canvas');
-
-          checkMapSetManager(myMapSetManager);
-          
+          myMapSetManager = geocamMapSetLib.MapSetManager(spec, map, '#mapset_canvas', '#mapsetlib_canvas');
+                    
       }
-
-      function checkMapSetManager(mapSetManager) {
-          if (mapSetManager.status == 'FINISHED_LOADING') {
-              document.getElementById('mapsetjson_dump').innerHTML =
-              '<table border="1">' + 
-              '<th> member </th> <th> value </th>'+
-              '<tr> <td> mapsetjson </td> <td>' + mapSetManager.mapSet.mapsetjson + '</td></tr>' +
-	      '<tr> <td> url </td> <td> <a href=' + myMapSetManager.url + '>' + myMapSetManager.url + '</a></td></tr>' +
-              '</table>';
-          } else {
-              document.getElementById('mapsetjson_dump').innerHTML = 'MapSet JSON status is "' + mapSetManager.status +'".';
-          }
-      }
-
+     
       function testToggle(myMapSetManager) {
           var editable = myMapSetManager.isEditable();
           if (editable) {
@@ -117,12 +105,11 @@
   <body onload="initialize()">
     <table>
       <tr>
-        <td></button><div id="mapsetjson_dump"></div></td>
+        <td></button><div id="mapsetlib_canvas"></div></td>
         <td><div id="mapset_canvas"></div></td>
         <td><div id="map_canvas"></div></td>
       </tr>
-    </table>
-    <input type="button" value="Read MapSet Object" onclick="checkMapSetManager(myMapSetManager)">
+    </table>    
     <input type="button" value="ToggleEditingMode" onclick="testToggle(myMapSetManager)">
     <input type="button" value="Save" onclick="mapSetManager.getMapsetState()"">
   </body>

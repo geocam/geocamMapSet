@@ -260,6 +260,9 @@ function drawEditorDivAndMapCanvas() {
     // make the layer list sortable
     //
     $('#mapLayerList').sortable({
+        // show placeholder during sorting 
+        placeholder: 'ui-state-highlight',
+
         // when the user 'drops' a ui element in the list, update
         // the state of the ui map
         //
@@ -268,6 +271,7 @@ function drawEditorDivAndMapCanvas() {
                 var jsonId = $(obj).find('.metadata').attr("id");
                 geocamMapSetLib.dataMap[i] = jsonId;
             })
+            // for debugging
             dumpDataMap(geocamMapSetLib.dataMap);
         }
     });

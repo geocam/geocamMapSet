@@ -151,6 +151,44 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, 
 }
 
 
+
+// composeLayerEntry(layer, jsonId)
+//
+// Helper function for drawEditorDivAndMapCanvas. 
+// It returns the HTML for the layer entry in the custom MapSet. 
+//
+// @layer is the mapSet layer object (expected fields: name, show)
+// @jsonId is the index of the corresponding child entry in the 
+// mapSetManager.mapSet.children[] array.
+// 
+function composeLayerEntry(layer, jsonId) {
+    var mapSetEntryHtml = [];
+    var checkbox;
+
+    // if the layer is set to 'show' by default, the layer
+    // should be selected on the mapset editor
+    //
+    if (layer.show == 'true') {
+        checkbox = '<input type="checkbox" id="showLayer_' + jsonId + '" checked="checked"></input>';
+        } else {
+        checkbox = '<input type="checkbox" id="showLayer_' + jsonId + '"></input>';
+    }
+
+    // create mapset entry content
+    //
+    mapSetEntryHtml.push
+        ('<div class="layerEntry ui-state-default">'
+         + '<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>'
+         + checkbox
+         + '<label for="showLayer_' + jsonId + '">' + layer.name + '</label>'
+         + '<div class="metadata" id="' + jsonId + '" style="visibility:hidden"' + '></div>'
+         + '</div>');
+
+    return mapSetEntryHtml.join('');    
+}
+
+
+
 // mapSetManager.drawEditorDivAndMapCanvas()
 //
 // Clean the editorDiv and draw the html content based on the jsonObj
@@ -202,24 +240,8 @@ function drawEditorDivAndMapCanvas() {
         console.log(i, jsonId, htmlId);
         console.log(layer.url);
 
-        // if the layer is set to 'show' by default, the layer
-        // should be selected on the mapset viewer
-        //
-        if (layer.show == 'true') {
-            checkbox = '<input type="checkbox" id="showLayer_' + jsonId + '" checked="checked"></input>';
-        } else {
-            checkbox = '<input type="checkbox" id="showLayer_' + jsonId + '"></input>';
-        }
-
-        // create mapset viewer content
-        //
-        mapSetViewHtml.push
-            ('<div class="layerEntry ui-state-default">'
-             + '<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>'
-             + checkbox
-             + '<label for="showLayer_' + jsonId + '">' + layer.name + '</label>'
-             + '<div class="metadata" id="' + jsonId + '" style="visibility:hidden"' + '></div>'
-             + '</div>');
+        var layerEntryHtml = composeLayerEntry(layer, jsonId);
+        mapSetViewHtml.push(layerEntryHtml);
 
         // add map layer to global array for map management
         //

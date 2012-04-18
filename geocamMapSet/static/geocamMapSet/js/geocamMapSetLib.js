@@ -12,7 +12,14 @@ var geocamMapSetLib = geocamMapSetLib || {};
 //
 var mapLibraryURL = "/mixer/library/";
 
+// UI-Data mapping: dataMap[htmlId] = jsonId
+//
 geocamMapSetLib.dataMap = new Array();
+
+// geocamMapSetLib.mapLibraryList will be populated with content
+// downloaded from mapLibraryURL.
+//
+geocamMapSetLib.mapLibraryList = new Array();
 
 /* MapSetManager(spec, map, editorDivId, libraryDivId, opts)
  *
@@ -46,6 +53,10 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, 
     mapSetManager.libraryDivId = libraryDivId;
     mapSetManager.googleMap = map;
     mapSetManager.mapLayers = [];
+
+    // make mapSetManager retrievable via global geocamMapSetLib instance.
+    // It is mainlyd used by UI event handlers.
+    geocamMapSetLib.managerRef = mapSetManager;
 
 
     //    var mapLayers = [];
@@ -135,8 +146,8 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, 
     // Initialize the libraryDiv
     //
     $.getJSON(mapLibraryURL, function(obj) {
-
-        mapSetManager.mapLibraryList = obj;
+        // store the map layer library as globally retrievable
+        geocamMapSetLib.mapLibraryList = obj;                
         
         mapSetManager.drawLibraryDiv();
     });
@@ -152,6 +163,65 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, 
 
 
 
+// bindNewLayerToGoogleMap(layerEntry)
+//
+// Helper function for drawEditorDivAndMapCanvas. It bind the map set entry 
+// (i.e., @layerEntry) to the mapSetManager.googleMap
+// 
+// Return value is the index of the new map layer in 
+// geocamMapSetLib.managerRef.mapLayers.
+//
+// @layerEntry is a map set layer object (expected fields: url, show).
+//
+// Notes: It retrieve the googleMap object via geocamMapSetLib.managerRef.
+//
+function bindNewLayerToGoogleMap(layerEntry) {
+    var googleMap = geocamMapSetLib.managerRef.googleMap;
+    var mapLayers = geocamMapSetLib.managerRef.mapLayers;
+    var newLayerIdx = mapLayers.length;
+
+    // add map layer to global array for map management    
+    mapLayers[newLayerIdx] = new google.maps.KmlLayer(layerEntry.url, {preserveViewport: true});
+            
+    // also load the layer on the map if it is enabled
+    if (typeof layerEntry.show !== 'undefined') {
+        if (layerEntry.show.toLowerCase() == 'true') {
+            mapLayers[newLayerIdx].setMap(googleMap);
+            console.log('Showing map:' + layerEntry.url);
+        }    
+    }
+
+    return newLayerIdx;
+}
+
+
+
+// addLibraryLayerToMapSet(mapLibraryLayer)
+//
+// Helper function for drawEditorDivAndMapCanvas.
+// It returns the mapSet.childrenp[] index for the newly-added map layer entry corresponding
+// to the @mapLibraryLayer.
+//
+// @mapLibraryLayer is a map layer entry following the format of 
+//  geocamMapSetLib.mapLibraryList.
+// 
+// Notes: It retrieve the MapSetJSON via geocamMapSetLib.managerRef.
+//
+function addLibraryLayerToMapSet(mapLibraryLayer) {
+    var mapSetList = geocamMapSetLib.managerRef.mapSet.children;
+    var newItemIdx = mapSetList.length;
+
+    mapSetList.push(mapLibraryLayer);
+    
+    // debugging
+    console.log('New item added, mapSetJson.children[' + newItemIdx + ']:' 
+                + mapSetList[newItemIdx].name);
+    
+    return newItemIdx;
+}
+
+
+
 // composeLayerEntry(layer, jsonId)
 //
 // Helper function for drawEditorDivAndMapCanvas. 
@@ -159,7 +229,7 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, 
 //
 // @layer is the mapSet layer object (expected fields: name, show)
 // @jsonId is the index of the corresponding child entry in the 
-// mapSetManager.mapSet.children[] array.
+//  mapSetManager.mapSet.children[] array.
 // 
 function composeLayerEntry(layer, jsonId) {
     var mapSetEntryHtml = [];
@@ -168,11 +238,15 @@ function composeLayerEntry(layer, jsonId) {
     // if the layer is set to 'show' by default, the layer
     // should be selected on the mapset editor
     //
-    if (layer.show == 'true') {
-        checkbox = '<input type="checkbox" id="showLayer_' + jsonId + '" checked="checked"></input>';
-        } else {
-        checkbox = '<input type="checkbox" id="showLayer_' + jsonId + '"></input>';
+    if (typeof layer.show !== 'undefined') {
+        if (layer.show.toLowerCase() == 'true') {
+            checkbox = '<input type="checkbox" id="showLayer_' + jsonId + '" checked="checked"></input>';
+        } 
     }
+    else {
+            checkbox = '<input type="checkbox" id="showLayer_' + jsonId + '"></input>';
+    }
+    
 
     // create mapset entry content
     //
@@ -187,6 +261,37 @@ function composeLayerEntry(layer, jsonId) {
     return mapSetEntryHtml.join('');    
 }
 
+
+// connectMaplayerCheckboxToGoogleMap(mapEntry, jsonId, newMaplayerIdx)
+//
+// Helper function for drawEditorDivAndMapCanvas. 
+// It initiates the checkbox "change" event handler. 
+//
+// @mapEntry is the map layer entry from the map library. (expect field: name)
+// @jsonId is the index of the corresponding child entry in the 
+//  mapSetManager.mapSet.children[] array.
+// @newMaplayerIdx is the index of the corresponding entry in the
+//  mapSetManager.mapLayers[] array.
+//
+function connectMaplayerCheckboxToGoogleMap(mapEntry, jsonId, newMaplayerIdx) {
+
+    $('#showLayer_' + jsonId).change(function (layer) {
+        return function () {
+            var mapLayers = geocamMapSetLib.managerRef.mapLayers;
+            var map = geocamMapSetLib.managerRef.googleMap;            
+
+            var show = $(this).attr('checked');
+            if (show) {
+                console.log("showing layer " + layer.name);
+                mapLayers[newMaplayerIdx].setMap(map);
+            } else {
+                console.log("hiding layer " + layer.name);
+                mapLayers[newMaplayerIdx].setMap(null);
+            }
+        }
+    }(mapEntry));
+
+}
 
 
 // mapSetManager.drawEditorDivAndMapCanvas()
@@ -249,8 +354,10 @@ function drawEditorDivAndMapCanvas() {
             
         // also load the layer on the map if it is enabled
         //
-        if (layer.show == 'true') {
-            mapLayers[i].setMap(map);
+        if (typeof layer.show !== 'undefined') {
+            if (layer.show.toLowerCase() == 'true') {
+                mapLayers[i].setMap(map);
+            }
         }
     });  // end of .each() loop
 
@@ -261,16 +368,46 @@ function drawEditorDivAndMapCanvas() {
     //
     $('#mapLayerList').sortable({
         // show placeholder during sorting 
+        // TODO: enlage the box in ui-state-highlight styling
         placeholder: 'ui-state-highlight',
 
         // when the user 'drops' a ui element in the list, update
         // the state of the ui map
         //
         stop: function(event, ui) {
+            // Handle adding new entry and sorting separately
+            //
+            if (ui.item.hasClass('libraryEntry')) {
+                // retrieve the map layer from the mapLibraryList
+                var mapLibraryList = geocamMapSetLib.mapLibraryList;
+                var libIdx = ui.item.find('.metadata').attr('id');                
+                var libEntry = mapLibraryList[libIdx];
+                
+                // add item to the mapSet.children and retrieve its index
+                var jsonId = addLibraryLayerToMapSet(libEntry);
+
+                // generate the map set entry HTML and update the placeholder 
+                var newEntryHtml = composeLayerEntry(libEntry, jsonId);
+                ui.item.replaceWith(newEntryHtml);
+
+                // create the Google map binding to the new entry and initiate
+                // the checkbox "change" event handler.
+                var newMaplayerIdx = bindNewLayerToGoogleMap(libEntry);
+                connectMaplayerCheckboxToGoogleMap(libEntry, 
+                                                   jsonId, 
+                                                   newMaplayerIdx);
+
+                console.log('Add new entry from lib #' + libIdx);
+            }
+            else {
+                console.log('Sort only');
+            }
+
             $('.layerEntry').each(function (i, obj) {
                 var jsonId = $(obj).find('.metadata').attr("id");
                 geocamMapSetLib.dataMap[i] = jsonId;
-            })
+            });
+            
             // for debugging
             dumpDataMap(geocamMapSetLib.dataMap);
         }
@@ -281,18 +418,8 @@ function drawEditorDivAndMapCanvas() {
     // add/remove it from the map
     //
     $.each(mapSet.children, function (i, layer) {
-        $('#showLayer_' + i).change(function (layer) {
-            return function () {
-                var show = $(this).attr('checked');
-                if (show) {
-                    console.log("showing layer " + layer.name);
-                    mapLayers[i].setMap(map);
-                } else {
-                    console.log("hiding layer " + layer.name);
-                    mapLayers[i].setMap(null);
-                }
-            }
-        }(layer));
+        connectMaplayerCheckboxToGoogleMap(layer, i, i);
+
     });
 }
 
@@ -303,12 +430,13 @@ function drawEditorDivAndMapCanvas() {
 // Clean the libraryDiv and draw the html content based on the map layer
 // library in JSON format
 //
-// @mapLibraryList is the object representation of a set of map layers.
-// @libraryDivId is the ID of the libraryDiv. 
+// Dependencies:
+// @geocamMapSetLib.mapLibraryList is the object representation of a set of map layers.
+// @this.libraryDivId is the ID of the libraryDiv. 
 //
 function drawLibraryDiv() {
     
-    var mapLibraryList = this.mapLibraryList;
+    var mapLibraryList = geocamMapSetLib.mapLibraryList;
     var mapLibraryViewHtml = [];
 
     mapLibraryViewHtml.push('<div id="mapLibraryList">');
@@ -331,7 +459,16 @@ function drawLibraryDiv() {
 
     // assign draggable attribute to each libraryEntry 
     //
-    $('.libraryEntry').draggable({revert:'invalid', revertDuration:100});
+    // TODO: Synchronize is needed to ensure #mapLayerList is created.
+    //       Alternatively, invoke drawLibraryDiv() after finishing
+    //       drawEditorDivAndMapCanvas() explicitly.
+    //
+    $('.libraryEntry').draggable({
+            connectToSortable: '#mapLayerList',
+            helper: 'clone',
+            revert: 'invalid', 
+            revertDuration: 100
+    });
 }
 
 

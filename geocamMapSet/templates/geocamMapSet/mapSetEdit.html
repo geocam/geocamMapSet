@@ -42,19 +42,24 @@
       .layerEntry {
           margin: 5px;
           padding-left: 15px;
+          padding-right: 8px;
       }
 
-      .layerEntry label input {
+      .layerEntry input {
           margin-left: 0.3px 3px 3px;
           padding: 0.4em;
           padding-left: 1.0em;
           font-size: 1.0em;
           height: 18px;
       }
-    
-      .layerEntry span {
+      /* for the arrow icon */
+      .layerEntry span:first-of-type {
           position: absolute;
           margin-left: -1.0em;
+      }
+      /* for the delete button */
+      .removeButton {
+          float: right;
       }
 
       .libraryEntry {

@@ -255,11 +255,36 @@ function composeLayerEntry(layer, jsonId) {
          + '<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>'
          + checkbox
          + '<label for="showLayer_' + jsonId + '">' + layer.name + '</label>'
+         + '<span id="remove_' + jsonId + '"></span>'
          + '<div class="metadata" id="' + jsonId + '" style="visibility:hidden"' + '></div>'
          + '</div>');
 
     return mapSetEntryHtml.join('');    
 }
+
+
+
+// initRemoveButton(jsonId)
+//
+// Helper function for drawEditorDivAndMapCanvas.
+// It assign the button attribute to the "#remove_{jsonId}" DOM element and
+// bind the OnClick callback handler that removes the map layer entry.
+//
+// @jsonId is the index of the corresponding child entry in the 
+//  mapSetManager.mapSet.children[] array.
+// 
+function initRemoveButton(jsonId) {
+    var buttonId = '#remove_' + jsonId;
+
+    $(buttonId).button({
+        text: false
+    }).click(function() { 
+         console.log('removing map layer: ' + buttonId);
+    }).addClass("removeButton ui-icon ui-icon-close").width("17px");
+
+    console.log('initiating remote button:' + buttonId);
+}
+
 
 
 // connectMaplayerCheckboxToGoogleMap(mapEntry, jsonId, newMaplayerIdx)
@@ -397,6 +422,9 @@ function drawEditorDivAndMapCanvas() {
                                                    jsonId, 
                                                    newMaplayerIdx);
 
+                // create the "remove layer" button
+                initRemoveButton(jsonId);
+
                 console.log('Add new entry from lib #' + libIdx);
             }
             else {
@@ -413,13 +441,15 @@ function drawEditorDivAndMapCanvas() {
         }
     });
 
-    // attach handlers to each layer's checkbox in the mapset
-    // viewer. The handler will run the layer's setMap function to
-    // add/remove it from the map
-    //
+    // attach handlers to each layer's components:
+    // (1) checkbox handler will run the layer's setMap function to
+    // add/remove it from the map.
+    // (2) "remove-layer" button handler will remove the associate 
+    // map layer entry.
     $.each(mapSet.children, function (i, layer) {
         connectMaplayerCheckboxToGoogleMap(layer, i, i);
 
+        initRemoveButton(i);
     });
 }
 

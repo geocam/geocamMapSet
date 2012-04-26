@@ -86,6 +86,10 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, 
             // remove arrow-icon and draggable frame to each entry
             $('#mapLayerList span').removeClass('ui-icon ui-icon-arrowthick-2-n-s');
             $('.layerEntry').removeClass('ui-state-default');
+
+            // disable remove button
+            $('.removeButton').css('display','none');
+
         }
 
         // function to enable the editable mode
@@ -97,6 +101,10 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, 
             // Add arrow-icon and draggable frame to each entry
             $('#mapLayerList span').addClass('ui-icon ui-icon-arrowthick-2-n-s');
             $('.layerEntry').addClass('ui-state-default');
+
+            // enable remove button
+            $('.removeButton').css('display', 'inline');
+            $('.removeButton').button('option','icons','{primary:null, secondary:null}');
         }
 
         // function to create mapSetJSON from the current state

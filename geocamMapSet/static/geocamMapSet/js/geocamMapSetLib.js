@@ -52,14 +52,12 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, 
     mapSetManager.editorDivId = editorDivId;
     mapSetManager.libraryDivId = libraryDivId;
     mapSetManager.googleMap = map;
-    mapSetManager.mapLayers = [];
+    mapSetManager.mapLayers = [];   // use jsonId to index
 
     // make mapSetManager retrievable via global geocamMapSetLib instance.
     // It is mainlyd used by UI event handlers.
     geocamMapSetLib.managerRef = mapSetManager;
 
-
-    //    var mapLayers = [];
 
     // load the mapSetJSON asynchrously
     //
@@ -107,6 +105,7 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, 
         mapSetManager.getMapsetState = function () {
             var uiLayers = new Array();
 
+            // extract the state from the HTML Editor View
             for (htmlIdx = 0; htmlIdx < geocamMapSetLib.dataMap.length; htmlIdx++) {
                 // id of the json child in the ui 
                 //
@@ -127,17 +126,37 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, 
 
             // update the mapset json object with the new layer content
             //
-            mapSet.children = uiLayers;
-                            
-  
-	    // reset the ID of the metadata tag and the 
-            // dataMap{htmlIdx:jsonIdx}.
-            //
+            mapSet.children = uiLayers;                            
+  	    
+            // update mapLayers[] : remove the deleted entries (i.e. undefined)
+            var mapLayers = this.mapLayers;
+            var idx = 0;
+            while (idx<mapLayers.length) {
+                var entry = mapLayers[idx];
+                if (entry == undefined) {
+                    mapLayers.splice(idx, 1); // remove one element
+                    //console.log(mapLayers);
+                }
+                else {
+                    idx += 1;
+                }
+            }
+
+            // Redraw the Editor Div.
+            // pre-state: the ids in the html is out of sync with the new json!
+            //       
+            // Alternative for redrawing: update jsonId related components
+            //     the metadata tag id
+            //     the checkbox click() handler
+            //     the remove-layer button click() handler
+            this.drawEditorDivAndMapCanvas();            
+                
+            // the editor view should match the json state after redrawing
+            // i.e., dataMap{htmlIdx:jsonIdx | htmlId == jsonId}
             $('.layerEntry').each(function (i, obj) {
-                $(obj).find('.metadata').attr('id',i);
                 geocamMapSetLib.dataMap[i] = i;
             })
-           
+
             console.log("new json content: " + JSON.stringify(mapSet));
             return mapSet;
         }
@@ -272,6 +291,8 @@ function composeLayerEntry(layer, jsonId) {
 //
 // @jsonId is the index of the corresponding child entry in the 
 //  mapSetManager.mapSet.children[] array.
+//
+// Notes: the handler relies on geocamMapSetLib.managerRef.mapLayers.
 // 
 function initRemoveButton(jsonId) {
     var buttonId = '#remove_' + jsonId;
@@ -279,15 +300,55 @@ function initRemoveButton(jsonId) {
     $(buttonId).button({
         text: false
     }).click(function() { 
-         console.log('removing map layer: ' + buttonId);
-    }).addClass("removeButton ui-icon ui-icon-close").width("17px");
+         var mapLayers = geocamMapSetLib.managerRef.mapLayers;
 
-    console.log('initiating remote button:' + buttonId);
+         // onclick handler: remove the layer entry
+         console.log('removing map layer: ' + buttonId);
+
+         // unbind the GoogleMap if it is enabled.
+         var show = $('#showLayer_'+jsonId).attr('checked');
+         if (show) {
+             console.log('It is on show.');             
+             mapLayers[jsonId].setMap(null);
+         }
+
+         // remove the map layer from DOM
+         $(this).parent().remove();
+
+         // look for htmlId
+
+         // update dataMap[], i.e., Mapping: htmlId -> jsonId
+         // 
+         var dataMap = geocamMapSetLib.dataMap;
+         var htmlIdx = dataMap.indexOf(jsonId);
+         if (htmlIdx == -1) {
+              console.log('Error: failed to find JsonId ' + jsonId + '. ' + htmlIdx + ' returned.');
+              console.log(dataMap);
+         }
+         else {
+              // remove the dataMap entry
+              dataMap.splice(htmlIdx, 1);  
+              console.log(dataMap);
+         }
+
+         // defer shrinking the mapLayers[] when JSON is updated, 
+         // i.e., in mapSetManager.getMapsetState()
+         // 
+         // "delete array" only marks that entry as undefined, which serves
+         // as a marker for removed entry in mapLayers.
+         delete mapLayers[jsonId];
+
+         //console.log('--- mapLayer[] state after entry removed ---');
+         //console.log('Note:the deleted layer entry is marked as undefined.');
+         //console.log(mapLayers);
+
+    }).addClass("removeButton ui-icon ui-icon-close").width("17px");
+   
 }
 
 
 
-// connectMaplayerCheckboxToGoogleMap(mapEntry, jsonId, newMaplayerIdx)
+// connectMaplayerCheckboxToGoogleMap(mapEntry, jsonId)
 //
 // Helper function for drawEditorDivAndMapCanvas. 
 // It initiates the checkbox "change" event handler. 
@@ -295,10 +356,10 @@ function initRemoveButton(jsonId) {
 // @mapEntry is the map layer entry from the map library. (expect field: name)
 // @jsonId is the index of the corresponding child entry in the 
 //  mapSetManager.mapSet.children[] array.
-// @newMaplayerIdx is the index of the corresponding entry in the
-//  mapSetManager.mapLayers[] array.
 //
-function connectMaplayerCheckboxToGoogleMap(mapEntry, jsonId, newMaplayerIdx) {
+// Note: the mapSetManager.mapLayers[] array is indexed by jsonId.
+//
+function connectMaplayerCheckboxToGoogleMap(mapEntry, jsonId) {
 
     $('#showLayer_' + jsonId).change(function (layer) {
         return function () {
@@ -308,10 +369,10 @@ function connectMaplayerCheckboxToGoogleMap(mapEntry, jsonId, newMaplayerIdx) {
             var show = $(this).attr('checked');
             if (show) {
                 console.log("showing layer " + layer.name);
-                mapLayers[newMaplayerIdx].setMap(map);
+                mapLayers[jsonId].setMap(map);  
             } else {
                 console.log("hiding layer " + layer.name);
-                mapLayers[newMaplayerIdx].setMap(null);
+                mapLayers[jsonId].setMap(null);
             }
         }
     }(mapEntry));
@@ -367,8 +428,8 @@ function drawEditorDivAndMapCanvas() {
         // editing.
         geocamMapSetLib.dataMap[htmlId] = jsonId;
 
-        console.log(i, jsonId, htmlId);
-        console.log(layer.url);
+        //console.log(i, jsonId, htmlId);
+        //console.log(layer.url);
 
         var layerEntryHtml = composeLayerEntry(layer, jsonId);
         mapSetViewHtml.push(layerEntryHtml);
@@ -417,10 +478,8 @@ function drawEditorDivAndMapCanvas() {
 
                 // create the Google map binding to the new entry and initiate
                 // the checkbox "change" event handler.
-                var newMaplayerIdx = bindNewLayerToGoogleMap(libEntry);
-                connectMaplayerCheckboxToGoogleMap(libEntry, 
-                                                   jsonId, 
-                                                   newMaplayerIdx);
+                bindNewLayerToGoogleMap(libEntry);
+                connectMaplayerCheckboxToGoogleMap(libEntry,jsonId);
 
                 // create the "remove layer" button
                 initRemoveButton(jsonId);
@@ -431,9 +490,12 @@ function drawEditorDivAndMapCanvas() {
                 console.log('Sort only');
             }
 
+            // rebuild the dataMap[] based on the updated Html Editor View
+            // 
             $('.layerEntry').each(function (i, obj) {
                 var jsonId = $(obj).find('.metadata').attr("id");
-                geocamMapSetLib.dataMap[i] = jsonId;
+                // Don't assign string to dataMap!!!
+                geocamMapSetLib.dataMap[i] = parseInt(jsonId, 10); 
             });
             
             // for debugging

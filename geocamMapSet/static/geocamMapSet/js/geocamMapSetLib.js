@@ -88,7 +88,7 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, 
             $('.layerEntry').removeClass('ui-state-default');
 
             // disable remove button
-            $('.removeButton').css('display','none');
+            $('.layer-entry-right').hide();
 
             // disable save button
             setButtonDisabled($('#save'), true);
@@ -105,8 +105,9 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, 
             $('.layerEntry').addClass('ui-state-default');
 
             // enable remove button
-            $('.removeButton').css('display', 'inline');
+            $('.layer-entry-right').show();
             $('.removeButton').button('option','icons','{primary:null, secondary:null}');
+            
 
             // disable save button
             setButtonDisabled($('#save'), false);
@@ -130,7 +131,7 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, 
 
                 // save the show status if enabled
                 //
-                if ($('.layerEntry > input').get(htmlIdx).checked) {
+                if ($('.layer-entry-left > input').get(htmlIdx).checked) {
                     uiLayers[htmlIdx].show = 'true';
                 } else {
                     delete uiLayers[htmlIdx].show;
@@ -284,10 +285,11 @@ function composeLayerEntry(layer, jsonId) {
     //
     mapSetEntryHtml.push
         ('<div class="layerEntry ui-state-default">'
-         + '<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>'
-         + checkbox
-         + '<label for="showLayer_' + jsonId + '">' + layer.name + '</label>'
-         + '<span id="remove_' + jsonId + '"></span>'
+         + '<table width="100%"><tr valign="top">'
+         + '<td class="layer-entry-left">' + checkbox + '</td>'
+         + '<td class="layer-entry-mid"><label for="showLayer_' + jsonId + '">' + layer.name + '</label></td>'
+         + '<td class="layer-entry-right"><span id="remove_' + jsonId + '"></span></td>'
+         + '</tr></table>'
          + '<div class="metadata" id="' + jsonId + '" style="visibility:hidden"' + '></div>'
          + '</div>');
 
@@ -326,7 +328,7 @@ function initRemoveButton(jsonId) {
          }
 
          // remove the map layer from DOM
-         $(this).parent().remove();
+         $(this).parents(".layerEntry").remove();
 
          // look for htmlId
 

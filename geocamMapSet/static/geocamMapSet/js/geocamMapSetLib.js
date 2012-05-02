@@ -90,6 +90,8 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, 
             // disable remove button
             $('.removeButton').css('display','none');
 
+            // disable save button
+            setButtonDisabled($('#save'), true);
         }
 
         // function to enable the editable mode
@@ -105,6 +107,9 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, 
             // enable remove button
             $('.removeButton').css('display', 'inline');
             $('.removeButton').button('option','icons','{primary:null, secondary:null}');
+
+            // disable save button
+            setButtonDisabled($('#save'), false);
         }
 
         // function to create mapSetJSON from the current state
@@ -422,15 +427,19 @@ function drawEditorDivAndMapCanvas() {
 
     var mapSetViewHtml = [];
 
-    //
-    // XXX ADD BUTTONS AND NAME HERE
+    // add buttons and name 
     //
     var mapSetName = "Unnamed Mapset";
     if (this.mapSet.hasOwnProperty('name')) {
         mapSetName = this.mapSet.name;
     }
-    mapSetViewHtml.push('<label>' + mapSetName + '</label>');
-    mapSetViewHtml.push('<button id="saveMapSet" type="button">Save</button>');
+    mapSetViewHtml.push('<label id="mapSetName">' + mapSetName + '</label><br>');
+    mapSetViewHtml.push('<button id="save" type="button">Save</button>');
+    mapSetViewHtml.push('<img id="activityIndicator"' +
+                        'src="/static/geocamMapSet/images/indicator.white.gif"' +
+                        'style="display:none"/>');
+    mapSetViewHtml.push('<label id="activityStatus" style="display:none">' +
+                        'save complete.</label>');
 
     mapSetViewHtml.push('<div id="mapLayerList">');
 
@@ -468,12 +477,23 @@ function drawEditorDivAndMapCanvas() {
     mapSetViewHtml.push('</div>');
     $(this.editorDivId).html(mapSetViewHtml.join(''));
 
-    // XXX add callback for button click here
+    // add callback for button click here
     //
-    $('#saveMapSet').click(function() {
+    $('#save').button();
+    $('#save').click(function() {
+
         m = geocamMapSetLib.managerRef.getMapsetState();
+
+        setButtonDisabled($('#save'), true);
+        $('#activityIndicator').show();
+
         $.post('/mixer/sets/new', JSON.stringify(m), function(data) {
-            alert('save completed');
+                setButtonDisabled($('#save'), false);
+                $('#activityIndicator').hide();
+
+                $('#activityStatus').show('slow', function() {
+                    setTimeout("$('#activityStatus').hide()", 1000);
+                })
         })
     })
     
@@ -601,5 +621,12 @@ function dumpDataMap(dataMap) {
 }
 
 
-
-
+// toggle a button as enabled or disabled
+//
+function setButtonDisabled(button, disabled) {
+    if (disabled) {
+        button.button('disable');
+    } else {
+        button.button('enable');
+    }
+}

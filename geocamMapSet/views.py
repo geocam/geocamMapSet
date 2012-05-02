@@ -11,6 +11,7 @@ from geocamMapSet.models import MapSet, MapSetLayer, Extension
 from django.utils import simplejson
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+import time
 
 ######################################################################
 # views for generic map set viewing and editing
@@ -53,6 +54,8 @@ def mapSetSave(request):
                 c = MapSetLayer.fromJSON(child)
                 mapset.mapsetlayer_set.add(c)
                 c.save()
+
+        time.sleep(2);
 
     return HttpResponse("OK")
 

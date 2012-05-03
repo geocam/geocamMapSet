@@ -55,8 +55,6 @@ def mapSetSave(request):
                 mapset.mapsetlayer_set.add(c)
                 c.save()
 
-        time.sleep(2);
-
     return HttpResponse("OK")
 
 def mapSetCreate(request):

@@ -1,3 +1,13 @@
 <div style="padding: 20px;">
   <img src="{{ STATIC_URL }}mixer/icons/mapMixerLogo.png"/>
+  <span style="padding-left: 50px;">
+    {% if user.is_authenticated %}
+      <a href="{{ logout_url }}">Logout</a>
+    {% else %}
+      <a href="{{ login_url_with_next }}">Login</a>
+    {% endif %}
+  </span>
+</div>
+<div>
+  <span class="navLink"><a href="{% url geocamMapMixer_welcome %}">Dashboard</a>
 </div>

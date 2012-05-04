@@ -15,6 +15,8 @@ from geocamMapSet.urls import mapMixerPatterns
 urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
     (r'^mixer/', include('geocamMapSet.urls')),
+    (r'^accounts/login/$', 'django.contrib.auth.views.login', {}, 'login'),
+    (r'^accounts/logout/$', 'django.contrib.auth.views.logout', {}, 'logout'),
 ) + mapMixerPatterns
 
 urlpatterns = urlpatterns + patterns('',

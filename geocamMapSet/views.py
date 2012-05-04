@@ -16,13 +16,18 @@ import time
 ######################################################################
 # views for generic map set viewing and editing
 
-def mapSetEdit(request, user_name, set_id):
+def mapSetEdit(request, username, setName):
     return render_to_response('geocamMapSet/mapSetEdit.html', {},
                               context_instance=RequestContext(request))
 
-def mapSetView(request, user_name, set_id):
-    mapset = get_object_or_404(MapSet, pk=set_id)
+def mapSetViewJson(request, username, setName):
+    mapset = get_object_or_404(MapSet, name=setName)
     return HttpResponse(mapset.json, 'application/json')
+
+def mapSetView(request, username, setName):
+    mapset = get_object_or_404(MapSet, name=setName)
+    return render_to_response('geocamMapSet/mapSetEdit.html', {},
+                              context_instance=RequestContext(request))
 
 def mapSetIndex(request):
     json_str = []
@@ -68,11 +73,19 @@ def libraryIndex(request):
     json_str = LibraryLayer.getAllLayersInJson()
     return HttpResponse(json_str, 'application/json')
 
+def dashboard(request):
+    return render_to_response('geocamMapSet/dashboard.html',
+                              {'mapSets': MapSet.objects.all()},
+                              context_instance=RequestContext(request))
+
 ######################################################################
 # views specific to mapmixer.org site
 
 # these will be refactored into a separate repo later
 
 def welcome(request):
-    return render_to_response('mixer/welcome.html', {},
-                              context_instance=RequestContext(request))
+    if request.user.is_authenticated():
+        return dashboard(request)
+    else:
+        return render_to_response('mixer/welcome.html', {},
+                                  context_instance=RequestContext(request))

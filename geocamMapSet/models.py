@@ -6,7 +6,7 @@
 
 from django.db import models
 from django.utils import simplejson
-
+from django.core.urlresolvers import reverse
 
 
 class LibraryLayer(models.Model):
@@ -57,7 +57,8 @@ class MapSet(models.Model):
             vals['mapsetjson'] = json['mapsetjson']
         return MapSet(**vals)
 
-            
+    def get_absolute_url(self):
+        return reverse('geocamMapSet_view', args=['user', self.name])
 
 class MapSetLayer(models.Model):
     name = models.CharField(primary_key=True, max_length=255)

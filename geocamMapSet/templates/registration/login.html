@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block contents %}
+
+{% if form.errors %}
+<div style="color: red; font-weight: bold; padding-top: 10px; padding-bottom: 10px;">
+  Invalid username or password. Please try again.
+</div>
+{% endif %}
+
+<form method="post" action=".">
+<table>
+<tr><td>{{ form.username.label_tag }}</td><td>{{ form.username }}</td></tr>
+<tr><td>{{ form.password.label_tag }}</td><td>{{ form.password }}</td></tr>
+</table>
+
+<br/>
+<input type="submit" value="login" />
+<input type="hidden" name="next" value="{{ next }}" />
+{% csrf_token %}
+</form>
+
+{% endblock %}

@@ -19,10 +19,13 @@ urlpatterns = patterns(
     url(r'^createSet/$', 'mapSetCreate', {},
         'geocamMapSet_create'),
 
-    url(r'^(?P<user_name>[^/]+)/(?P<set_id>[^/]+)/$', 'mapSetView', {},
+    url(r'^(?P<username>[^/]+)/(?P<setName>[^/]+)\.json$', 'mapSetViewJson', {},
+        'geocamMapSet_viewJson'),
+
+    url(r'^(?P<username>[^/]+)/(?P<setName>[^/]+)/?$', 'mapSetView', {},
         'geocamMapSet_view'),
 
-    url(r'^(?P<user_name>[^/]+)/(?P<set_id>[^/]+)/edit/$', 'mapSetEdit', {},
+    url(r'^(?P<username>[^/]+)/(?P<setName>[^/]+)/edit/$', 'mapSetEdit', {},
         'geocamMapSet_edit'),
 
     url(r'^sets/new$', 'mapSetSave', {},

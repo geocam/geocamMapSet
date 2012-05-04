@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ block.super }}
+    <title>MapMixer - Dashboard</title>
+{% endblock head %}
+
+{% block style %}
+    {{ block.super }}
+
+    <style type="text/css">
+    </style>
+
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}external/css/ui-lightness/jquery-ui-1.8.18.custom.css"></link>
+
+{% endblock style %}
+
+{% block scripts %}
+    {{ block.super }}
+
+    <script type="text/javascript" src="{{ STATIC_URL }}external/js/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}external/js/jquery-ui-1.8.18.custom.min.js"></script>
+{% endblock scripts %}
+
+{% block contents %}
+  <h3>Map Sets</h3>
+  <ul>
+    {% for mapSet in mapSets %}
+       <li><a href="{{ mapSet.get_absolute_url }}">{{ mapSet.name }}</a></li>
+    {% endfor %}
+  </ul>
+{% endblock contents %}
+
+{% block jsInit %}
+      {{ block.super }}
+
+/*
+      function initialize() {
+      }
+
+      $(initialize());
+*/
+{% endblock jsInit %}

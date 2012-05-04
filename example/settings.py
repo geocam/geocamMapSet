@@ -99,6 +99,8 @@ STATIC_URL = '/static/'
 
 TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
     'django.core.context_processors.request',
+    'django.core.context_processors.static',
+    'geocamUtil.context_processors.AuthUrlsContextProcessor.AuthUrlsContextProcessor',
 )
 
 INSTALLED_APPS = (
@@ -112,3 +114,22 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.databrowse',
 )
+
+SCRIPT_NAME = '/'
+LOGIN_URL = SCRIPT_NAME + 'accounts/login/'
+LOGOUT_URL = SCRIPT_NAME + 'accounts/logout/'
+LOGIN_DEFAULT_NEXT_URL = SCRIPT_NAME
+
+try:
+    import debug_toolbar
+except ImportError:
+    debug_toolbar = None
+
+if debug_toolbar:
+    INSTALLED_APPS = INSTALLED_APPS + (
+        'debug_toolbar',
+    )
+    MIDDLEWARE_CLASSES = global_settings.MIDDLEWARE_CLASSES + (
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    )
+    INTERNAL_IPS = ('127.0.0.1',)

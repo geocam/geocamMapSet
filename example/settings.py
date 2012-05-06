@@ -120,12 +120,10 @@ LOGIN_URL = SCRIPT_NAME + 'accounts/login/'
 LOGOUT_URL = SCRIPT_NAME + 'accounts/logout/'
 LOGIN_DEFAULT_NEXT_URL = SCRIPT_NAME
 
-try:
-    import debug_toolbar
-except ImportError:
-    debug_toolbar = None
+USE_DEBUG_TOOLBAR = False
 
-if debug_toolbar:
+if USE_DEBUG_TOOLBAR:
+    import debug_toolbar
     INSTALLED_APPS = INSTALLED_APPS + (
         'debug_toolbar',
     )

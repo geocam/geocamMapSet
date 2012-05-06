@@ -3,6 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>MapMixer</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}external/css/ui-lightness/jquery-ui-1.8.18.custom.css"></link>
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}mixer/css/base.css"></link>
   </head>
   <body>
@@ -20,6 +22,7 @@
 
     <div id="content" style="padding: 20px;"></div>
 
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script data-main="{{ STATIC_URL }}mixer/js/main" src="{{ STATIC_URL }}external/js/require-jquery.js"></script>
     <script type="text/javascript">
       STATIC_URL = "{{ STATIC_URL }}";

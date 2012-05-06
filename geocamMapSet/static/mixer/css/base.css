@@ -33,10 +33,71 @@ div#contents {
 }
 
 h3 {
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
 }
 
 .navLink {
-  padding-left: 20px;
+    padding-left: 20px;
+}
+
+#map_canvas {
+    width: 480px;
+    height: 480px;
+}
+#mapset_canvas {
+    width: 340px;
+    height: 480px;
+    overflow: auto;
+}
+#mapsetlib_canvas {
+    width: 340px;
+    height: 480px;
+    overflow: auto;
+    background: #C8C8C8;
+}
+
+#mapLayerList {
+    margin: 2px;
+}
+
+#mapSetName {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-left: 15px;
+    margin-top: 10px;
+}
+
+#save {
+    margin-left: 15px;
+    margin-right: 15px;
+    margin-top: 10px;
+}
+
+.layerEntry {
+    margin: 5px;
+    padding-left: 5px;
+    padding-right: 3px;
+}
+
+.layer-entry-left {
+    width: 5%
+}
+
+.layer-entry-mid {
+    width: 90%
+}
+
+.layer-entry-right {
+    width: 5%
+}
+
+.libraryEntry {
+    width: 290px;
+    margin: 5px;
+    padding-left: 15px;
+    background: #C8C8C8;
+    border: 1px solid #CCCCCC;
+    color: #1C94C4;
+    font-weight: bold;
 }

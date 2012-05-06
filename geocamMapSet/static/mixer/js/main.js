@@ -6,6 +6,17 @@
 | __END_LICENSE__
 */
 
+// FIX: figure out where to put this
+var myMapSetManager;
+function testToggle(myMapSetManager) {
+    var editable = myMapSetManager.isEditable();
+    if (editable) {
+        myMapSetManager.disableEditing();
+    } else {
+        myMapSetManager.enableEditing();
+    }
+}
+
 requirejs.config({
     paths: {
         'json2': '../../external/js/json2',
@@ -13,6 +24,8 @@ requirejs.config({
         'backbone': '../../external/js/backbone-min',
         'Handlebars': '../../external/js/Handlebars',
         'hbs': '../../external/js/hbs',
+        'jquery-ui': '../../external/js/jquery-ui-1.8.18.custom.min',
+        'geocamMapSetLib': '../../geocamMapSet/js/geocamMapSetLib'
     },
 
     hbs: {
@@ -24,10 +37,13 @@ requirejs.config({
 require([
     'jquery',
     'hbs!../templates/welcome',
+    'hbs!../../geocamMapSet/templates/mapSet',
     'json2',
     'underscore',
-    'backbone'
-], function ($, welcomeTemplate) {
+    'backbone',
+    'jquery-ui',
+    'geocamMapSetLib'
+], function ($, welcomeTemplate, mapSetTemplate) {
 
     var MapSetsView = Backbone.View.extend({
         el: '#mapSetList',
@@ -50,7 +66,8 @@ require([
         
         routes: {
             "dash": "dash",
-            "welcome": "welcome"
+            "welcome": "welcome",
+            ":user/:mapSetName": "mapSet"
         },
         
         dash: function() {
@@ -64,6 +81,21 @@ require([
         
         welcome: function() {
             $('#content').html(welcomeTemplate({STATIC_URL: STATIC_URL}));
+        },
+
+        mapSet: function (user, mapSetName) {
+            $('#content').html(mapSetTemplate({}));
+
+            var spec = '/mixer/foo/HurricaneLayers.json';
+
+            var myOptions = {
+                center: new google.maps.LatLng(35, -95),
+                zoom: 4,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+            var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+
+            myMapSetManager = geocamMapSetLib.MapSetManager(spec, map, '#mapset_canvas', '#mapsetlib_canvas');
         }
         
     });

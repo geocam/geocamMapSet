@@ -4,14 +4,18 @@
 # All Rights Reserved.
 # __END_LICENSE__
 
+import time
+
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from geocamMapSet.models import LibraryLayer
-from geocamMapSet.models import MapSet, MapSetLayer, Extension
 from django.utils import simplejson
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-import time
+
+from geocamUtil import anyjson as json
+
+from geocamMapSet.models import LibraryLayer
+from geocamMapSet.models import MapSet, MapSetLayer, Extension
 
 ######################################################################
 # views for generic map set viewing and editing
@@ -78,14 +82,15 @@ def dashboard(request):
                               {'mapSets': MapSet.objects.all()},
                               context_instance=RequestContext(request))
 
+def mapSetIndexJson(request):
+    mapSets = [m.getDict() for m in MapSet.objects.all()]
+    return HttpResponse(json.dumps(mapSets), mimetype='application/json')
+
 ######################################################################
 # views specific to mapmixer.org site
 
 # these will be refactored into a separate repo later
 
-def welcome(request):
-    if request.user.is_authenticated():
-        return dashboard(request)
-    else:
-        return render_to_response('mixer/welcome.html', {},
-                                  context_instance=RequestContext(request))
+def app(request):
+    return render_to_response('mixer/app.html', {},
+                              context_instance=RequestContext(request))

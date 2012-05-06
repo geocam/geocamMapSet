@@ -28,6 +28,9 @@ urlpatterns = patterns(
     url(r'^(?P<username>[^/]+)/(?P<setName>[^/]+)/edit/$', 'mapSetEdit', {},
         'geocamMapSet_edit'),
 
+    url(r'^sets.json', 'mapSetIndexJson', {},
+        'geocamMapSet_indexJson'),
+
     url(r'^sets/new$', 'mapSetSave', {},
         'geocamMapSet_save'),
 
@@ -45,8 +48,8 @@ urlpatterns = patterns(
 mapMixerPatterns = patterns(
     '',
 
-    url(r'^$', 'geocamMapSet.views.welcome', {},
-        'geocamMapMixer_welcome'),
+    url(r'^$', 'geocamMapSet.views.app', {},
+        'geocamMapMixer_app'),
 
     url(r'^favicon.ico$', 'django.views.generic.simple.redirect_to',
         {'url': settings.STATIC_URL + 'mixer/icons/mapMixerFavicon.ico', 'permanent': False}),

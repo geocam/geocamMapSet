@@ -60,6 +60,10 @@ class MapSet(models.Model):
     def get_absolute_url(self):
         return reverse('geocamMapSet_view', args=['user', self.name])
 
+    def getDict(self):
+        return {'name': self.name}
+
+
 class MapSetLayer(models.Model):
     name = models.CharField(primary_key=True, max_length=255)
     type = models.CharField(max_length=255)

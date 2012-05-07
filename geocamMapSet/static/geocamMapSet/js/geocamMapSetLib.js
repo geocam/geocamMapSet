@@ -12,7 +12,9 @@ var geocamMapSetLib = geocamMapSetLib || {};
 //
 var mapLibraryURL = "/mixer/library/";
 
-// UI-Data mapping: dataMap[htmlId] = jsonId
+// UI-Data mapping: dataMap[htmlIdx] = jsonIdx
+// Use the array dataMap as a lookup table for mapping the layer entries in
+// the mapset editor back to the mapSetManager.mapSet.children[] array
 //
 geocamMapSetLib.dataMap = new Array();
 
@@ -21,31 +23,26 @@ geocamMapSetLib.dataMap = new Array();
 //
 geocamMapSetLib.mapLibraryList = new Array();
 
-/* MapSetManager(spec, map, editorDivId, libraryDivId, opts)
- *
- * Constructor that creates and displays a map set. It returns a MapSetManager
- * object, the status attribute of which indicates whether the mapSetJSON has
- * loaded.
- *
- * @spec is MapSetJSON document url string
- * @map is a Google API v3 map
- * @editorDivId is the id of an HTML div where the layer editor interface
- * widget will be displayed.
- * @libraryDivId
- * @opts passes in customization options (to be defined later).
- *
- * TODO: @spec can also be the eval’d JavaScript object for a MapSetJSON document
- * TODO: @map is a *Mapstraction* map
- * TODO: can we include css tags here? css styling here?
- */
+// MapSetManager(spec, map, editorDivId, libraryDivId, opts)
+//
+// Constructor that creates and displays a map set. It returns a MapSetManager
+// object, the status attribute of which indicates whether the mapSetJSON has
+// loaded.
+//
+// @spec is MapSetJSON document url string
+// @map is a Google API v3 map
+// @editorDivId is the id of an HTML div where the layer editor interface
+// widget will be displayed.
+// @libraryDivId is the id of an HTML div for populating the map layer library.
+// @opts passes in customization options (to be defined later).
+//
+//
 geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, opts) {
 
     // TODO: input validation (google search 'javascript function type
     // checking', 'javascript function args', 'javascript typeof')
     //
-
-    // setup MapSet object attributes
-    //
+    
     mapSetManager = new Object();
     mapSetManager.status = 'LOADING';
     mapSetManager.url = spec;
@@ -55,7 +52,7 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, 
     mapSetManager.mapLayers = [];   // use jsonId to index
 
     // make mapSetManager retrievable via global geocamMapSetLib instance.
-    // It is mainlyd used by UI event handlers.
+    // It is used by the components inside the the mapset editor.
     geocamMapSetLib.managerRef = mapSetManager;
 
 
@@ -63,21 +60,19 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, 
     //
     $.getJSON(spec, function(obj) {
         mapSet = obj;
-
-        // flesh out the wrapper object
-        //
+        
         mapSetManager.mapSet = mapSet;
         mapSetManager.status = 'FINISHED_LOADING';
 
         mapSetManager.drawEditorDivAndMapCanvas();
 
-        // function to check editable mode status
+        // function to check editing mode status
         //
         mapSetManager.isEditable = function() {
             return !$('#mapLayerList').sortable("option", "disabled");
         }
 
-        // function to disable the editable mode
+        // function to disable the editing mode
         //
         mapSetManager.disableEditing = function () {
             // disable sorting
@@ -94,7 +89,7 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, 
             setButtonDisabled($('#save'), true);
         }
 
-        // function to enable the editable mode
+        // function to enable the editing mode
         //
         mapSetManager.enableEditing = function (savedUrl) {
             // enable sorting 
@@ -113,7 +108,7 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, 
             setButtonDisabled($('#save'), false);
         }
 
-        // function to create mapSetJSON from the current state
+        // function to create a mapSetJSON from the current state
         // (i.e., after editing). "What You See Is What You Get"
         //
         mapSetManager.getMapsetState = function () {
@@ -166,7 +161,7 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, 
             this.drawEditorDivAndMapCanvas();            
                 
             // the editor view should match the json state after redrawing
-            // i.e., dataMap{htmlIdx:jsonIdx | htmlId == jsonId}
+            // i.e., dataMap[htmlIdx] htmlIdx
             $('.layerEntry').each(function (i, obj) {
                 geocamMapSetLib.dataMap[i] = i;
             })
@@ -204,7 +199,7 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, 
 // Return value is the index of the new map layer in 
 // geocamMapSetLib.managerRef.mapLayers.
 //
-// @layerEntry is a map set layer object (expected fields: url, show).
+// @layerEntry is a mapSetJSON layer object (expected fields: url, show).
 //
 // Notes: It retrieve the googleMap object via geocamMapSetLib.managerRef.
 //
@@ -232,13 +227,13 @@ function bindNewLayerToGoogleMap(layerEntry) {
 // addLibraryLayerToMapSet(mapLibraryLayer)
 //
 // Helper function for drawEditorDivAndMapCanvas.
-// It returns the mapSet.childrenp[] index for the newly-added map layer entry corresponding
+// It returns the mapSet.children[] index for the newly-added map layer entry corresponding
 // to the @mapLibraryLayer.
 //
 // @mapLibraryLayer is a map layer entry following the format of 
 //  geocamMapSetLib.mapLibraryList.
 // 
-// Notes: It retrieve the MapSetJSON via geocamMapSetLib.managerRef.
+// Notes: It retrieves the MapSetJSON via geocamMapSetLib.managerRef.mapSet.
 //
 function addLibraryLayerToMapSet(mapLibraryLayer) {
     var mapSetList = geocamMapSetLib.managerRef.mapSet.children;
@@ -260,7 +255,7 @@ function addLibraryLayerToMapSet(mapLibraryLayer) {
 // Helper function for drawEditorDivAndMapCanvas. 
 // It returns the HTML for the layer entry in the custom MapSet. 
 //
-// @layer is the mapSet layer object (expected fields: name, show)
+// @layer is the MapSetJSON layer object (expected fields: name, show)
 // @jsonId is the index of the corresponding child entry in the 
 //  mapSetManager.mapSet.children[] array.
 // 
@@ -301,13 +296,13 @@ function composeLayerEntry(layer, jsonId) {
 // initRemoveButton(jsonId)
 //
 // Helper function for drawEditorDivAndMapCanvas.
-// It assign the button attribute to the "#remove_{jsonId}" DOM element and
-// bind the OnClick callback handler that removes the map layer entry.
+// It assigns the button attributes to the "#remove_{jsonId}" DOM element and
+// bind the Click event handler that removes the map layer entry.
 //
 // @jsonId is the index of the corresponding child entry in the 
 //  mapSetManager.mapSet.children[] array.
 //
-// Notes: the handler relies on geocamMapSetLib.managerRef.mapLayers.
+// Notes: the handler relies on geocamMapSetLib.managerRef.mapLayers[].
 // 
 function initRemoveButton(jsonId) {
     var buttonId = '#remove_' + jsonId;
@@ -315,10 +310,10 @@ function initRemoveButton(jsonId) {
     $(buttonId).button({
         text: false
     }).click(function() { 
-         var mapLayers = geocamMapSetLib.managerRef.mapLayers;
-
          // onclick handler: remove the layer entry
          console.log('removing map layer: ' + buttonId);
+
+         var mapLayers = geocamMapSetLib.managerRef.mapLayers;
 
          // unbind the GoogleMap if it is enabled.
          var show = $('#showLayer_'+jsonId).attr('checked');
@@ -346,8 +341,8 @@ function initRemoveButton(jsonId) {
               console.log(dataMap);
          }
 
-         // defer shrinking the mapLayers[] when JSON is updated, 
-         // i.e., in mapSetManager.getMapsetState()
+         // defer shrinking the mapLayers[] to when mapSetManager.mapSet gets
+         // updated, i.e., in mapSetManager.getMapsetState()
          // 
          // "delete array" only marks that entry as undefined, which serves
          // as a marker for removed entry in mapLayers.
@@ -358,7 +353,7 @@ function initRemoveButton(jsonId) {
          //console.log(mapLayers);
 
     }).addClass("removeButton ui-icon ui-icon-close").width("17px");
-   
+
 }
 
 
@@ -454,7 +449,7 @@ function drawEditorDivAndMapCanvas() {
         var checkbox;
 
         // build the { htmlId : jsonId } mapping to track reordering
-        // editing.
+        // operations.
         geocamMapSetLib.dataMap[htmlId] = jsonId;
 
         //console.log(i, jsonId, htmlId);
@@ -506,9 +501,10 @@ function drawEditorDivAndMapCanvas() {
         // TODO: enlage the box in ui-state-highlight styling
         placeholder: 'ui-state-highlight',
 
-        // when the user 'drops' a ui element in the list, update
-        // the state of the ui map
-        //
+        // Event handler for the change of state in mapset editor, i.e.,
+	//     Add a new layer
+        //     Reorder a layer
+	//
         stop: function(event, ui) {
             // Handle adding new entry and sorting separately
             //
@@ -566,7 +562,7 @@ function drawEditorDivAndMapCanvas() {
 
 
 
-// mapSetManager.drawLibraryDiv 
+// mapSetManager.drawLibraryDiv() 
 // 
 // Clean the libraryDiv and draw the html content based on the map layer
 // library in JSON format

@@ -502,9 +502,9 @@ function drawEditorDivAndMapCanvas() {
         placeholder: 'ui-state-highlight',
 
         // Event handler for the change of state in mapset editor, i.e.,
-	//     Add a new layer
+        //     Add a new layer
         //     Reorder a layer
-	//
+        //
         stop: function(event, ui) {
             // Handle adding new entry and sorting separately
             //

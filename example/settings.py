@@ -96,6 +96,7 @@ ROOT_URLCONF = 'example.urls'
 #)
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(APP, 'build', 'static')
 
 TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
     'django.core.context_processors.request',
@@ -105,6 +106,8 @@ TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
 
 INSTALLED_APPS = (
     'geocamMapSet',
+
+    'pipeline',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -131,3 +134,44 @@ if USE_DEBUG_TOOLBAR:
         'debug_toolbar.middleware.DebugToolbarMiddleware',
     )
     INTERNAL_IPS = ('127.0.0.1',)
+
+######################################################################
+# django-pipeline setup
+
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+PIPELINE_YUI_BINARY = os.path.join(APP, 'bin', 'yuicompressor')
+PIPELINE_TEMPLATE_FUNC = '_.template'
+PIPELINE_TEMPLATE_EXT = '.html'
+
+PIPELINE_CSS = {
+    'master': {
+        'source_filenames': (
+            'external/css/ui-lightness/jquery-ui-1.8.18.custom.css',
+            'mixer/css/base.css',
+        ),
+        'output_filename': 'mixer/css/master.css',
+    },
+}
+
+PIPELINE_JS = {
+    'master': {
+        'source_filenames': (
+            # libs
+            'external/js/jquery-1.7.1.min.js',
+            'external/js/jquery-ui-1.8.18.custom.min.js',
+            'external/js/json2.js',
+            'external/js/underscore.js',
+            'external/js/backbone-min.js',
+            'geocamMapSet/js/geocamMapSetLib.js',
+
+            # templates
+            'mixer/js/templateConfig.js',
+            'geocamMapSet/templates/mapSet.html',
+            'mixer/templates/welcome.html',
+
+            # app
+            'mixer/js/app.js',
+        ),
+        'output_filename': 'mixer/js/master.js',
+    }
+}

@@ -17,23 +17,6 @@ function testToggle(myMapSetManager) {
     }
 }
 
-define([
-    'jquery',
-    'text!../templates/welcome.html',
-    'text!../../geocamMapSet/templates/mapSet.html',
-    'json2',
-    'underscore',
-    'backbone',
-    'jquery-ui',
-    'geocamMapSetLib'
-], function ($, welcomeTemplate, mapSetTemplate) {
-
-    // interpret underscore templates django-style -- {{ var }}
-    _.templateSettings.interpolate = /\{\{(.+?)\}\}/g;
-
-    var welcomeTemplate = _.template(welcomeTemplate);
-    var mapSetTemplate = _.template(mapSetTemplate);
-
     var MapSetsView = Backbone.View.extend({
         el: '#mapSetList',
 
@@ -69,11 +52,11 @@ define([
         },
 
         welcome: function() {
-            $('#content').html(welcomeTemplate({STATIC_URL: STATIC_URL}));
+            $('#content').html(JST.welcome({STATIC_URL: STATIC_URL}));
         },
 
         mapSet: function (user, mapSetName) {
-            $('#content').html(mapSetTemplate({}));
+            $('#content').html(JST.mapSet({}));
 
             var spec = '/mixer/foo/HurricaneLayers.json';
 
@@ -93,6 +76,3 @@ define([
         new Workspace();
         Backbone.history.start();
     });
-
-    return {};
-});

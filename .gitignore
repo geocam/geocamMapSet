@@ -10,3 +10,4 @@
 /static/css/*.r*.css
 /geocamMapSet/build
 /example/sourceme.sh
+/build

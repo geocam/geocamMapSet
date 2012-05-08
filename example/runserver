@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# specify our preferred default options for the runserver command
+
+./manage.py runserver --nothread --nostatic

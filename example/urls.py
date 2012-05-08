@@ -17,11 +17,9 @@ urlpatterns = patterns('',
     (r'^mixer/', include('geocamMapSet.urls')),
     (r'^accounts/login/$', 'django.contrib.auth.views.login', {}, 'login'),
     (r'^accounts/logout/$', 'django.contrib.auth.views.logout', {}, 'logout'),
+    url('^static/(?P<path>.*)$',
+        'django.views.static.serve',
+        {'document_root': settings.STATIC_ROOT,
+         'show_indexes': True}, 'dev_static')
 ) + mapMixerPatterns
 
-urlpatterns = urlpatterns + patterns('',
-    (r'^static/(?P<path>.*)$', 'django.views.static.serve',
-        {'document_root': settings.MEDIA_ROOT}),
-#    (r'^data/(?P<path>.*)$', 'django.views.static.serve',
-#        {'document_root': settings.DATA_ROOT}),
-)

@@ -140,7 +140,7 @@ if USE_DEBUG_TOOLBAR:
 
 STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 PIPELINE_YUI_BINARY = os.path.join(APP, 'bin', 'yuicompressor')
-PIPELINE_TEMPLATE_FUNC = '_.template'
+PIPELINE_TEMPLATE_FUNC = 'Handlebars.compile'
 PIPELINE_TEMPLATE_EXT = '.html'
 
 PIPELINE_CSS = {
@@ -162,10 +162,10 @@ PIPELINE_JS = {
             'external/js/json2.js',
             'external/js/underscore.js',
             'external/js/backbone-min.js',
+            'external/js/handlebars.js',
             'geocamMapSet/js/geocamMapSetLib.js',
 
             # templates
-            'mixer/js/templateConfig.js',
             'geocamMapSet/templates/mapSet.html',
             'mixer/templates/welcome.html',
 
@@ -175,3 +175,5 @@ PIPELINE_JS = {
         'output_filename': 'mixer/js/master.js',
     }
 }
+
+PIPELINE = True

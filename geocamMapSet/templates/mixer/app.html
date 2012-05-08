@@ -22,13 +22,10 @@
 
     <div id="content" style="padding: 20px;"></div>
 
-    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
-    {% compressed_js 'master' %}
-
-    <script id="welcomeTemplate" type="text/html" src="{{ STATIC_URL }}mixer/templates/welcome.html"></script>
-    <script id="mapSetTemplate" type="text/html" src="{{ STATIC_URL }}geocamMapSet/templates/mapSet.html"></script>
     <script type="text/javascript">
       STATIC_URL = "{{ STATIC_URL }}";
     </script>
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    {% compressed_js 'master' %}
   </body>
 </html>

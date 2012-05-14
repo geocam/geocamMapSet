@@ -173,12 +173,14 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, libraryDivId, 
 
     // Initialize the libraryDiv
     //
+    if (0) {
     $.getJSON(mapLibraryURL, function(obj) {
         // store the map layer library as globally retrievable
         geocamMapSetLib.mapLibraryList = obj;                
         
         mapSetManager.drawLibraryDiv();
     });
+    }
 
     // bind the function drawEditorDivAndMapCanvas() and drawLibraryDiv() 
     // needed in the asynchronous part of the initialization.
@@ -279,12 +281,11 @@ function composeLayerEntry(layer, jsonId) {
     // create mapset entry content
     //
     mapSetEntryHtml.push
-        ('<div class="layerEntry ui-state-default">'
-         + '<table width="100%"><tr valign="top">'
-         + '<td class="layer-entry-left">' + checkbox + '</td>'
-         + '<td class="layer-entry-mid"><label for="showLayer_' + jsonId + '">' + layer.name + '</label></td>'
-         + '<td class="layer-entry-right"><span id="remove_' + jsonId + '"></span></td>'
-         + '</tr></table>'
+        ('<div class="layerEntry" styl="width: 100%;">'
+         + '<span class="layer-entry-left">' + checkbox + '</span>'
+         + '<span class="layer-entry-mid"><label for="showLayer_' + jsonId + '">' + layer.name + '</label></span>'
+         //+ '<span class="layer-entry-right"><span id="remove_' + jsonId + '"></span></span>'
+         + '</div>'
          + '<div class="metadata" id="' + jsonId + '" style="visibility:hidden"' + '></div>'
          + '</div>');
 
@@ -430,13 +431,15 @@ function drawEditorDivAndMapCanvas() {
     if (this.mapSet.hasOwnProperty('name')) {
         mapSetName = this.mapSet.name;
     }
-    mapSetViewHtml.push('<label id="mapSetName">' + mapSetName + '</label><br>');
+    mapSetViewHtml.push('<div id="mapSetName">' + mapSetName + '</div>');
+    /*
     mapSetViewHtml.push('<button id="save" type="button">Save</button>');
     mapSetViewHtml.push('<img id="activityIndicator"' +
                         'src="/static/geocamMapSet/images/indicator.white.gif"' +
                         'style="display:none"/>');
     mapSetViewHtml.push('<label id="activityStatus" style="display:none">' +
                         'save complete.</label>');
+    */
 
     mapSetViewHtml.push('<div id="mapLayerList">');
 
@@ -497,6 +500,8 @@ function drawEditorDivAndMapCanvas() {
     // make the layer list sortable
     //
     $('#mapLayerList').sortable({
+        disabled: true,
+
         // show placeholder during sorting 
         // TODO: enlage the box in ui-state-highlight styling
         placeholder: 'ui-state-highlight',

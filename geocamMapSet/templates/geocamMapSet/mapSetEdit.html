@@ -9,7 +9,7 @@
 
 {% block head %}
    {{ block.super }}
-    <title>MapMixer - Edit [setName]</title>
+    <title>{{ settings.SITE_TITLE }}</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 {% endblock head %}
 
@@ -97,13 +97,16 @@
    
 {% block contents %}
     <table>
-      <th>Google Map</th>
-      <th>Your map set<br>(check or reorder layers)</th>
-      <th>Feed Finder<br>(drag and drop the feeds into your map set)</th>
       <tr>
         <td><div id="map_canvas"></div></td>
         <td><div id="mapset_canvas"></div></td>
-        <td><div id="mapsetlib_canvas"></div></td>
+        <td>
+          <div>
+            <div class="columnHeader">Layer Library</div>
+            <div class="columnHeader">(drag and drop feeds into your map set)</div>
+          </div>
+          <div id="mapsetlib_canvas"></div>
+        </td>
       </tr>
     </table>    
     <input type="button" value="ToggleEditingMode" onclick="testToggle(myMapSetManager)">
@@ -114,7 +117,7 @@
 
       var myMapSetManager;
       function initialize() {
-          spec='/mixer/foo/1/';
+          spec='{{ mapset.get_absolute_url }}';
 
           var myOptions = {
               center: new google.maps.LatLng(35, -95),
@@ -123,7 +126,11 @@
           };
           var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
           
-          myMapSetManager = geocamMapSetLib.MapSetManager(spec, map, '#mapset_canvas', '#mapsetlib_canvas');
+          myMapSetManager = geocamMapSetLib.MapSetManager(spec, map, '#mapset_canvas',
+          {
+              'libraryDiv': '#mapsetlib_canvas',
+              'libraryUrl': '{% url geocamMapSet_libraryIndex %}'
+          });
                     
       }
      

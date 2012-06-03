@@ -201,8 +201,10 @@
         "pk": 1,
         "fields": {
             "mapsetjson": "0.1",
-            "name": "Hurricane Layers",
-            "json": "{ \"name\": \"Hurricane Layers\", \"id\": \"1\", \"mapsetjson\": \"0.1\",\"type\": \"Document\",\"extensions\": {\"kml\": \"http://mapmixer.org/mapsetjson/ext/kml/0.1/\",\"geojson\": \"http://mapmixer.org/mapsetjson/ext/geojson/0.1/\"},\"children\": [{ \"type\": \"kml.KML\", \"name\": \"US Significant River Flood Outlook\", \"url\": \"http://www.hpc.ncep.noaa.gov/kml/fop/fopbody.kml\", \"show\": \"True\" } ]}"
+	    "author": 2,
+	    "shortName": "hurricaneIrene2012",
+            "name": "Hurricane Irene 2012",
+            "json": "{ \"name\": \"Hurricane Irene 2012\", \"id\": \"1\", \"mapsetjson\": \"0.1\",\"type\": \"Document\",\"extensions\": {\"kml\": \"http://mapmixer.org/mapsetjson/ext/kml/0.1/\",\"geojson\": \"http://mapmixer.org/mapsetjson/ext/geojson/0.1/\"},\"children\": [{ \"type\": \"kml.KML\", \"name\": \"US Significant River Flood Outlook\", \"url\": \"http://www.hpc.ncep.noaa.gov/kml/fop/fopbody.kml\", \"show\": \"True\" } ]}"
         }
     },
 
@@ -236,5 +238,63 @@
             "show": "True",
             "json": "{ \"type\": \"kml.KML\", \"name\": \"US Significant River Flood Outlook\", \"url\" : \"http://www.hpc.ncep.noaa.gov/kml/fop/fopbody.kml\" }"
             }
+    },
+
+    {
+        "pk": 2,
+        "model": "auth.user",
+        "fields": {
+            "username": "alice",
+            "first_name": "Alice",
+            "last_name": "Doe",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2012-06-02 16:08:26",
+            "groups": [],
+            "user_permissions": [],
+            "password": "sha1$801a8$0ffaae3c369f38ebc5069d3ec7b25efd711e55f4",
+            "email": "alice@example.com",
+            "date_joined": "2012-06-02 13:52:40"
+        }
+    },
+
+    {
+        "pk": 3,
+        "model": "auth.user",
+        "fields": {
+            "username": "bob",
+            "first_name": "Bob",
+            "last_name": "Doe",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2012-06-02 13:53:18",
+            "groups": [],
+            "user_permissions": [],
+            "password": "sha1$a2341$3078c1ca3263161a13c5d09456fe683f90b5e6ec",
+            "email": "bob@example.com",
+            "date_joined": "2012-06-02 13:53:18"
+        }
+    },
+
+    {
+        "pk": 4,
+        "model": "auth.user",
+        "fields": {
+            "username": "clara",
+            "first_name": "Clara",
+            "last_name": "Doe",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2012-06-02 13:53:41",
+            "groups": [],
+            "user_permissions": [],
+            "password": "sha1$56ec4$430d066432401b478d8d4a9680e5e6e7d8db8a8e",
+            "email": "clara@example.com",
+            "date_joined": "2012-06-02 13:53:41"
+        }
     }
+
 ]

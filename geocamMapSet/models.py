@@ -6,7 +6,8 @@
 
 from django.db import models
 from django.utils import simplejson
-
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 
 
 class LibraryLayer(models.Model):
@@ -31,14 +32,30 @@ class LibraryLayer(models.Model):
 
 
 class MapSet(models.Model):
+    mtime = models.DateTimeField(null=True, blank=True, auto_now=True)
+    # shortName: a version of the name suitable for embedding into a URL (no spaces or special chars)
+    shortName = models.CharField(max_length=255, blank=True)
     name = models.CharField(max_length=255, blank=True)
     description = models.CharField(max_length=255, blank=True)
     url = models.URLField(blank=True)
     mapsetjson = models.DecimalField(max_digits=5, decimal_places=2)
     json = models.TextField()
+    author = models.ForeignKey(User, null=True, blank=True)
 
     def __unicode__(self):
         return self.name
+
+    def get_absolute_url(self):
+        """
+        Return url that fetches the MapSetJSON document for this map set.
+        """
+        return reverse('geocamMapSet_setJson', args=[self.author.username, self.shortName])
+
+    def getViewUrl(self):
+        """
+        Return url that gets an HTML page with a map viewing this map set.
+        """
+        return reverse('geocamMapSet_view', args=[self.author.username, self.shortName])
 
     @classmethod     
     def fromJSON(cls, json):
@@ -57,6 +74,8 @@ class MapSet(models.Model):
             vals['mapsetjson'] = json['mapsetjson']
         return MapSet(**vals)
 
+    class Meta:
+        ordering = ['-mtime']
             
 
 class MapSetLayer(models.Model):

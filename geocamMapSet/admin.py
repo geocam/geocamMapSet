@@ -4,4 +4,10 @@
 # All Rights Reserved.
 # __END_LICENSE__
 
-# from django.contrib import admin
+from django.contrib import admin
+from geocamMapSet.models import *
+
+admin.site.register(LibraryLayer)
+admin.site.register(MapSet)
+admin.site.register(MapSetLayer)
+admin.site.register(Extension)

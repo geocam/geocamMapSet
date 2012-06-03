@@ -5,25 +5,45 @@
 # __END_LICENSE__
 
 from django.conf.urls.defaults import url, patterns
-from django.contrib import databrowse
 from geocamMapSet.models import MapSet, Extension, MapSetLayer
 from geocamMapSet import settings
 
-databrowse.site.register(MapSet)
-databrowse.site.register(Extension)
-databrowse.site.register(MapSetLayer)
+# web pages:
+
+# home/ <- landing screen for a user, with map sets they can edit (for now, each set will have a single owner)
+#   [create a map set]
+#   map set 1
+#   map set 2
+#   ...
+# <user>/<set_id>/ <- viewer for map set, can enable editing. editor allows importing a new layer
+
+# api hooks:
+
+# <user>/<set_id>.json <- fetch map set, post to save a map set
+# layer/<user>/<layer_id>.json <- fetch layer info, post to import a layer
+# library.json <- all layers, as map set
+# sets.json <- list of metadata about all map sets: username and set_id
 
 urlpatterns = patterns(
     'geocamMapSet.views',
 
+    url(r'^home/$', 'mapSetDashboard', {},
+        'geocamMapSet_dashboard'),
+
+    url(r'^sets.json$', 'mapSetSetsJson', {},
+        'geocamMapSet_setsJson'),
+
+    url(r'^(?P<userName>[^/]+)/(?P<shortName>[^/]+).json$', 'mapSetSet', {},
+        'geocamMapSet_setJson'),
+
     url(r'^createSet/$', 'mapSetCreate', {},
         'geocamMapSet_create'),
 
-    url(r'^(?P<user_name>[^/]+)/(?P<set_id>[^/]+)/$', 'mapSetView', {},
+    url(r'^(?P<userName>[^/]+)/(?P<shortName>[^/]+)/$', 'mapSetView', {},
         'geocamMapSet_view'),
 
-    url(r'^(?P<user_name>[^/]+)/(?P<set_id>[^/]+)/edit/$', 'mapSetEdit', {},
-        'geocamMapSet_edit'),
+#    url(r'^(?P<user_name>[^/]+)/(?P<set_id>[^/]+)/edit/$', 'mapSetEdit', {},
+#        'geocamMapSet_edit'),
 
     url(r'^sets/new$', 'mapSetSave', {},
         'geocamMapSet_save'),
@@ -33,9 +53,8 @@ urlpatterns = patterns(
 
     url(r'^library/(?P<layer_id>\d+)/$', 'libraryView'),
 
-    url(r'^library/$', 'libraryIndex'),
-
-    url(r'^databrowse/(.*)', databrowse.site.root),
+    url(r'^library.json$', 'libraryIndex', {},
+        'geocamMapSet_libraryIndex'),
 
 )
 

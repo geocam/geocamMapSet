@@ -4,25 +4,29 @@
 # All Rights Reserved.
 # __END_LICENSE__
 
+import time
+
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from geocamMapSet.models import LibraryLayer
-from geocamMapSet.models import MapSet, MapSetLayer, Extension
-from django.utils import simplejson
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-import time
+
+from geocamUtil import anyjson as json
+
+from geocamMapSet.models import LibraryLayer
+from geocamMapSet.models import MapSet, MapSetLayer, Extension
 
 ######################################################################
 # views for generic map set viewing and editing
 
-def mapSetEdit(request, user_name, set_id):
-    return render_to_response('geocamMapSet/mapSetEdit.html', {},
+def mapSetView(request, userName, shortName):
+    mapset = get_object_or_404(MapSet, author__username=userName, shortName=shortName)
+    return render_to_response('geocamMapSet/mapSetEdit.html', {'mapset': mapset},
                               context_instance=RequestContext(request))
 
-def mapSetView(request, user_name, set_id):
-    mapset = get_object_or_404(MapSet, pk=set_id)
-    return HttpResponse(mapset.json, 'application/json')
+#def mapSetView(request, userName, shortName):
+#    mapset = get_object_or_404(MapSet, author__username=userName, shortName=shortName)
+#    return HttpResponse(mapset.json, 'application/json')
 
 def mapSetIndex(request):
     json_str = []
@@ -34,7 +38,7 @@ def mapSetIndex(request):
 @csrf_exempt
 def mapSetSave(request):
     if request.method == 'POST':
-        json_data = simplejson.loads(request.raw_post_data)
+        json_data = json.loads(request.raw_post_data)
 
         mapset = MapSet.fromJSON(json_data)
         mapset.save()
@@ -67,6 +71,23 @@ def libraryView(request, layer_id):
 def libraryIndex(request):
     json_str = LibraryLayer.getAllLayersInJson()
     return HttpResponse(json_str, 'application/json')
+
+def mapSetDashboard(request):
+    return render_to_response('geocamMapSet/mapSetDashboard.html', {},
+                              context_instance=RequestContext(request))
+
+
+def mapSetSetsJson(request):
+    obj = [dict(url=s.get_absolute_url(),
+                viewUrl=s.getViewUrl(),
+                name=s.name,
+                author=s.author.username)
+           for s in MapSet.objects.all()]
+    return HttpResponse(json.dumps(obj), mimetype='application/json')
+
+def mapSetSet(request, userName, shortName):
+    s = get_object_or_404(MapSet, author__username=userName, shortName=shortName)
+    return HttpResponse(s.json, mimetype='application/json')
 
 ######################################################################
 # views specific to mapmixer.org site

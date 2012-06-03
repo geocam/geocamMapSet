@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block head %}
+   {{ block.super }}
+    <title>{{ settings.SITE_TITLE }}</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+{% endblock head %}
+
+{% block style %}
+    {{ block.super }}
+
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}external/css/ui-lightness/jquery-ui-1.8.18.custom.css"></link>
+
+{% endblock style %}
+
+{% block scripts %}
+   {{ block.super }}
+
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}external/js/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}external/js/jquery-ui-1.8.18.custom.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}geocamMapSet/js/geocamMapSetLib.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}geocamMapSet/js/mapSetDashboard.js"></script>
+{% endblock scripts %}
+   
+{% block contents %}
+<div id="dashbody"></div>
+{% endblock contents %}
+
+{% block jsInit %}
+      {{ block.super }}
+
+      var userG = "{{ user.username }}";
+
+      function initialize() {
+          renderMapSets('{% url geocamMapSet_setsJson %}');
+      }
+     
+      $(initialize());
+{% endblock jsInit %}

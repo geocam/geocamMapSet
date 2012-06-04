@@ -384,7 +384,6 @@ function connectMaplayerCheckboxToGoogleMap(mapEntry, jsonId) {
 
 }
 
-
 // mapSetManager.drawEditorDivAndMapCanvas()
 //
 // Clean the editorDiv and draw the html content based on the jsonObj
@@ -428,7 +427,7 @@ function drawEditorDivAndMapCanvas() {
     mapSetViewHtml.push('<label id="mapSetName">' + mapSetName + '</label><br>');
     mapSetViewHtml.push('<button id="save" type="button">Save</button>');
     mapSetViewHtml.push('<img id="activityIndicator"' +
-                        'src="/static/geocamMapSet/images/indicator.white.gif"' +
+                        'src="' + STATIC_URL + 'geocamMapSet/images/indicator.white.gif"' +
                         'style="display:none"/>');
     mapSetViewHtml.push('<label id="activityStatus" style="display:none">' +
                         'save complete.</label>');
@@ -467,7 +466,35 @@ function drawEditorDivAndMapCanvas() {
     });  // end of .each() loop
 
     mapSetViewHtml.push('</div>');
+    mapSetViewHtml.push('<button id="importLayer">Import Layer</button>');
+
     $(this.editorDivId).html(mapSetViewHtml.join(''));
+
+    importLayerButton = $('#importLayer');
+    importLayerButton.button();
+    importLayerButton.click(function () {
+	var dialogDiv = $('#dialogDiv');
+	dialogDiv.attr('title', 'Import Layer');
+	// this html was copy-and-pasted from the django-rendered form
+	dialogDiv.html
+	('<form id="importLayerForm" method="post" action=".">'
+	 + '<table>'
+	 + '<tr><th><label for="id_url">Url:</label></th><td><input id="id_url" type="text" name="url" maxlength="200" /></td></tr>'
+	 + '<tr><th><label for="id_name">Name:</label></th><td><input id="id_name" type="text" name="name" maxlength="255" /></td></tr>'
+	 + '</table>'
+	 + '<input id="importLayerSubmit" type="submit" value="Save"/>'
+	 + '</form>');
+	$('#importLayerForm').submit(function () {
+	    var text = JSON.stringify($(this).serializeObject());
+	    console.log(text);
+	    $.ajax(geocamMapSetLib.managerRef.opts.createLayerUrl, text,
+		   function () {
+		       console.log('posted');
+		   });
+	    return false;
+	});
+	dialogDiv.dialog({modal: true});
+    });
 
     // add callback for button click here
     //
@@ -476,11 +503,11 @@ function drawEditorDivAndMapCanvas() {
 
         m = geocamMapSetLib.managerRef.getMapsetState();
 
-        setButtonDisabled($('#save'), true);
+        //setButtonDisabled($('#save'), true);
         $('#activityIndicator').show();
 
-        $.post('/mixer/sets/new', JSON.stringify(m), function(data) {
-                setButtonDisabled($('#save'), false);
+        $.post(geocamMapSetLib.managerRef.url, JSON.stringify(m), function(data) {
+                //setButtonDisabled($('#save'), false);
                 $('#activityIndicator').hide();
 
                 $('#activityStatus').show('slow', function() {
@@ -623,3 +650,32 @@ function setButtonDisabled(button, disabled) {
         button.button('enable');
     }
 }
+
+// FIX: this should probably be in a different file
+jQuery.fn.serializeObject = function() {
+    var arrayData, objectData;
+    arrayData = this.serializeArray();
+    objectData = {};
+
+    $.each(arrayData, function() {
+	var value;
+
+	if (this.value != null) {
+	    value = this.value;
+	} else {
+	    value = '';
+	}
+
+	if (objectData[this.name] != null) {
+	    if (!objectData[this.name].push) {
+		objectData[this.name] = [objectData[this.name]];
+	    }
+
+	    objectData[this.name].push(value);
+	} else {
+	    objectData[this.name] = value;
+	}
+    });
+
+    return objectData;
+};

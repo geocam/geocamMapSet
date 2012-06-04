@@ -4,4 +4,11 @@
 # All Rights Reserved.
 # __END_LICENSE__
 
-# from django import forms
+from django import forms
+
+from geocamMapSet.models import LibraryLayer
+
+class LibraryLayerForm(forms.ModelForm):
+    class Meta:
+        model = LibraryLayer
+        fields = ('url', 'name')

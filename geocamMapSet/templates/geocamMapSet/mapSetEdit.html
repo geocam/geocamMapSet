@@ -110,14 +110,17 @@
       </tr>
     </table>    
     <input type="button" value="ToggleEditingMode" onclick="testToggle(myMapSetManager)">
+    <div id="dialogDiv" style="display: none;"></div>
 {% endblock contents %}
 
 {% block jsInit %}
       {{ block.super }}
 
+      var STATIC_URL = '{{ STATIC_URL }}';
+
       var myMapSetManager;
       function initialize() {
-          spec='{{ mapset.get_absolute_url }}';
+          var spec = '{{ mapset.get_absolute_url }}';
 
           var myOptions = {
               center: new google.maps.LatLng(35, -95),
@@ -129,7 +132,8 @@
           myMapSetManager = geocamMapSetLib.MapSetManager(spec, map, '#mapset_canvas',
           {
               'libraryDiv': '#mapsetlib_canvas',
-              'libraryUrl': '{% url geocamMapSet_libraryIndex %}'
+              'libraryUrl': '{% url geocamMapSet_libraryIndex %}',
+              'createLayerUrl': '{% url geocamMapSet_createLayer %}'
           });
                     
       }

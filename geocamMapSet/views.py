@@ -14,10 +14,19 @@ from django.views.decorators.csrf import csrf_exempt
 from geocamUtil import anyjson as json
 
 from geocamMapSet.models import LibraryLayer
-from geocamMapSet.models import MapSet, MapSetLayer, Extension
+from geocamMapSet.models import MapSet, MapSetLayer
+from geocamMapSet.forms import LibraryLayerForm
 
 ######################################################################
 # views for generic map set viewing and editing
+
+def jsonResponse(x, raw=False):
+    if raw:
+        text = x
+    else:
+        text = json.dumps(x, sort_keys=True, indent=4)
+    return HttpResponse(text,
+                        mimetype='application/json; charset=UTF-8')
 
 def mapSetView(request, userName, shortName):
     mapset = get_object_or_404(MapSet, author__username=userName, shortName=shortName)
@@ -28,12 +37,14 @@ def mapSetView(request, userName, shortName):
 #    mapset = get_object_or_404(MapSet, author__username=userName, shortName=shortName)
 #    return HttpResponse(mapset.json, 'application/json')
 
+
 def mapSetIndex(request):
     json_str = []
     mapsets = MapSet.objects.all()
     for m in mapsets:
         json_str.append(m.json)
-    return HttpResponse(json_str, 'application/json')
+    return jsonResponse(json_str)
+
 
 @csrf_exempt
 def mapSetSave(request):
@@ -43,34 +54,38 @@ def mapSetSave(request):
         mapset = MapSet.fromJSON(json_data)
         mapset.save()
 
-        if 'extensions' in json_data:
-            extensions = json_data['extensions']
-            for extension in extensions.keys():
-                e = Extension(
-                    name = extension,
-                    url = extensions[extension])
-                mapset.extension_set.add(e)
-                e.save()
+        # if 'extensions' in json_data:
+        #     extensions = json_data['extensions']
+        #     for extension in extensions.keys():
+        #         e = Extension(
+        #             name = extension,
+        #             url = extensions[extension])
+        #         mapset.extension_set.add(e)
+        #         e.save()
 
-        if 'children' in json_data:
-            children = json_data['children']
-            for child in children:
-                c = MapSetLayer.fromJSON(child)
-                mapset.mapsetlayer_set.add(c)
-                c.save()
+        # if 'children' in json_data:
+        #     children = json_data['children']
+        #     for child in children:
+        #         c = MapSetLayer.fromJSON(child)
+        #         mapset.mapsetlayer_set.add(c)
+        #         c.save()
 
     return HttpResponse("OK")
+
 
 def mapSetCreate(request):
     return 'implement me'
 
+
 def libraryView(request, layer_id):
     layer = get_object_or_404(LibraryLayer, pk=layer_id)
-    return HttpResponse(layer.json, 'application/json')
+    return jsonResponse(layer.json, raw=True)
+
 
 def libraryIndex(request):
     json_str = LibraryLayer.getAllLayersInJson()
     return HttpResponse(json_str, 'application/json')
+
 
 def mapSetDashboard(request):
     return render_to_response('geocamMapSet/mapSetDashboard.html', {},
@@ -85,15 +100,45 @@ def mapSetSetsJson(request):
            for s in MapSet.objects.all()]
     return HttpResponse(json.dumps(obj), mimetype='application/json')
 
+# def mapSetById(request, setId):
+#     if request.method == 'POST':
+#         return postMapSet(request)
+#     else:
+#         s = get_object_or_404(MapSet, pk=setId)
+#         return HttpResponse(s.json, mimetype='application/json')
+
+
+@csrf_exempt
 def mapSetSet(request, userName, shortName):
-    s = get_object_or_404(MapSet, author__username=userName, shortName=shortName)
-    return HttpResponse(s.json, mimetype='application/json')
+    if request.method == 'POST':
+        json_data = json.loads(request.raw_post_data)
+        mapset = MapSet.fromJSON(userName, shortName, json_data)
+        mapset.save()
+        return HttpResponse("OK")
+    else:
+        # get: user is requesting map set
+        s = get_object_or_404(MapSet,
+                              author__username=userName,
+                              shortName=shortName)
+        return jsonResponse(s.json, raw=True)
 
-######################################################################
-# views specific to mapmixer.org site
 
-# these will be refactored into a separate repo later
-
-def welcome(request):
-    return render_to_response('mixer/welcome.html', {},
+def importLayerForm(request):
+    if request.method == 'POST':
+        form = LibraryLayerForm(request.POST)
+        if form.is_valid():
+            layer = form.save(commit=False)
+            layer.setJson()
+            layer.save()
+            return jsonResponse(layer.json, raw=True)
+    else:
+        form = LibraryLayerForm()
+    return render_to_response('geocamMapSet/importLayerForm.html',
+                              {'form': form},
                               context_instance=RequestContext(request))
+
+def layerJson(request, layerId):
+    pass
+
+def createLayer(request):
+    return HttpResponse('ok')

@@ -10,4 +10,3 @@ from geocamMapSet.models import *
 admin.site.register(LibraryLayer)
 admin.site.register(MapSet)
 admin.site.register(MapSetLayer)
-admin.site.register(Extension)

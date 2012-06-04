@@ -202,9 +202,9 @@
         "fields": {
             "mapsetjson": "0.1",
 	    "author": 2,
-	    "shortName": "hurricaneIrene2012",
-            "name": "Hurricane Irene 2012",
-            "json": "{ \"name\": \"Hurricane Irene 2012\", \"id\": \"1\", \"mapsetjson\": \"0.1\",\"type\": \"Document\",\"extensions\": {\"kml\": \"http://mapmixer.org/mapsetjson/ext/kml/0.1/\",\"geojson\": \"http://mapmixer.org/mapsetjson/ext/geojson/0.1/\"},\"children\": [{ \"type\": \"kml.KML\", \"name\": \"US Significant River Flood Outlook\", \"url\": \"http://www.hpc.ncep.noaa.gov/kml/fop/fopbody.kml\", \"show\": \"True\" } ]}"
+	    "shortName": "hurricane-irene-2011",
+            "name": "Hurricane Irene 2011",
+            "json": "{ \"name\": \"Hurricane Irene 2011\", \"id\": \"1\", \"mapsetjson\": \"0.1\",\"type\": \"Document\",\"extensions\": {\"kml\": \"http://mapmixer.org/mapsetjson/ext/kml/0.1/\",\"geojson\": \"http://mapmixer.org/mapsetjson/ext/geojson/0.1/\"},\"children\": [{ \"type\": \"kml.KML\", \"name\": \"US Significant River Flood Outlook\", \"url\": \"http://www.hpc.ncep.noaa.gov/kml/fop/fopbody.kml\", \"show\": \"True\" } ]}"
         }
     },
 

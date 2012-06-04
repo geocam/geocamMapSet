@@ -5,7 +5,6 @@
 # __END_LICENSE__
 
 from django.conf.urls.defaults import url, patterns
-from geocamMapSet.models import MapSet, Extension, MapSetLayer
 from geocamMapSet import settings
 
 # web pages:
@@ -56,6 +55,14 @@ urlpatterns = patterns(
     url(r'^library.json$', 'libraryIndex', {},
         'geocamMapSet_libraryIndex'),
 
+    url(r'^importLayerForm/$', 'importLayerForm', {},
+        'geocamMapSet_importLayerForm'),
+
+    url(r'^layer/(?P<layerId>[^/]+).json$', 'layerJson', {},
+        'geocamMapSet_layerJson'),
+
+    url(r'^layer/create/$', 'createLayer', {},
+        'geocamMapSet_createLayer'),
 )
 
 mapMixerPatterns = patterns(

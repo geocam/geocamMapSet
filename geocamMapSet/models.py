@@ -4,16 +4,19 @@
 # All Rights Reserved.
 # __END_LICENSE__
 
+import re
+
 from django.db import models
-from django.utils import simplejson
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
+from geocamUtil import anyjson as json
+
 
 class LibraryLayer(models.Model):
+    url = models.URLField()
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=255)
-    url = models.URLField()
     show = models.BooleanField(default=False)
     json = models.TextField()
 
@@ -29,6 +32,11 @@ class LibraryLayer(models.Model):
                 
         return "[" +  ",".join(json_list) + "]"
 
+    def setJson(self):
+        obj = {'type': 'kml.KML',
+               'name': self.name,
+               'url': self.url}
+        self.json = json.dumps(obj, sort_keys=True, indent=4)
 
 
 class MapSet(models.Model):
@@ -57,21 +65,32 @@ class MapSet(models.Model):
         """
         return reverse('geocamMapSet_view', args=[self.author.username, self.shortName])
 
+    @classmethod
+    def shortNameFromName(cls, name):
+        # switch to lowercase
+        name = name.lower()
+        # replaces spaces with hyphens
+        name = re.sub(' +', '-', name)
+        # remove special characters
+        name = re.sub('[^a-zA-Z0-9_-]', '', name)
+        return name
+
     @classmethod     
-    def fromJSON(cls, json):
+    def fromJSON(cls, userName, shortName, json):
         # json is literally a simplejson object
         vals = {}
         vals['json'] = simplejson.dumps(json)
-        if 'name' in json: 
-            vals['name'] = json['name']
-        if 'description' in json:
-            vals['description'] = json['description']
-        if 'id' in json:
-            vals['id'] = json['id']
-        if 'url' in json: 
-            vals['url'] = json['url']
-        if 'mapsetjson' in json: 
-            vals['mapsetjson'] = json['mapsetjson']
+        copyFields = ('name',
+                      'description',
+                      'id',
+                      'url',
+                      'mapsetjson')
+        for field in copyFields:
+            val = json.get(field, None)
+            if val is not None:
+                vals[field] = val
+        vals['author'] = User.objects.get(username=userName)
+        vals['shortName'] = shortName
         return MapSet(**vals)
 
     class Meta:
@@ -122,6 +141,3 @@ class Extension(models.Model):
         if 'url' in json: 
             vals['url'] = json['url']
         return Extension(**vals)
-
-
-

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block contents %}
+  <form method="post" action=".">
+    <table id="importLayerForm">
+      {{ form.as_table }}
+    </table>
+    {% csrf_token %}
+    <input type="submit" value="Save"/>
+  </form>  
+{% endblock contents %}

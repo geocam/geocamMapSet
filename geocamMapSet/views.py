@@ -16,6 +16,7 @@ from geocamUtil import anyjson as json
 from geocamMapSet.models import LibraryLayer
 from geocamMapSet.models import MapSet, MapSetLayer
 from geocamMapSet.forms import LibraryLayerForm
+from geocamMapSet import settings
 
 ######################################################################
 # views for generic map set viewing and editing
@@ -30,7 +31,13 @@ def jsonResponse(x, raw=False):
 
 def mapSetView(request, userName, shortName):
     mapset = get_object_or_404(MapSet, author__username=userName, shortName=shortName)
-    return render_to_response('geocamMapSet/mapSetEdit.html', {'mapset': mapset},
+    settingsFields = ('GEOCAM_MAP_SET_DISABLE_MAPS',)
+    settingsObj = dict(((f, getattr(settings, f)) for f in settingsFields))
+    settingsJson = json.dumps(settingsObj, indent=4, sort_keys=True)
+    return render_to_response('geocamMapSet/mapSetEdit.html',
+                              {'mapset': mapset,
+                               'settings': settingsObj,
+                               'settingsJson': settingsJson},
                               context_instance=RequestContext(request))
 
 #def mapSetView(request, userName, shortName):

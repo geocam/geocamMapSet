@@ -199,6 +199,8 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, opts) {
 // Notes: It retrieve the googleMap object via geocamMapSetLib.managerRef.
 //
 function bindNewLayerToGoogleMap(layerEntry) {
+    if (settings.GEOCAM_MAP_SET_DISABLE_MAPS) return;
+
     var googleMap = geocamMapSetLib.managerRef.googleMap;
     var mapLayers = geocamMapSetLib.managerRef.mapLayers;
     var newLayerIdx = mapLayers.length;
@@ -374,10 +376,14 @@ function connectMaplayerCheckboxToGoogleMap(mapEntry, jsonId) {
             var show = $(this).attr('checked');
             if (show) {
                 console.log("showing layer " + layer.name);
-                mapLayers[jsonId].setMap(map);  
+                if (!settings.GEOCAM_MAP_SET_DISABLE_MAPS) {
+                    mapLayers[jsonId].setMap(map);
+                }
             } else {
                 console.log("hiding layer " + layer.name);
-                mapLayers[jsonId].setMap(null);
+                if (!settings.GEOCAM_MAP_SET_DISABLE_MAPS) {
+                    mapLayers[jsonId].setMap(null);
+                }
             }
         }
     }(mapEntry));
@@ -454,13 +460,15 @@ function drawEditorDivAndMapCanvas() {
 
         // add map layer to global array for map management
         //
-        mapLayers[i] = new google.maps.KmlLayer(layer.url, {preserveViewport: true});
+        if (!settings.GEOCAM_MAP_SET_DISABLE_MAPS) {
+            mapLayers[i] = new google.maps.KmlLayer(layer.url, {preserveViewport: true});
             
-        // also load the layer on the map if it is enabled
-        //
-        if (typeof layer.show !== 'undefined') {
-            if (layer.show.toLowerCase() == 'true') {
-                mapLayers[i].setMap(map);
+            // also load the layer on the map if it is enabled
+            //
+            if (typeof layer.show !== 'undefined') {
+                if (layer.show.toLowerCase() == 'true') {
+                    mapLayers[i].setMap(map);
+                }
             }
         }
     });  // end of .each() loop

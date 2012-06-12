@@ -4,23 +4,6 @@
 # All Rights Reserved.
 # __END_LICENSE__
 
-"""
-This app may define some new parameters that can be modified in the
-Django settings module.  Let's say one such parameter is FOO.  The
-default value for FOO is defined in this file, like this:
-
-  FOO = 'my default value'
-
-If the admin for the site doesn't like the default value, they can
-override it in the site-level settings module, like this:
-
-  FOO = 'a better value'
-
-Other modules can access the value of FOO like this:
-
-  from geocamMapSet import settings
-  print settings.FOO
-
-Don't try to get the value of FOO from django.conf.settings.  That
-settings object will not know about the default value!
-"""
+# you can temporarily disable use of the Google Maps API for offline
+# development
+GEOCAM_MAP_SET_DISABLE_MAPS = False

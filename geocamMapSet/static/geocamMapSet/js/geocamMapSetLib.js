@@ -170,7 +170,7 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, opts) {
     //
     $.getJSON(mapSetManager.opts.libraryUrl, function(obj) {
         // store the map layer library as globally retrievable
-        geocamMapSetLib.mapLibraryList = obj;                
+        geocamMapSetLib.mapLibraryList = obj;
         
         mapSetManager.drawLibraryDiv();
     });

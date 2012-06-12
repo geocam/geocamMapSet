@@ -25,12 +25,8 @@ class LibraryLayer(models.Model):
 
     @classmethod 
     def getAllLayersInJson(cls):
-        layer_list = LibraryLayer.objects.all()
-        json_list = []
-        for layer in layer_list:
-            json_list.append(layer.json)    
-                
-        return "[" +  ",".join(json_list) + "]"
+        return json.dumps([json.loads(layer.json) for layer in LibraryLayer.objects.all()],
+                          indent=4)
 
     def setJson(self):
         obj = {'type': 'kml.KML',

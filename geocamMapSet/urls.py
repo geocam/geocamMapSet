@@ -32,13 +32,13 @@ urlpatterns = patterns(
     url(r'^sets.json$', 'mapSetSetsJson', {},
         'geocamMapSet_setsJson'),
 
-    url(r'^(?P<userName>[^/]+)/(?P<shortName>[^/]+).json$', 'mapSetSet', {},
+    url(r'^map/(?P<userName>[^/]+)/(?P<shortName>[^/]+).json$', 'mapSetSet', {},
         'geocamMapSet_setJson'),
 
     url(r'^createSet/$', 'mapSetCreate', {},
         'geocamMapSet_create'),
 
-    url(r'^(?P<userName>[^/]+)/(?P<shortName>[^/]+)/$', 'mapSetView', {},
+    url(r'^map/(?P<userName>[^/]+)/(?P<shortName>[^/]+)/$', 'mapSetView', {},
         'geocamMapSet_view'),
 
 #    url(r'^(?P<user_name>[^/]+)/(?P<set_id>[^/]+)/edit/$', 'mapSetEdit', {},

@@ -72,17 +72,16 @@ class MapSet(models.Model):
         return name
 
     @classmethod     
-    def fromJSON(cls, userName, shortName, json):
-        # json is literally a simplejson object
+    def fromJSON(cls, userName, shortName, obj):
         vals = {}
-        vals['json'] = simplejson.dumps(json)
+        vals['json'] = json.dumps(obj)
         copyFields = ('name',
                       'description',
                       'id',
                       'url',
                       'mapsetjson')
         for field in copyFields:
-            val = json.get(field, None)
+            val = obj.get(field, None)
             if val is not None:
                 vals[field] = val
         vals['author'] = User.objects.get(username=userName)
@@ -105,18 +104,17 @@ class MapSetLayer(models.Model):
         return self.name
 
     @classmethod     
-    def fromJSON(cls, json):
-        # json is literally a simplejson object
+    def fromJSON(cls, obj):
         vals = {}
-        vals['json'] = simplejson.dumps(json)
-        if 'name' in json: 
-            vals['name'] = json['name']
-        if 'type' in json: 
-            vals['type'] = json['type']
-        if 'url' in json: 
-            vals['url'] = json['url']
-        if 'show' in json: 
-            vals['show'] = json['show']
+        vals['json'] = json.dumps(obj)
+        if 'name' in obj:
+            vals['name'] = obj['name']
+        if 'type' in obj:
+            vals['type'] = obj['type']
+        if 'url' in obj:
+            vals['url'] = obj['url']
+        if 'show' in obj:
+            vals['show'] = obj['show']
         return MapSetLayer(**vals)
 
 
@@ -130,10 +128,10 @@ class Extension(models.Model):
         return self.name
 
     @classmethod     
-    def fromJSON(cls, json):
+    def fromJSON(cls, obj):
         vals = {}
-        if 'name' in json: 
-            vals['name'] = json['name']
-        if 'url' in json: 
-            vals['url'] = json['url']
+        if 'name' in obj:
+            vals['name'] = obj['name']
+        if 'url' in obj:
+            vals['url'] = obj['url']
         return Extension(**vals)

@@ -16,72 +16,6 @@
 {% block style %}
     {{ block.super }}
 
-    <style type="text/css">
-      html { height: 100% }
-      body { height: 100%; margin: 0; padding: 0 }
-      #map_canvas {
-          width: 480px;
-          height: 480px;
-      }
-      #mapset_canvas {
-          width: 340px;
-          height: 480px;
-          overflow: auto;
-      }
-      #mapsetlib_canvas {
-          width: 340px;
-          height: 480px;
-          overflow: auto;
-          background: #888;
-      }
-
-      #mapLayerList {
-          margin: 2px;
-      }
-
-      #mapSetName {
-          font-size: 1.2em;
-          font-weight: bold;
-          margin-left: 15px;
-          margin-top: 10px;
-      }
-
-      #save {
-          margin-left: 15px;
-          margin-right: 15px;
-          margin-top: 10px;
-      }
-
-      .layerEntry {
-          margin: 5px;
-          padding-left: 5px;
-          padding-right: 3px;
-      }
-
-      .layer-entry-left {
-          width: 5%
-      }
-
-      .layer-entry-mid {
-          width: 90%
-      }
-
-      .layer-entry-right {
-          width: 5%
-      }
-     
-      .libraryEntry {
-          width: 290px;
-          margin: 5px;
-          padding-left: 15px;
-          background: #C8C8C8;
-          border: 1px solid #CCCCCC;
-          color: #1C94C4;
-          font-weight: bold;
-      }
-
-    </style>
-
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}external/css/smoothness/jquery-ui-1.8.21.custom.css"></link>
 
 {% endblock style %}
@@ -96,7 +30,7 @@
 {% endblock scripts %}
    
 {% block contents %}
-    <table>
+    <table id="mapSetTable">
       <tr>
         <td><div id="map_canvas"></div></td>
         <td><div id="mapset_canvas"></div></td>

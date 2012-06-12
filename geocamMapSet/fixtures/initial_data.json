@@ -17,7 +17,7 @@
             "type": "kml.KML",
             "name": "Significant Wave Events - Atlantic, Gulf of Mexico",
             "url" : "http://neptune.baruch.sc.edu/xenia/feeds/events/events.kmz",
-            "show": true,
+            "show": false,
             "json": "{\"type\": \"kml.KML\", \"name\": \"Significant Wave Events - Atlantic, Gulf of Mexico\", \"url\" : \"http://neptune.baruch.sc.edu/xenia/feeds/events/events.kmz\", \"show\": \"True\" }"
         }
     },
@@ -29,7 +29,7 @@
             "type": "kml.KML",
             "name": "SUSGS Real-Time Streamflow - New England",
             "url" : "http://water.usgs.gov/waterwatch/?regions=01&m=real&w=kml",
-            "show": true,
+            "show": false,
             "json": "{\"type\": \"kml.KML\", \"name\": \"USGS Real-Time Streamflow - New England\", \"url\" : \"http://water.usgs.gov/waterwatch/?regions=01&m=real&w=kml\" }"
         }
     },
@@ -41,7 +41,7 @@
             "type": "kml.KML",
             "name": "USGS Real-Time Streamflow - Mid-Atlantic",
             "url" : "http://water.usgs.gov/waterwatch/?regions=02&m=real&w=kml",
-            "show": true,
+            "show": false,
             "json": "{\"type\": \"kml.KML\", \"name\": \"USGS Real-Time Streamflow - Mid-Atlantic\", \"url\" : \"http://water.usgs.gov/waterwatch/?regions=02&m=real&w=kml\" }"
         }
     },
@@ -234,7 +234,7 @@
             "type": "kml.KML",
             "name": "US Significant River Flood Outlook",
             "url": "http://www.hpc.ncep.noaa.gov/kml/fop/fopbody.kml",
-            "show": true,
+            "show": false,
             "json": "{ \"type\": \"kml.KML\", \"name\": \"US Significant River Flood Outlook\", \"url\" : \"http://www.hpc.ncep.noaa.gov/kml/fop/fopbody.kml\" }"
             }
     },

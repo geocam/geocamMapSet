@@ -14,11 +14,15 @@ from geocamUtil import anyjson as json
 
 
 class LibraryLayer(models.Model):
-    url = models.URLField()
+    mtime = models.DateTimeField(null=True, blank=True, auto_now=True)
+    url = models.URLField(verify_exists=False)
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=255)
     show = models.BooleanField(default=False)
     json = models.TextField()
+
+    class Meta:
+        ordering = ('-mtime',)
 
     def __unicode__(self):
         return self.name

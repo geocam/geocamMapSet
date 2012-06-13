@@ -61,8 +61,8 @@ urlpatterns = patterns(
     url(r'^layer/(?P<layerId>[^/]+).json$', 'layerJson', {},
         'geocamMapSet_layerJson'),
 
-    url(r'^layer/create/$', 'createLayer', {},
-        'geocamMapSet_createLayer'),
+    url(r'^layer/new/$', 'newLayer', {},
+        'geocamMapSet_newLayer'),
 )
 
 mapMixerPatterns = patterns(

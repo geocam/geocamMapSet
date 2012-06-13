@@ -166,14 +166,7 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, opts) {
         }
     });  // end of asynchronous execution, i.e., $.getJSON() method.
 
-    // Initialize the libraryDiv
-    //
-    $.getJSON(mapSetManager.opts.libraryUrl, function(obj) {
-        // store the map layer library as globally retrievable
-        geocamMapSetLib.mapLibraryList = obj;
-        
-        mapSetManager.drawLibraryDiv();
-    });
+    loadLibrary();
 
     // bind the function drawEditorDivAndMapCanvas() and drawLibraryDiv() 
     // needed in the asynchronous part of the initialization.
@@ -184,7 +177,19 @@ geocamMapSetLib.MapSetManager = function (spec, map, editorDivId, opts) {
     return mapSetManager;
 }
 
+function loadLibrary(highlightNew) {
+    var mapSetManager = geocamMapSetLib.managerRef;
 
+    $.getJSON(mapSetManager.opts.libraryUrl, function(obj) {
+        // store the map layer library as globally retrievable
+        geocamMapSetLib.mapLibraryList = obj;
+
+        mapSetManager.drawLibraryDiv();
+        if (highlightNew) {
+            brieflyHighlightFirstLibraryEntry();
+        }
+    });
+}
 
 // bindNewLayerToGoogleMap(layerEntry)
 //
@@ -244,8 +249,6 @@ function addLibraryLayerToMapSet(mapLibraryLayer) {
     
     return newItemIdx;
 }
-
-
 
 // composeLayerEntry(layer, jsonId)
 //
@@ -474,35 +477,8 @@ function drawEditorDivAndMapCanvas() {
     });  // end of .each() loop
 
     mapSetViewHtml.push('</div>');
-    mapSetViewHtml.push('<button id="importLayer">Import Layer</button>');
 
     $(this.editorDivId).html(mapSetViewHtml.join(''));
-
-    importLayerButton = $('#importLayer');
-    importLayerButton.button();
-    importLayerButton.click(function () {
-	var dialogDiv = $('#dialogDiv');
-	dialogDiv.attr('title', 'Import Layer');
-	// this html was copy-and-pasted from the django-rendered form
-	dialogDiv.html
-	('<form id="importLayerForm" method="post" action=".">'
-	 + '<table>'
-	 + '<tr><th><label for="id_url">Url:</label></th><td><input id="id_url" type="text" name="url" maxlength="200" /></td></tr>'
-	 + '<tr><th><label for="id_name">Name:</label></th><td><input id="id_name" type="text" name="name" maxlength="255" /></td></tr>'
-	 + '</table>'
-	 + '<input id="importLayerSubmit" type="submit" value="Save"/>'
-	 + '</form>');
-	$('#importLayerForm').submit(function () {
-	    var text = JSON.stringify($(this).serializeObject());
-	    console.log(text);
-	    $.ajax(geocamMapSetLib.managerRef.opts.createLayerUrl, text,
-		   function () {
-		       console.log('posted');
-		   });
-	    return false;
-	});
-	dialogDiv.dialog({modal: true});
-    });
 
     // add callback for button click here
     //
@@ -590,7 +566,23 @@ function drawEditorDivAndMapCanvas() {
     });
 }
 
+function brieflyHighlightFirstLibraryEntry() {
+    var libraryDiv = $(geocamMapSetLib.managerRef.opts.libraryDiv);
+    var firstEntry = libraryDiv.find('.libraryEntry:first')
 
+    var originalBorderColor = firstEntry.css('border-color');
+    var originalBackground = firstEntry.css('background');
+
+    // highlight
+    firstEntry.css('border-color', '#ff8');
+    firstEntry.animate({backgroundColor: '#ffa'}, 1000);
+
+    setTimeout(function () {
+        // unhighlight
+        firstEntry.css('border-color', originalBorderColor);
+        firstEntry.animate({backgroundColor: originalBackground}, 500);
+    }, 1500);
+}
 
 // mapSetManager.drawLibraryDiv() 
 // 
@@ -606,6 +598,7 @@ function drawLibraryDiv() {
     var mapLibraryList = geocamMapSetLib.mapLibraryList;
     var mapLibraryViewHtml = [];
 
+    mapLibraryViewHtml.push('<button id="newLayer">New Layer</button>');
     mapLibraryViewHtml.push('<div id="mapLibraryList">');
 
     // iterate through the mapLibraryList and create the html entries
@@ -615,7 +608,7 @@ function drawLibraryDiv() {
             + layer.name
             + '<div class="metadata" id="' + i + '" style="visibility:hidden"' + '></div>'
             + '</div>');
-        console.log( "library layer " + i + ": " + layer.name );
+        //console.log( "library layer " + i + ": " + layer.name );
     });
 
     mapLibraryViewHtml.push('</div>');
@@ -636,6 +629,101 @@ function drawLibraryDiv() {
             revert: 'invalid', 
             revertDuration: 100
     });
+
+    newLayerButton = $('#newLayer');
+    newLayerButton.button();
+    newLayerButton.click(function () {
+	var dialogDiv = $('#dialogDiv');
+	dialogDiv.attr('title', 'New Layer');
+
+	// this html was mostly copy-and-pasted from the django-rendered form
+	dialogDiv.html
+	('<form id="newLayerForm" method="post" action=".">'
+	 + '<table>'
+         + '<tr><th/><td><div id="error_url" class="formError"></div></td></tr>'
+	 + '<tr><th><label for="id_url">Url:</label></th>'
+         + '<td><input id="id_url" type="text" name="url" maxlength="200" /></td></tr>'
+         + '<tr><th/><td><div id="error_name" class="formError"></div></td></tr>'
+	 + '<tr><th><label for="id_name">Name:</label></th>'
+         + '<td><input id="id_name" type="text" name="name" maxlength="255" /></td></tr>'
+	 + '</table>'
+	 + '</form>'
+         + '<div id="dialogError" class="error"></div>');
+
+	dialogDiv.dialog({
+            modal: true,
+            draggable: false,
+            buttons: [
+
+                {
+                    'text': 'Save',
+                    'click': function () {
+                        $('#dialogDiv .formError').html('');
+	                var text = JSON.stringify($('#newLayerForm').serializeObject());
+	                $.post(geocamMapSetLib.managerRef.opts.newLayerUrl,
+                               text,
+		               function (response) {
+                                   $('#dialogDiv').dialog('close');
+                                   loadLibrary(true);
+                                   return false;
+		               },
+                               'json')
+                            .fail(function (xhr) {
+                                var errText;
+                                if (xhr.readyState == 0) {
+                                    errText = "couldn't connect to server";
+                                } else if (xhr.readyState == 4) {
+                                    var hasJsonError = false;
+                                    if (xhr.responseText != null) {
+                                        var response = null;
+                                        try {
+                                            response = JSON.parse(xhr.responseText);
+                                        } catch (SyntaxError) {
+                                            // do nothing
+                                        }
+                                        if (response != null && response.error != null) {
+                                            $.each(response.error, function (field, error) {
+                                                $('#error_' + field).html(error.join('<br/>'));
+                                                hasJsonError = true;
+                                            });
+                                        }
+                                    }
+                                    if (!hasJsonError) {
+                                        errText = "HTTP error " + xhr.status
+                                            + " (" + xhr.statusText + ")";
+                                    }
+                                } else {
+                                    errText = "unknown error";
+                                }
+                                if (errText != null) {
+                                    $('#dialogError').html('Last save failed: ' + errText);
+                                }
+                                return false;
+                            });
+	                return false;
+	            }
+                },
+
+                {
+                    'text': 'Cancel',
+                    'click': function () {
+                        $(this).dialog("close");
+                    }
+                }
+
+            ]
+        });
+    });
+
+    // pressing enter in the dialog should click the 'Save' button
+    if (geocamMapSetLib.managerRef.dialogKeypressBound == null) {
+        $('#dialogDiv').keypress(function (e) {
+            if (e.keyCode == $.ui.keyCode.ENTER) {
+                $(this).parent().find('.ui-dialog-buttonpane button:first').click();
+            }
+        });
+        geocamMapSetLib.managerRef.dialogKeypressBound = true;
+    }
 }
 
 

@@ -2,7 +2,7 @@
 
 {% block head %}
    {{ block.super }}
-    <title>{{ settings.SITE_TITLE }}</title>
+    <title>{{ mapset.name }} - {{ settings.SITE_TITLE }}</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 {% endblock head %}
 
@@ -16,7 +16,7 @@
 {% block scripts %}
    {{ block.super }}
 
-{% if settings.GEOCAM_MAP_SET_DISABLE_MAPS %}
+{% if not settings.GEOCAM_MAP_SET_DISABLE_MAPS %}
     <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
 {% endif %}
     <script type="text/javascript" src="{{ STATIC_URL }}external/js/jquery-1.7.1.min.js"></script>
@@ -54,7 +54,7 @@
           var spec = '{{ mapset.get_absolute_url }}';
 
           if (settings.GEOCAM_MAP_SET_DISABLE_MAPS) {
-              $('#map_canvas').html('<div style="margin-top: 150px; align: center;">Maps are disabled in settings</div>');
+              $('#map_canvas').html('<div style="margin-top: 150px; align: center;">settings.GEOCAM_MAP_SET_DISABLE_MAPS == True</div>');
           } else {
               var myOptions = {
                   center: new google.maps.LatLng(35, -95),
@@ -68,7 +68,7 @@
           {
               'libraryDiv': '#mapsetlib_canvas',
               'libraryUrl': '{% url geocamMapSet_libraryIndex %}',
-              'createLayerUrl': '{% url geocamMapSet_createLayer %}'
+              'newLayerUrl': '{% url geocamMapSet_newLayer %}'
           });
                     
       }

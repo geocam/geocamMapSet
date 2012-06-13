@@ -5,10 +5,11 @@
 # __END_LICENSE__
 
 import time
+import sys
 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 
 from geocamUtil import anyjson as json
@@ -36,7 +37,6 @@ def mapSetView(request, userName, shortName):
     settingsJson = json.dumps(settingsObj, indent=4, sort_keys=True)
     return render_to_response('geocamMapSet/mapSetEdit.html',
                               {'mapset': mapset,
-                               'settings': settingsObj,
                                'settingsJson': settingsJson},
                               context_instance=RequestContext(request))
 
@@ -144,8 +144,26 @@ def importLayerForm(request):
                               {'form': form},
                               context_instance=RequestContext(request))
 
+@csrf_exempt
 def layerJson(request, layerId):
     pass
 
-def createLayer(request):
-    return HttpResponse('ok')
+@csrf_exempt
+def newLayer(request):
+    if request.method == 'POST':
+        layerObject = json.loads(request.raw_post_data)
+        form = LibraryLayerForm(layerObject)
+        print form.base_fields['url'].validators[1].verify_exists
+        if form.is_valid():
+            layer = form.save(commit=False)
+            layer.setJson()
+            layer.save()
+            return jsonResponse({'result': json.loads(layer.json)})
+        else:
+            errorDict = dict(((k, v) for k, v in form.errors.iteritems()))
+            return HttpResponseBadRequest(json.dumps({'error': errorDict},
+                                                     sort_keys=True,
+                                                     indent=4),
+                                          mimetype='application/json; charset=UTF-8')
+    else:
+        return HttpResponseNotAllowed(['POST'])

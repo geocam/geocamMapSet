@@ -39,7 +39,7 @@ LICENSE_CHOICES = (('http://creativecommons.org/publicdomain/mark/1.0/',
 class LibraryLayer(models.Model):
     mtime = models.DateTimeField(null=True, blank=True, auto_now=True)
     url = models.URLField(verify_exists=False)
-    acceptTerms = models.BooleanField(verbose_name='Terms', blank=False)
+    acceptTerms = models.BooleanField(verbose_name='Terms')
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=255)
     description = models.TextField(blank=True)

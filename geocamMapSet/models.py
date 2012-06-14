@@ -12,13 +12,50 @@ from django.core.urlresolvers import reverse
 
 from geocamUtil import anyjson as json
 
+LICENSE_CHOICES = (('http://creativecommons.org/publicdomain/mark/1.0/',
+                    'Public Domain'),
+
+                   ('http://creativecommons.org/licenses/by/3.0',
+                    'Creative Commons CC-BY'),
+
+                   ('http://creativecommons.org/licenses/by-nd/3.0',
+                    'Creative Commons CC-BY-ND'),
+
+                   ('http://creativecommons.org/licenses/by-nc-sa/3.0',
+                    'Creative Commons CC-BY-NC-SA'),
+
+                   ('http://creativecommons.org/licenses/by-sa/3.0',
+                    'Creative Commons CC-BY-SA'),
+
+                   ('http://creativecommons.org/licenses/by-nc/3.0',
+                    'Creative Commons CC-BY-NC'),
+
+                   ('http://creativecommons.org/licenses/by-nc-nd/3.0',
+                    'Creative Commons CC-BY-NC-ND'),
+
+                   )
+
 
 class LibraryLayer(models.Model):
     mtime = models.DateTimeField(null=True, blank=True, auto_now=True)
     url = models.URLField(verify_exists=False)
+    acceptTerms = models.BooleanField(verbose_name='Terms', blank=False)
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=255)
-    show = models.BooleanField(default=False)
+    description = models.TextField(blank=True)
+    coverage = models.CharField(max_length=255, blank=True,
+                                verbose_name='Region covered by the layer')
+    creator = models.CharField(max_length=255, blank=True)
+    contributors = models.CharField(max_length=512, blank=True,
+                                    verbose_name='Other contributors')
+    publisher = models.CharField(max_length=255, blank=True)
+    rights = models.CharField(max_length=255, blank=True,
+                              verbose_name='Copyright information')
+    license = models.URLField(verify_exists=False, blank=True,
+                              verbose_name='License',
+                              choices=LICENSE_CHOICES)
+    morePermissions = models.TextField(blank=True,
+                                       verbose_name='Other permissions')
     json = models.TextField()
 
     class Meta:
@@ -33,9 +70,19 @@ class LibraryLayer(models.Model):
                           indent=4)
 
     def setJson(self):
-        obj = {'type': 'kml.KML',
-               'name': self.name,
-               'url': self.url}
+        fields = ('url',
+                  'name',
+                  'description',
+                  'coverage',
+                  'creator',
+                  'contributors',
+                  'publisher',
+                  'rights',
+                  'license',
+                  'morePermissions',
+                  )
+        obj = dict(((f, getattr(self, f)) for f in fields))
+        obj.setdefault('type', 'kml.KML')
         self.json = json.dumps(obj, sort_keys=True, indent=4)
 
 

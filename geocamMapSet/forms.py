@@ -5,10 +5,24 @@
 # __END_LICENSE__
 
 from django import forms
+from django.forms import widgets
 
 from geocamMapSet.models import LibraryLayer
 
 class LibraryLayerForm(forms.ModelForm):
+    url = forms.URLField(widget=widgets.TextInput(attrs=dict(size=60)))
+
     class Meta:
         model = LibraryLayer
-        fields = ('url', 'name')
+        fields = ('url',
+                  'acceptTerms',
+                  'name',
+                  'description',
+                  'coverage',
+                  'creator',
+                  'contributors',
+                  'publisher',
+                  'rights',
+                  'license',
+                  'morePermissions',
+                  )

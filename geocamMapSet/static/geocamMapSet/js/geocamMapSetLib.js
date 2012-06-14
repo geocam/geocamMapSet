@@ -636,16 +636,37 @@ function drawLibraryDiv() {
 	var dialogDiv = $('#dialogDiv');
 	dialogDiv.attr('title', 'New Layer');
 
-	// this html was mostly copy-and-pasted from the django-rendered form
+	// this html was mostly copy-and-pasted from the django-rendered form.
+        // a better workflow would be better.
 	dialogDiv.html
-	('<form id="newLayerForm" method="post" action=".">'
+        (''
+         + '<form id="newLayerForm" method="post" action=".">'
 	 + '<table>'
          + '<tr><th/><td><div id="error_url" class="formError"></div></td></tr>'
-	 + '<tr><th><label for="id_url">Url:</label></th>'
-         + '<td><input id="id_url" type="text" name="url" maxlength="200" /></td></tr>'
+         + '<tr><th><label for="id_url">Url *</label></th><td><input id="id_url" type="text" name="url" maxlength="200" size="60"/></td></tr>'
+         + '<tr><th/><td><div id="error_acceptTerms" class="formError"></div></td></tr>'
+         + '<tr><th><label for="id_acceptTerms">Terms *</label></th><td><input type="checkbox" name="acceptTerms" id="id_acceptTerms" /> I have read and accept the <a href="'
+         + geocamMapSetLib.managerRef.opts.termsOfServiceUrl
+         + '" target="termsOfService" style="font-weight: bold; text-decoration: underline;">terms of service for this site</a>, which include a description of how the site can share my map layer with other users.</td></tr>'
          + '<tr><th/><td><div id="error_name" class="formError"></div></td></tr>'
-	 + '<tr><th><label for="id_name">Name:</label></th>'
-         + '<td><input id="id_name" type="text" name="name" maxlength="255" /></td></tr>'
+         + '<tr><th><label for="id_name">Name *</label></th><td><input id="id_name" type="text" name="name" maxlength="255" size="60"/></td></tr>'
+         + '<tr><th/><td><div id="error_description" class="formError"></div></td></tr>'
+         + '<tr><th><label for="id_description">Description</label></th><td><textarea id="id_description" rows="2" cols="65" name="description"></textarea></td></tr>'
+         + '<tr><th/><td><div id="error_coverage" class="formError"></div></td></tr>'
+         + '<tr><th><label for="id_coverage">Region covered</label></th><td><input id="id_coverage" type="text" name="coverage" maxlength="255" size="60"/></td></tr>'
+         + '<tr><th/><td><div id="error_creator" class="formError"></div></td></tr>'
+         + '<tr><th><label for="id_creator">Creator</label></th><td><input id="id_creator" type="text" name="creator" maxlength="255" size="60"/></td></tr>'
+         + '<tr><th/><td><div id="error_contributors" class="formError"></div></td></tr>'
+         + '<tr><th><label for="id_contributors">Other contributors</label></th><td><input id="id_contributors" type="text" name="contributors" maxlength="512" size="60"/></td></tr>'
+         + '<tr><th/><td><div id="error_publisher" class="formError"></div></td></tr>'
+         + '<tr><th><label for="id_publisher">Publisher</label></th><td><input id="id_publisher" type="text" name="publisher" maxlength="255" size="60"/></td></tr>'
+         + '<tr><th/><td><div id="error_rights" class="formError"></div></td></tr>'
+         + '<tr><th><label for="id_rights">Copyright information</label></th><td><input id="id_rights" type="text" name="rights" maxlength="255" size="60"/></td></tr>'
+         + '<tr><th/><td><div id="error_license" class="formError"></div></td></tr>'
+         + '<tr><th><label for="id_license">License</label></th><td><select name="license" id="id_license"><option value="" selected="selected">---------</option><option value="http://creativecommons.org/publicdomain/mark/1.0/">Public Domain</option><option value="http://creativecommons.org/licenses/by/3.0">Creative Commons CC-BY</option><option value="http://creativecommons.org/licenses/by-nd/3.0">Creative Commons CC-BY-ND</option><option value="http://creativecommons.org/licenses/by-nc-sa/3.0">Creative Commons CC-BY-NC-SA</option><option value="http://creativecommons.org/licenses/by-sa/3.0">Creative Commons CC-BY-SA</option><option value="http://creativecommons.org/licenses/by-nc/3.0">Creative Commons CC-BY-NC</option><option value="http://creativecommons.org/licenses/by-nc-nd/3.0">Creative Commons CC-BY-NC-ND</option></select></td></tr>'
+         + '<tr><th/><td><div id="error_morePermissions" class="formError"></div></td></tr>'
+         + '<tr><th><label for="id_morePermissions">Other permissions</label></th><td><textarea id="id_morePermissions" rows="2" cols="65" name="morePermissions"></textarea></td></tr>'
+         + '<tr><th/><td class="formInstructions">* indicates required fields.</td></tr>'
 	 + '</table>'
 	 + '</form>'
          + '<div id="dialogError" class="error"></div>');
@@ -653,6 +674,7 @@ function drawLibraryDiv() {
 	dialogDiv.dialog({
             modal: true,
             draggable: false,
+            width: 800,
             buttons: [
 
                 {

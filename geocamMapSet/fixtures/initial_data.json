@@ -19,8 +19,7 @@
             "type": "kml.KML",
             "name": "Significant Wave Events - Atlantic, Gulf of Mexico",
             "url" : "http://neptune.baruch.sc.edu/xenia/feeds/events/events.kmz",
-            "show": false,
-            "json": "{\"type\": \"kml.KML\", \"name\": \"Significant Wave Events - Atlantic, Gulf of Mexico\", \"url\" : \"http://neptune.baruch.sc.edu/xenia/feeds/events/events.kmz\", \"show\": \"True\" }"
+            "json": "{\"type\": \"kml.KML\", \"name\": \"Significant Wave Events - Atlantic, Gulf of Mexico\", \"url\" : \"http://neptune.baruch.sc.edu/xenia/feeds/events/events.kmz\" }"
         }
     },
 
@@ -32,7 +31,6 @@
             "type": "kml.KML",
             "name": "SUSGS Real-Time Streamflow - New England",
             "url" : "http://water.usgs.gov/waterwatch/?regions=01&m=real&w=kml",
-            "show": false,
             "json": "{\"type\": \"kml.KML\", \"name\": \"USGS Real-Time Streamflow - New England\", \"url\" : \"http://water.usgs.gov/waterwatch/?regions=01&m=real&w=kml\" }"
         }
     },
@@ -45,7 +43,6 @@
             "type": "kml.KML",
             "name": "USGS Real-Time Streamflow - Mid-Atlantic",
             "url" : "http://water.usgs.gov/waterwatch/?regions=02&m=real&w=kml",
-            "show": false,
             "json": "{\"type\": \"kml.KML\", \"name\": \"USGS Real-Time Streamflow - Mid-Atlantic\", \"url\" : \"http://water.usgs.gov/waterwatch/?regions=02&m=real&w=kml\" }"
         }
     },
@@ -58,7 +55,6 @@
             "type": "kml.KML",
             "name": "Fire Updates and Road Closures in Santa Clarita",
             "url" : "http://maps.google.com/maps/ms?ie=UTF8&authuser=0&msa=0&output=kml&msid=211709450220015285310.00043d17488896182acd3",
-            "show": false,
             "json": "{\"type\": \"kml.KML\", \"name\": \"Fire Updates and Road Closures in Santa Clarita\", \"url\" : \"http://maps.google.com/maps/ms?ie=UTF8&authuser=0&msa=0&output=kml&msid=211709450220015285310.00043d17488896182acd3\" }"
         }
     },
@@ -71,7 +67,6 @@
             "type": "kml.KML",
             "name": "San Bruno Gas Explosion and Fire Map",
             "url" : "http://maps.google.com/maps/ms?ie=UTF8&authuser=0&msa=0&output=kml&msid=209726524314865854320.00048fdfe759741e3afd2",
-            "show": false,
             "json": "{\"type\": \"kml.KML\", \"name\": \"San Bruno Gas Explosion and Fire Map\", \"url\" : \"http://maps.google.com/maps/ms?ie=UTF8&authuser=0&msa=0&output=kml&msid=209726524314865854320.00048fdfe759741e3afd2\" }"
 
         }
@@ -85,7 +80,6 @@
             "type": "kml.KML",
             "name": "Gulf Oil Spill: Oil Slick Overview",
             "url" : "http://mw1.google.com/mw-earth-vectordb/disaster/oil_slick_042010/2/oil_slick_maps.kml",
-            "show": false,
             "json": "{\"type\": \"kml.KML\", \"name\": \"Gulf Oil Spill: Oil Slick Overview\", \"url\" : \"http://mw1.google.com/mw-earth-vectordb/disaster/oil_slick_042010/2/oil_slick_maps.kml\" }"
         }
     },
@@ -98,7 +92,6 @@
             "type": "kml.KML",
             "name": "Gulf Oil Spill: Spill Impacts and Projects",
             "url" : "http://sites.google.com/site/gulfoilspillrecoverydata/projects_and_impacts.kml",
-            "show": false,
             "json": "{\"type\": \"kml.KML\", \"name\": \"Gulf Oil Spill: Spill Impacts and Projects\", \"url\" : \"http://sites.google.com/site/gulfoilspillrecoverydata/projects_and_impacts.kml\" }"
 
         }
@@ -112,7 +105,6 @@
             "type": "kml.KML",
             "name": "Gulf Oil Spill: Youtube Videos",
             "url" : "http://mw1.google.com/mw-earth-vectordb/disaster/gulf_oil_spill/kml/youtube/root.kmz",
-            "show": false,
             "json": "{\"type\": \"kml.KML\", \"name\": \"Gulf Oil Spill: Youtube Videos\", \"url\" : \"http://mw1.google.com/mw-earth-vectordb/disaster/gulf_oil_spill/kml/youtube/root.kmz\" }"
         }
     },
@@ -125,7 +117,6 @@
             "type": "kml.KML",
             "name": "Gulf Oil Spill: Oil Spill Points of Interest",
             "url" : "http://mw1.google.com/mw-earth-vectordb/disaster/gulf_oil_spill/kml/labucketbrigade/root.kmz",
-            "show": false,
             "json": "{\"type\": \"kml.KML\", \"name\": \"Gulf Oil Spill: Oil Spill Points of Interest\", \"url\" : \"http://mw1.google.com/mw-earth-vectordb/disaster/gulf_oil_spill/kml/labucketbrigade/root.kmz\" }"
         }
     },
@@ -138,7 +129,6 @@
             "type": "kml.KML",
             "name": "Gulf Oil Spill: Booms",
             "url" : "http://mw1.google.com/mw-earth-vectordb/disaster/gulf_oil_spill/kml/BoomsMay12010_1415.kml",
-            "show": false,
             "json": "{\"type\": \"kml.KML\", \"name\": \"Gulf Oil Spill: Booms\", \"url\" : \"http://mw1.google.com/mw-earth-vectordb/disaster/gulf_oil_spill/kml/BoomsMay12010_1415.kml\" }"
         }
     },
@@ -151,7 +141,6 @@
             "type": "kml.KML",
             "name": "San Diego Fire Stations",
             "url" : "http://maps.google.com/maps/ms?hl=en&gl=US&ptab=2&ie=UTF8&oe=UTF8&authuser=0&msa=0&output=kml&msid=217734534330274243556.000480ebf06ecfe6cef00",
-            "show": false,
             "json": "{\"type\": \"kml.KML\", \"name\": \"San Diego Fire Stations\", \"url\" : \"http://maps.google.com/maps/ms?hl=en&gl=US&ptab=2&ie=UTF8&oe=UTF8&authuser=0&msa=0&output=kml&msid=217734534330274243556.000480ebf06ecfe6cef00\" }"
 
         }
@@ -165,7 +154,6 @@
             "type": "kml.KML",
             "name": "2007 San Diego County Fires - KPBS Online",
             "url" : "http://maps.google.com/maps/ms?ie=UTF8&authuser=0&msa=0&output=kml&msid=217734534330274243556.00043d08ac31fe3357571",
-            "show": false,
             "json": "{\"type\": \"kml.KML\", \"name\": \"2007 San Diego County Fires - KPBS Online\", \"url\" : \"http://maps.google.com/maps/ms?ie=UTF8&authuser=0&msa=0&output=kml&msid=217734534330274243556.00043d08ac31fe3357571\" }"
 
         }
@@ -179,7 +167,6 @@
             "type": "kml.KML",
             "name": "Where Can I Get My Swine Flu Vaccine in San Diego?",
             "url" : "http://maps.google.com/maps/ms?hl=en&gl=US&ptab=2&ie=UTF8&oe=UTF8&authuser=0&msa=0&output=kml&msid=217734534330274243556.000476eed7910c457a47a",
-            "show": false,
             "json": "{\"type\": \"kml.KML\", \"name\": \"Where Can I Get My Swine Flu Vaccine in San Diego?\", \"url\" : \"http://maps.google.com/maps/ms?hl=en&gl=US&ptab=2&ie=UTF8&oe=UTF8&authuser=0&msa=0&output=kml&msid=217734534330274243556.000476eed7910c457a47a\" }"
         }
     },
@@ -192,7 +179,6 @@
             "type": "kml.KML",
             "name": "Swine Flu Activity In San Diego County Schools",
             "url" : "http://maps.google.com/maps/ms?hl=en&gl=US&ptab=2&ie=UTF8&oe=UTF8&authuser=0&msa=0&output=kml&msid=217734534330274243556.0004768c21830f67ac488",
-            "show": false,
             "json": "{\"type\": \"kml.KML\", \"name\": \"Swine Flu Activity In San Diego County Schools\", \"url\" : \"http://maps.google.com/maps/ms?hl=en&gl=US&ptab=2&ie=UTF8&oe=UTF8&authuser=0&msa=0&output=kml&msid=217734534330274243556.0004768c21830f67ac488\" }"
         }
     },
@@ -205,7 +191,6 @@
             "type": "kml.KML",
             "name": "NOAA National Metar Obs",
             "url" : "http://www.srh.noaa.gov/gis/kml/metar/metarlink.kml",
-            "show": false,
             "json": "{\"type\": \"kml.KML\", \"name\": \"NOAA National Metar Obs\", \"url\" : \"http://www.srh.noaa.gov/gis/kml/metar/metarlink.kml\" }"
 
         }
@@ -219,7 +204,7 @@
 	    "author": 2,
 	    "shortName": "hurricane-irene-2011",
             "name": "Hurricane Irene 2011",
-            "json": "{ \"name\": \"Hurricane Irene 2011\", \"id\": \"1\", \"mapsetjson\": \"0.1\",\"type\": \"Document\",\"extensions\": {\"kml\": \"http://mapmixer.org/mapsetjson/ext/kml/0.1/\",\"geojson\": \"http://mapmixer.org/mapsetjson/ext/geojson/0.1/\"},\"children\": [{ \"type\": \"kml.KML\", \"name\": \"US Significant River Flood Outlook\", \"url\": \"http://www.hpc.ncep.noaa.gov/kml/fop/fopbody.kml\", \"show\": \"True\" } ]}"
+            "json": "{ \"name\": \"Hurricane Irene 2011\", \"id\": \"1\", \"mapsetjson\": \"0.1\",\"type\": \"Document\",\"extensions\": {\"kml\": \"http://mapmixer.org/mapsetjson/ext/kml/0.1/\",\"geojson\": \"http://mapmixer.org/mapsetjson/ext/geojson/0.1/\"},\"children\": [{ \"type\": \"kml.KML\", \"name\": \"US Significant River Flood Outlook\", \"url\": \"http://www.hpc.ncep.noaa.gov/kml/fop/fopbody.kml\" } ]}"
         }
     },
 

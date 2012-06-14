@@ -153,7 +153,6 @@ def newLayer(request):
     if request.method == 'POST':
         layerObject = json.loads(request.raw_post_data)
         form = LibraryLayerForm(layerObject)
-        print form.base_fields['url'].validators[1].verify_exists
         if form.is_valid():
             layer = form.save(commit=False)
             layer.setJson()

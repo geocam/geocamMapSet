@@ -5,6 +5,7 @@
 # __END_LICENSE__
 
 import re
+import os
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -38,8 +39,25 @@ LICENSE_CHOICES = (('http://creativecommons.org/publicdomain/mark/1.0/',
 
 class LibraryLayer(models.Model):
     mtime = models.DateTimeField(null=True, blank=True, auto_now=True)
-    url = models.URLField(verify_exists=False)
-    acceptTerms = models.BooleanField(verbose_name='Terms')
+    author = models.ForeignKey(User, null=True, blank=True)
+
+    # A layer is basically a pointer to a map file. If there is a local
+    # copy, we'll give the local URL to users (local hosting). Otherwise
+    # we'll give them the external URL (external hosting). Keeping track
+    # of both lets us provide a way for the layer editor to refresh the
+    # local copy (and later support automated refresh). If the user
+    # created the layer by uploading a file, the externalUrl will be
+    # unspecified.
+    localCopy = models.FileField(null=True, blank=True,
+                                 upload_to=os.path.join('geocamMapSet', 'layers'))
+    externalUrl = models.URLField(blank=True, verify_exists=False)
+
+    # Layer creation is a 2-step process where a file must be selected
+    # first and required meta-data is entered later. The 'complete' flag
+    # marks layer entries where both steps are done. Incomplete layers
+    # should not be displayed in the user interface.
+    complete = models.BooleanField()
+
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=255)
     description = models.TextField(blank=True)
@@ -56,21 +74,27 @@ class LibraryLayer(models.Model):
                               choices=LICENSE_CHOICES)
     morePermissions = models.TextField(blank=True,
                                        verbose_name='Other permissions')
+    acceptTerms = models.BooleanField(verbose_name='Terms')
     json = models.TextField()
 
     class Meta:
         ordering = ('-mtime',)
 
     def __unicode__(self):
-        return self.name
+        return ' '.join((self.name, self.externalUrl))
+
+    def get_absolute_url(self):
+        return reverse('geocamMapSet_layerJson', args=[self.id])
 
     @classmethod 
     def getAllLayersInJson(cls):
-        return json.dumps([json.loads(layer.json) for layer in LibraryLayer.objects.all()],
+        return json.dumps([json.loads(layer.json)
+                           for layer in LibraryLayer.objects.all()
+                           if layer.complete],
                           indent=4)
 
     def setJson(self):
-        fields = ('url',
+        fields = ('id',
                   'name',
                   'description',
                   'coverage',
@@ -82,12 +106,15 @@ class LibraryLayer(models.Model):
                   'morePermissions',
                   )
         obj = dict(((f, getattr(self, f)) for f in fields))
+        obj['url'] = self.externalUrl
+        obj['metaUrl'] = self.get_absolute_url()
         obj.setdefault('type', 'kml.KML')
         self.json = json.dumps(obj, sort_keys=True, indent=4)
 
 
 class MapSet(models.Model):
     mtime = models.DateTimeField(null=True, blank=True, auto_now=True)
+    author = models.ForeignKey(User, null=True, blank=True)
     # shortName: a version of the name suitable for embedding into a URL (no spaces or special chars)
     shortName = models.CharField(max_length=255, blank=True)
     name = models.CharField(max_length=255, blank=True)
@@ -95,7 +122,6 @@ class MapSet(models.Model):
     url = models.URLField(blank=True)
     mapsetjson = models.DecimalField(max_digits=5, decimal_places=2)
     json = models.TextField()
-    author = models.ForeignKey(User, null=True, blank=True)
 
     def __unicode__(self):
         return self.name

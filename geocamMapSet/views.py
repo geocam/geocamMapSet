@@ -6,6 +6,7 @@
 
 import time
 import sys
+import os
 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
@@ -16,7 +17,9 @@ from geocamUtil import anyjson as json
 
 from geocamMapSet.models import LibraryLayer
 from geocamMapSet.models import MapSet, MapSetLayer
-from geocamMapSet.forms import LibraryLayerForm
+from geocamMapSet.forms import LibraryLayerUploadForm, \
+     LibraryLayerUrlForm, \
+     LibraryLayerMetaForm
 from geocamMapSet import settings
 
 ######################################################################
@@ -133,6 +136,8 @@ def mapSetSet(request, userName, shortName):
 def importLayerForm(request):
     if request.method == 'POST':
         form = LibraryLayerForm(request.POST)
+        print >> sys.stderr, 'raw_post_data:'
+        print >> sys.stderr, request.raw_post_data
         if form.is_valid():
             layer = form.save(commit=False)
             layer.setJson()
@@ -146,23 +151,57 @@ def importLayerForm(request):
 
 @csrf_exempt
 def layerJson(request, layerId):
-    pass
+    if request.method == 'POST':
+        layerObject = json.loads(request.raw_post_data)
+        if 'id' in layerObject:
+            assert layerObject['id'] == layerId
+        else:
+            layerObject['id'] = layerId
+        form = LibraryLayerMetaForm(layerObject)
+        if form.is_valid():
+            layer = form.save(commit=False)
+            layer.complete = True
+            form.save()
+    elif request.method == 'GET':
+        return jsonResponse(layer.json, raw=True)
+    else:
+        return HttpResponseNotAllowed(['POST', 'GET'])
+
+def jsonErrorResponse(error):
+    return HttpResponseBadRequest(json.dumps({'error': error},
+                                             sort_keys=True,
+                                             indent=4),
+                                  mimetype='application/json; charset=UTF-8')
+
+
+def jsonFormErrorsResponse(form):
+    errorDict = dict(((k, v) for k, v in form.errors.iteritems()))
+    return HttpResponseBadRequest(json.dumps({'error': errorDict},
+                                             sort_keys=True,
+                                             indent=4),
+                                  mimetype='application/json; charset=UTF-8')
 
 @csrf_exempt
 def newLayer(request):
     if request.method == 'POST':
         layerObject = json.loads(request.raw_post_data)
-        form = LibraryLayerForm(layerObject)
+        if 'localCopy' in layerObject:
+            form = LibraryLayerUploadForm(layerObject)
+        elif 'externalUrl' in layerObject:
+            form = LibraryLayerUrlForm(layerObject)
+        else:
+            print >> sys.stderr, request.raw_post_data
+            return jsonErrorResponse('did not get expected fields')
         if form.is_valid():
-            layer = form.save(commit=False)
+            layer = form.save()
+            if layer.externalUrl:
+                layer.name = os.path.basename(layer.externalUrl)
+            elif layer.localCopy:
+                pass # figure this out
             layer.setJson()
             layer.save()
             return jsonResponse({'result': json.loads(layer.json)})
         else:
-            errorDict = dict(((k, v) for k, v in form.errors.iteritems()))
-            return HttpResponseBadRequest(json.dumps({'error': errorDict},
-                                                     sort_keys=True,
-                                                     indent=4),
-                                          mimetype='application/json; charset=UTF-8')
+            return jsonFormErrorsResponse(form)
     else:
         return HttpResponseNotAllowed(['POST'])

@@ -9,14 +9,33 @@ from django.forms import widgets
 
 from geocamMapSet.models import LibraryLayer
 
-class LibraryLayerForm(forms.ModelForm):
-    url = forms.URLField(widget=widgets.TextInput(attrs=dict(size=60)))
-    acceptTerms = forms.BooleanField(required=True)
+class LibraryLayerUploadForm(forms.ModelForm):
+    class Meta:
+        model = LibraryLayer
+        fields = ('localCopy',)
+
+HOSTING_CHOICES = (('external',
+                    'Display the externally hosted file (recommended)'),
+                   ('local',
+                    'Display a copy of the file hosted on this site'
+                    ),
+                   )
+
+class LibraryLayerUrlForm(forms.ModelForm):
+    hosting = forms.ChoiceField(HOSTING_CHOICES)
 
     class Meta:
         model = LibraryLayer
-        fields = ('url',
-                  'acceptTerms',
+        fields = ('externalUrl',)
+
+class LibraryLayerMetaForm(forms.ModelForm):
+    url = forms.URLField(widget=widgets.TextInput(attrs=dict(size=60)))
+    acceptTerms = forms.BooleanField(label='Terms', required=True)
+
+    class Meta:
+        model = LibraryLayer
+        fields = ('localCopy',
+                  'externalUrl',
                   'name',
                   'description',
                   'coverage',
@@ -26,4 +45,5 @@ class LibraryLayerForm(forms.ModelForm):
                   'rights',
                   'license',
                   'morePermissions',
+                  'acceptTerms',
                   )

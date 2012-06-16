@@ -584,6 +584,280 @@ function brieflyHighlightFirstLibraryEntry() {
     }, 1500);
 }
 
+function newLayerStep1() {
+    var dialogDiv = $('#dialogDiv');
+    dialogDiv.attr('title', 'New Layer');
+
+    dialogDiv.html
+    ('<div class="dialogSteps">'
+     + '<span class="dialogStep dialogStepHighlight">1. Select a file</span>'
+     + '<span class="dialogStep">2. Describe your layer</span>'
+     + '</div>'
+     
+     + '<table><tr>'
+
+     + '<td class="sidebarChoices">'
+     + '<div id="dialogNav_upload" class="sidebarChoice">Upload</div>'
+     + '<div id="dialogNav_url" class="sidebarChoice">From a URL</div>'
+     + '</td>'
+
+     + '<td class="selectFile">'
+     + '<div id="selectFile"></div>'
+     + '</td>'
+
+     + '</tr></table>'
+
+     + '<div id="dialogError" class="error"></div>'
+
+    );
+
+    dialogDiv.dialog({
+        modal: true,
+        draggable: false,
+        width: 800,
+        buttons: [
+
+            {
+                'text': 'Next',
+                'click': function () {
+                    $('#dialogDiv .formError').html('');
+	            var text = JSON.stringify($('#newLayerForm').serializeObject());
+	            $.post(geocamMapSetLib.managerRef.opts.newLayerUrl,
+                           text,
+		           function (response) {
+                               $('#dialogDiv').dialog('close');
+                               newLayerStep2(response);
+                               return false;
+		           },
+                           'json')
+                        .fail(function (xhr) {
+                            var errText;
+                            if (xhr.readyState == 0) {
+                                errText = "couldn't connect to server";
+                            } else if (xhr.readyState == 4) {
+                                var hasJsonError = false;
+                                if (xhr.responseText != null) {
+                                    var response = null;
+                                    try {
+                                        response = JSON.parse(xhr.responseText);
+                                    } catch (SyntaxError) {
+                                        // do nothing
+                                    }
+                                    if (response != null && response.error != null) {
+                                        $.each(response.error, function (field, error) {
+                                            $('#error_' + field).html(error.join('<br/>'));
+                                            hasJsonError = true;
+                                        });
+                                    }
+                                }
+                                if (!hasJsonError) {
+                                    errText = "HTTP error " + xhr.status
+                                        + " (" + xhr.statusText + ")";
+                                }
+                            } else {
+                                errText = "unknown error";
+                            }
+                            if (errText != null) {
+                                $('#dialogError').html('Last save failed: ' + errText);
+                            }
+                            return false;
+                        });
+	            return false;
+	        }
+            },
+
+            {
+                'text': 'Cancel',
+                'click': function () {
+                    $(this).dialog("close");
+                }
+            }
+            
+        ]
+    });
+
+    var dialogNavMode = null;
+
+    var setModeUpload = function () {
+        if (dialogNavMode != 'upload') {
+            $('#dialogNav_upload').addClass('sidebarChoiceHighlight');
+            $('#dialogNav_url').removeClass('sidebarChoiceHighlight');
+            $('#selectFile').html
+            ('<form id="newLayerForm" method="post" action=".">'
+             + '<input type="file" name="localCopy" id="id_localCopy" />'
+             + '</form>'
+            );
+            dialogNavMode = 'upload';
+        }
+    };
+
+    var setModeUrl = function () {
+        if (dialogNavMode != 'url') {
+            $('#dialogNav_url').addClass('sidebarChoiceHighlight');
+            $('#dialogNav_upload').removeClass('sidebarChoiceHighlight');
+            $('#selectFile').html
+            ('<form id="newLayerForm" method="post" action=".">'
+             + '<table><tr>'
+             + '<th><label for="id_externalUrl">URL</label></th>'
+             + '<td><input type="text" name="externalUrl" id="id_externalUrl" size="50" /></td>'
+             + '</tr><tr>'
+             + '<th><label for="id_hosting">Hosting</label></th>'
+             + '<td>'
+             + '<table><tr>'
+             + '<td><input type="radio" name="hosting" value="external" checked="checked" id="id_hosting"/></td>'
+             + '<td class="radioOption">Display the externally hosted file (recommended)</td>'
+             + '</tr><tr>'
+             + '<td/>'
+             + '<td class="radioOptionDescription">If the external file changes, people viewing your layer will see the new version. However, if the service hosting the file takes it down or moves it, your layer will no longer display properly.</td>'
+             + '</tr><tr>'
+             + '<td><input type="radio" name="hosting" value="local" id="id_hosting"/></td>'
+             + '<td class="radioOption">Display a copy of the file hosted on this site</td>'
+             + '</tr><tr>'
+             + '<td/>'
+             + '<td class="radioOptionDescription">If the external file changes, people viewing your layer will continue to see the old version.</td>'
+             + '</tr></table>'
+             + '</td>'
+             + '</tr></table>'
+             + '</form>'
+            );
+            dialogNavMode = 'url';
+        }
+    };
+
+    $('#dialogNav_upload').click(setModeUpload);
+    $('#dialogNav_url').click(setModeUrl);
+    setModeUpload();
+
+    // pressing enter in the dialog should click the 'Next' button
+    if (geocamMapSetLib.managerRef.dialogKeypressBound == null) {
+        $('#dialogDiv').keypress(function (e) {
+            if (e.keyCode == $.ui.keyCode.ENTER) {
+                $(this).parent().find('.ui-dialog-buttonpane button:first').click();
+            }
+        });
+        geocamMapSetLib.managerRef.dialogKeypressBound = true;
+    }
+}
+
+function newLayerStep2(response) {
+    console.log(response);
+    var dialogDiv = $('#dialogDiv');
+    dialogDiv.attr('title', 'New Layer');
+
+    // this html was mostly copy-and-pasted from the django-rendered form.
+    // a better workflow would be better.
+    dialogDiv.html
+    (''
+     + '<div class="dialogSteps">'
+     + '<span class="dialogStep">1. Select a file</span>'
+     + '<span class="dialogStep dialogStepHighlight">2. Describe your layer</span>'
+     + '</div>'
+
+     + '<form id="newLayerForm" method="post" action=".">'
+     + '<table>'
+     + '<tr><th/><td><div id="error_name" class="formError"></div></td></tr>'
+     + '<tr><th><label for="id_name">Name *</label></th><td><input id="id_name" type="text" name="name" maxlength="255" size="60"/></td></tr>'
+     + '<tr><th/><td><div id="error_description" class="formError"></div></td></tr>'
+     + '<tr><th><label for="id_description">Description</label></th><td><textarea id="id_description" rows="2" cols="65" name="description"></textarea></td></tr>'
+     + '<tr><th/><td><div id="error_coverage" class="formError"></div></td></tr>'
+     + '<tr><th><label for="id_coverage">Region covered</label></th><td><input id="id_coverage" type="text" name="coverage" maxlength="255" size="60"/></td></tr>'
+     + '<tr><th/><td><div id="error_creator" class="formError"></div></td></tr>'
+     + '<tr><th><label for="id_creator">Creator</label></th><td><input id="id_creator" type="text" name="creator" maxlength="255" size="60"/></td></tr>'
+     + '<tr><th/><td><div id="error_contributors" class="formError"></div></td></tr>'
+     + '<tr><th><label for="id_contributors">Other contributors</label></th><td><input id="id_contributors" type="text" name="contributors" maxlength="512" size="60"/></td></tr>'
+     + '<tr><th/><td><div id="error_publisher" class="formError"></div></td></tr>'
+     + '<tr><th><label for="id_publisher">Publisher</label></th><td><input id="id_publisher" type="text" name="publisher" maxlength="255" size="60"/></td></tr>'
+     + '<tr><th/><td><div id="error_rights" class="formError"></div></td></tr>'
+     + '<tr><th><label for="id_rights">Copyright information</label></th><td><input id="id_rights" type="text" name="rights" maxlength="255" size="60"/></td></tr>'
+     + '<tr><th/><td><div id="error_license" class="formError"></div></td></tr>'
+     + '<tr><th><label for="id_license">License</label></th><td><select name="license" id="id_license"><option value="" selected="selected">---------</option><option value="http://creativecommons.org/publicdomain/mark/1.0/">Public Domain</option><option value="http://creativecommons.org/licenses/by/3.0">Creative Commons CC-BY</option><option value="http://creativecommons.org/licenses/by-nd/3.0">Creative Commons CC-BY-ND</option><option value="http://creativecommons.org/licenses/by-nc-sa/3.0">Creative Commons CC-BY-NC-SA</option><option value="http://creativecommons.org/licenses/by-sa/3.0">Creative Commons CC-BY-SA</option><option value="http://creativecommons.org/licenses/by-nc/3.0">Creative Commons CC-BY-NC</option><option value="http://creativecommons.org/licenses/by-nc-nd/3.0">Creative Commons CC-BY-NC-ND</option></select></td></tr>'
+     + '<tr><th/><td><div id="error_morePermissions" class="formError"></div></td></tr>'
+     + '<tr><th><label for="id_morePermissions">Other permissions</label></th><td><textarea id="id_morePermissions" rows="2" cols="65" name="morePermissions"></textarea></td></tr>'
+     + '<tr><th/><td><div id="error_acceptTerms" class="formError"></div></td></tr>'
+     + '<tr><th><label for="id_acceptTerms">Terms *</label></th><td><input type="checkbox" name="acceptTerms" id="id_acceptTerms" /> I have read and accept the <a href="'
+     + geocamMapSetLib.managerRef.opts.termsOfServiceUrl
+     + '" target="termsOfService" style="font-weight: bold; text-decoration: underline;">terms of service for this site</a>, which include a description of how the site can share my map layer with other users.</td></tr>'
+     + '<tr><th/><td class="formInstructions"><br/>* indicates required fields.</td></tr>'
+     + '</table>'
+     + '</form>'
+     + '<div id="dialogError" class="error"></div>');
+
+    dialogDiv.dialog({
+        modal: true,
+        draggable: false,
+        width: 800,
+        buttons: [
+
+            {
+                'text': 'Save',
+                'click': function () {
+                    $('#dialogDiv .formError').html('');
+	            var text = JSON.stringify($('#newLayerForm').serializeObject());
+	            $.post(geocamMapSetLib.managerRef.opts.newLayerUrl,
+                           text,
+		           function (response) {
+                               $('#dialogDiv').dialog('close');
+                               loadLibrary(true);
+                               return false;
+		           },
+                           'json')
+                        .fail(function (xhr) {
+                            var errText;
+                            if (xhr.readyState == 0) {
+                                errText = "couldn't connect to server";
+                            } else if (xhr.readyState == 4) {
+                                var hasJsonError = false;
+                                if (xhr.responseText != null) {
+                                    var response = null;
+                                    try {
+                                        response = JSON.parse(xhr.responseText);
+                                    } catch (SyntaxError) {
+                                        // do nothing
+                                    }
+                                    if (response != null && response.error != null) {
+                                        $.each(response.error, function (field, error) {
+                                            $('#error_' + field).html(error.join('<br/>'));
+                                            hasJsonError = true;
+                                        });
+                                    }
+                                }
+                                if (!hasJsonError) {
+                                    errText = "HTTP error " + xhr.status
+                                        + " (" + xhr.statusText + ")";
+                                }
+                            } else {
+                                errText = "unknown error";
+                            }
+                            if (errText != null) {
+                                $('#dialogError').html('Last save failed: ' + errText);
+                            }
+                            return false;
+                        });
+	            return false;
+	        }
+            },
+
+            {
+                'text': 'Cancel',
+                'click': function () {
+                    $(this).dialog("close");
+                }
+            }
+            
+        ]
+    });
+
+    // pressing enter in the dialog should click the 'Save' button
+    if (geocamMapSetLib.managerRef.dialogKeypressBound == null) {
+        $('#dialogDiv').keypress(function (e) {
+            if (e.keyCode == $.ui.keyCode.ENTER) {
+                $(this).parent().find('.ui-dialog-buttonpane button:first').click();
+            }
+        });
+        geocamMapSetLib.managerRef.dialogKeypressBound = true;
+    }
+}
+
 // mapSetManager.drawLibraryDiv() 
 // 
 // Clean the libraryDiv and draw the html content based on the map layer
@@ -632,120 +906,7 @@ function drawLibraryDiv() {
 
     newLayerButton = $('#newLayer');
     newLayerButton.button();
-    newLayerButton.click(function () {
-	var dialogDiv = $('#dialogDiv');
-	dialogDiv.attr('title', 'New Layer');
-
-	// this html was mostly copy-and-pasted from the django-rendered form.
-        // a better workflow would be better.
-	dialogDiv.html
-        (''
-         + '<form id="newLayerForm" method="post" action=".">'
-	 + '<table>'
-         + '<tr><th/><td><div id="error_url" class="formError"></div></td></tr>'
-         + '<tr><th><label for="id_url">Url *</label></th><td><input id="id_url" type="text" name="url" maxlength="200" size="60"/></td></tr>'
-         + '<tr><th/><td><div id="error_acceptTerms" class="formError"></div></td></tr>'
-         + '<tr><th><label for="id_acceptTerms">Terms *</label></th><td><input type="checkbox" name="acceptTerms" id="id_acceptTerms" /> I have read and accept the <a href="'
-         + geocamMapSetLib.managerRef.opts.termsOfServiceUrl
-         + '" target="termsOfService" style="font-weight: bold; text-decoration: underline;">terms of service for this site</a>, which include a description of how the site can share my map layer with other users.</td></tr>'
-         + '<tr><th/><td><div id="error_name" class="formError"></div></td></tr>'
-         + '<tr><th><label for="id_name">Name *</label></th><td><input id="id_name" type="text" name="name" maxlength="255" size="60"/></td></tr>'
-         + '<tr><th/><td><div id="error_description" class="formError"></div></td></tr>'
-         + '<tr><th><label for="id_description">Description</label></th><td><textarea id="id_description" rows="2" cols="65" name="description"></textarea></td></tr>'
-         + '<tr><th/><td><div id="error_coverage" class="formError"></div></td></tr>'
-         + '<tr><th><label for="id_coverage">Region covered</label></th><td><input id="id_coverage" type="text" name="coverage" maxlength="255" size="60"/></td></tr>'
-         + '<tr><th/><td><div id="error_creator" class="formError"></div></td></tr>'
-         + '<tr><th><label for="id_creator">Creator</label></th><td><input id="id_creator" type="text" name="creator" maxlength="255" size="60"/></td></tr>'
-         + '<tr><th/><td><div id="error_contributors" class="formError"></div></td></tr>'
-         + '<tr><th><label for="id_contributors">Other contributors</label></th><td><input id="id_contributors" type="text" name="contributors" maxlength="512" size="60"/></td></tr>'
-         + '<tr><th/><td><div id="error_publisher" class="formError"></div></td></tr>'
-         + '<tr><th><label for="id_publisher">Publisher</label></th><td><input id="id_publisher" type="text" name="publisher" maxlength="255" size="60"/></td></tr>'
-         + '<tr><th/><td><div id="error_rights" class="formError"></div></td></tr>'
-         + '<tr><th><label for="id_rights">Copyright information</label></th><td><input id="id_rights" type="text" name="rights" maxlength="255" size="60"/></td></tr>'
-         + '<tr><th/><td><div id="error_license" class="formError"></div></td></tr>'
-         + '<tr><th><label for="id_license">License</label></th><td><select name="license" id="id_license"><option value="" selected="selected">---------</option><option value="http://creativecommons.org/publicdomain/mark/1.0/">Public Domain</option><option value="http://creativecommons.org/licenses/by/3.0">Creative Commons CC-BY</option><option value="http://creativecommons.org/licenses/by-nd/3.0">Creative Commons CC-BY-ND</option><option value="http://creativecommons.org/licenses/by-nc-sa/3.0">Creative Commons CC-BY-NC-SA</option><option value="http://creativecommons.org/licenses/by-sa/3.0">Creative Commons CC-BY-SA</option><option value="http://creativecommons.org/licenses/by-nc/3.0">Creative Commons CC-BY-NC</option><option value="http://creativecommons.org/licenses/by-nc-nd/3.0">Creative Commons CC-BY-NC-ND</option></select></td></tr>'
-         + '<tr><th/><td><div id="error_morePermissions" class="formError"></div></td></tr>'
-         + '<tr><th><label for="id_morePermissions">Other permissions</label></th><td><textarea id="id_morePermissions" rows="2" cols="65" name="morePermissions"></textarea></td></tr>'
-         + '<tr><th/><td class="formInstructions">* indicates required fields.</td></tr>'
-	 + '</table>'
-	 + '</form>'
-         + '<div id="dialogError" class="error"></div>');
-
-	dialogDiv.dialog({
-            modal: true,
-            draggable: false,
-            width: 800,
-            buttons: [
-
-                {
-                    'text': 'Save',
-                    'click': function () {
-                        $('#dialogDiv .formError').html('');
-	                var text = JSON.stringify($('#newLayerForm').serializeObject());
-	                $.post(geocamMapSetLib.managerRef.opts.newLayerUrl,
-                               text,
-		               function (response) {
-                                   $('#dialogDiv').dialog('close');
-                                   loadLibrary(true);
-                                   return false;
-		               },
-                               'json')
-                            .fail(function (xhr) {
-                                var errText;
-                                if (xhr.readyState == 0) {
-                                    errText = "couldn't connect to server";
-                                } else if (xhr.readyState == 4) {
-                                    var hasJsonError = false;
-                                    if (xhr.responseText != null) {
-                                        var response = null;
-                                        try {
-                                            response = JSON.parse(xhr.responseText);
-                                        } catch (SyntaxError) {
-                                            // do nothing
-                                        }
-                                        if (response != null && response.error != null) {
-                                            $.each(response.error, function (field, error) {
-                                                $('#error_' + field).html(error.join('<br/>'));
-                                                hasJsonError = true;
-                                            });
-                                        }
-                                    }
-                                    if (!hasJsonError) {
-                                        errText = "HTTP error " + xhr.status
-                                            + " (" + xhr.statusText + ")";
-                                    }
-                                } else {
-                                    errText = "unknown error";
-                                }
-                                if (errText != null) {
-                                    $('#dialogError').html('Last save failed: ' + errText);
-                                }
-                                return false;
-                            });
-	                return false;
-	            }
-                },
-
-                {
-                    'text': 'Cancel',
-                    'click': function () {
-                        $(this).dialog("close");
-                    }
-                }
-
-            ]
-        });
-    });
-
-    // pressing enter in the dialog should click the 'Save' button
-    if (geocamMapSetLib.managerRef.dialogKeypressBound == null) {
-        $('#dialogDiv').keypress(function (e) {
-            if (e.keyCode == $.ui.keyCode.ENTER) {
-                $(this).parent().find('.ui-dialog-buttonpane button:first').click();
-            }
-        });
-        geocamMapSetLib.managerRef.dialogKeypressBound = true;
-    }
+    newLayerButton.click(newLayerStep1);
 }
 
 

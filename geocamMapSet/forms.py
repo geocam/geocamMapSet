@@ -29,7 +29,8 @@ class LibraryLayerUrlForm(forms.ModelForm):
         fields = ('externalUrl',)
 
 class LibraryLayerMetaForm(forms.ModelForm):
-    url = forms.URLField(widget=widgets.TextInput(attrs=dict(size=60)))
+    url = forms.URLField(widget=widgets.TextInput(attrs=dict(size=60)),
+                         required=False)
     acceptTerms = forms.BooleanField(label='Terms', required=True)
 
     class Meta:

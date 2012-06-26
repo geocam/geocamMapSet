@@ -58,11 +58,27 @@ urlpatterns = patterns(
     url(r'^importLayerForm/$', 'importLayerForm', {},
         'geocamMapSet_importLayerForm'),
 
+    # post json to create a new layer. response is json meta-data.
+    # Note: To best fit our API concept, ideally we would have a single
+    # url for creating a new layer that accepts multipart form data
+    # where the header is json and the body is an attached file.
+    # However, the browser-side FormData object doesn't currently
+    # support that very well.  So we offer two urls: the standard url
+    # accepts just json in case you don't need a file payload, and the
+    # 'upload' url accepts multipart form data with a url-encoded header
+    # and an attached file. (More accurately, we could put in a
+    # url-encoded header but right now it's expected to be blank.)
+    url(r'^layer/new/$', 'newLayer', {},
+        'geocamMapSet_newLayer'),
+
+    # post a file to create a new layer. response is json meta-data.
+    url(r'^layer/new/upload/$', 'layerUpload', {},
+        'geocamMapSet_layerUpload'),
+
+    # get returns json meta-data. put/post updates json meta-data.
     url(r'^layer/(?P<layerId>[^/]+).json$', 'layerJson', {},
         'geocamMapSet_layerJson'),
 
-    url(r'^layer/new/$', 'newLayer', {},
-        'geocamMapSet_newLayer'),
 )
 
 mapMixerPatterns = patterns(

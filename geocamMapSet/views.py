@@ -151,7 +151,7 @@ def importLayerForm(request):
 
 @csrf_exempt
 def layerJson(request, layerId):
-    if request.method == 'POST':
+    if request.method in ('PUT', 'POST'):
         layerObject = json.loads(request.raw_post_data)
         if 'id' in layerObject:
             assert layerObject['id'] == layerId
@@ -161,11 +161,15 @@ def layerJson(request, layerId):
         if form.is_valid():
             layer = form.save(commit=False)
             layer.complete = True
-            form.save()
+            layer.setJson()
+            layer.save()
+            return jsonResponse(layer.json, raw=True)
+        else:
+            return jsonFormErrorsResponse(form)
     elif request.method == 'GET':
         return jsonResponse(layer.json, raw=True)
     else:
-        return HttpResponseNotAllowed(['POST', 'GET'])
+        return HttpResponseNotAllowed(('PUT', 'POST', 'GET'))
 
 def jsonErrorResponse(error):
     return HttpResponseBadRequest(json.dumps({'error': error},
@@ -185,13 +189,22 @@ def jsonFormErrorsResponse(form):
 def newLayer(request):
     if request.method == 'POST':
         layerObject = json.loads(request.raw_post_data)
-        if 'localCopy' in layerObject:
-            form = LibraryLayerUploadForm(layerObject)
-        elif 'externalUrl' in layerObject:
+        if 'externalUrl' in layerObject:
             form = LibraryLayerUrlForm(layerObject)
+            layer = form.save()
         else:
             print >> sys.stderr, request.raw_post_data
             return jsonErrorResponse('did not get expected fields')
+        layer.setJson()
+        layer.save()
+        return jsonResponse({'result': json.loads(layer.json)})
+    else:
+        return HttpResponseNotAllowed(('POST',))
+
+@csrf_exempt
+def layerUpload(request):
+    if request.method == 'POST':
+        form = LibraryLayerUploadForm(request.POST, request.FILES)
         if form.is_valid():
             layer = form.save()
             if layer.externalUrl:
@@ -204,4 +217,4 @@ def newLayer(request):
         else:
             return jsonFormErrorsResponse(form)
     else:
-        return HttpResponseNotAllowed(['POST'])
+        return HttpResponseNotAllowed(('POST',))

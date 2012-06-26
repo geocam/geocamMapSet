@@ -19,6 +19,8 @@ geocamMapSetLib.dataMap = new Array();
 //
 geocamMapSetLib.mapLibraryList = new Array();
 
+geocamMapSetLib.newLayer = null;
+
 // MapSetManager(spec, map, editorDivId, opts)
 //
 // Constructor that creates and displays a map set. It returns a MapSetManager
@@ -611,6 +613,73 @@ function newLayerStep1() {
 
     );
 
+    var saveErrorHandler = function (xhr) {
+        var errText;
+        if (xhr.readyState == 0) {
+            errText = "couldn't connect to server";
+        } else if (xhr.readyState == 4) {
+            var hasJsonError = false;
+            if (xhr.responseText != null) {
+                var response = null;
+                try {
+                    response = JSON.parse(xhr.responseText);
+                } catch (SyntaxError) {
+                    // do nothing
+                }
+                if (response != null && response.error != null) {
+                    $.each(response.error, function (field, error) {
+                        $('#error_' + field).html(error.join('<br/>'));
+                        hasJsonError = true;
+                    });
+                }
+            }
+            if (!hasJsonError) {
+                errText = "HTTP error " + xhr.status
+                    + " (" + xhr.statusText + ")";
+            }
+        } else {
+            errText = "unknown error";
+        }
+        if (errText != null) {
+            $('#dialogError').html('Last save failed: ' + errText);
+        }
+        return false;
+    };
+
+    var saveSuccessHandler = function (response) {
+        $('#dialogDiv').dialog('close');
+        newLayerStep2(response);
+        return false;
+    };
+
+    var submitHandlerUrlMode = function () {
+        var text = JSON.stringify($('#newLayerForm').serializeObject());
+	$.post(geocamMapSetLib.managerRef.opts.newLayerUrl,
+               text,
+               saveSuccessHandler,
+               'json')
+            .fail(saveErrorHandler);
+	return false;
+    };
+
+    var submitHandlerUploadMode = function () {
+        var formData = new FormData();
+        var file = $('#id_localCopy')[0].files[0];
+        formData.append('localCopy', file);
+
+	$.ajax({
+            url: geocamMapSetLib.managerRef.opts.newLayerUrl + 'upload/',
+            data: formData,
+            cache: false,
+            contentType: false, // suppress jQuery automatic content type header
+            processData: false,
+            type: 'POST',
+            success: saveSuccessHandler
+        }).fail(saveErrorHandler);
+
+	return false;
+    };
+
     dialogDiv.dialog({
         modal: true,
         draggable: false,
@@ -621,49 +690,12 @@ function newLayerStep1() {
                 'text': 'Next',
                 'click': function () {
                     $('#dialogDiv .formError').html('');
-	            var text = JSON.stringify($('#newLayerForm').serializeObject());
-	            $.post(geocamMapSetLib.managerRef.opts.newLayerUrl,
-                           text,
-		           function (response) {
-                               $('#dialogDiv').dialog('close');
-                               newLayerStep2(response);
-                               return false;
-		           },
-                           'json')
-                        .fail(function (xhr) {
-                            var errText;
-                            if (xhr.readyState == 0) {
-                                errText = "couldn't connect to server";
-                            } else if (xhr.readyState == 4) {
-                                var hasJsonError = false;
-                                if (xhr.responseText != null) {
-                                    var response = null;
-                                    try {
-                                        response = JSON.parse(xhr.responseText);
-                                    } catch (SyntaxError) {
-                                        // do nothing
-                                    }
-                                    if (response != null && response.error != null) {
-                                        $.each(response.error, function (field, error) {
-                                            $('#error_' + field).html(error.join('<br/>'));
-                                            hasJsonError = true;
-                                        });
-                                    }
-                                }
-                                if (!hasJsonError) {
-                                    errText = "HTTP error " + xhr.status
-                                        + " (" + xhr.statusText + ")";
-                                }
-                            } else {
-                                errText = "unknown error";
-                            }
-                            if (errText != null) {
-                                $('#dialogError').html('Last save failed: ' + errText);
-                            }
-                            return false;
-                        });
-	            return false;
-	        }
+                    if (dialogNavMode == 'url') {
+                        return submitHandlerUrlMode();
+                    } else {
+                        return submitHandlerUploadMode();
+                    }
+                }
             },
 
             {
@@ -741,6 +773,7 @@ function newLayerStep1() {
 
 function newLayerStep2(response) {
     console.log(response);
+    geocamMapSetLib.newLayer = response.result;
     var dialogDiv = $('#dialogDiv');
     dialogDiv.attr('title', 'New Layer');
 
@@ -793,7 +826,7 @@ function newLayerStep2(response) {
                 'click': function () {
                     $('#dialogDiv .formError').html('');
 	            var text = JSON.stringify($('#newLayerForm').serializeObject());
-	            $.post(geocamMapSetLib.managerRef.opts.newLayerUrl,
+	            $.post(geocamMapSetLib.newLayer.metaUrl,
                            text,
 		           function (response) {
                                $('#dialogDiv').dialog('close');

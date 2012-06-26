@@ -12,29 +12,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 from geocamUtil import anyjson as json
-
-LICENSE_CHOICES = (('http://creativecommons.org/publicdomain/mark/1.0/',
-                    'Public Domain'),
-
-                   ('http://creativecommons.org/licenses/by/3.0',
-                    'Creative Commons CC-BY'),
-
-                   ('http://creativecommons.org/licenses/by-nd/3.0',
-                    'Creative Commons CC-BY-ND'),
-
-                   ('http://creativecommons.org/licenses/by-nc-sa/3.0',
-                    'Creative Commons CC-BY-NC-SA'),
-
-                   ('http://creativecommons.org/licenses/by-sa/3.0',
-                    'Creative Commons CC-BY-SA'),
-
-                   ('http://creativecommons.org/licenses/by-nc/3.0',
-                    'Creative Commons CC-BY-NC'),
-
-                   ('http://creativecommons.org/licenses/by-nc-nd/3.0',
-                    'Creative Commons CC-BY-NC-ND'),
-
-                   )
+from geocamMapSet import settings
 
 
 class LibraryLayer(models.Model):
@@ -71,7 +49,7 @@ class LibraryLayer(models.Model):
                               verbose_name='Copyright information')
     license = models.URLField(verify_exists=False, blank=True,
                               verbose_name='License',
-                              choices=LICENSE_CHOICES)
+                              choices=settings.LICENSE_CHOICES)
     morePermissions = models.TextField(blank=True,
                                        verbose_name='Other permissions')
     acceptTerms = models.BooleanField(verbose_name='Terms')
@@ -94,8 +72,7 @@ class LibraryLayer(models.Model):
                           indent=4)
 
     def setJson(self):
-        fields = ('id',
-                  'name',
+        fields = ('name',
                   'description',
                   'coverage',
                   'creator',
@@ -105,8 +82,15 @@ class LibraryLayer(models.Model):
                   'license',
                   'morePermissions',
                   )
-        obj = dict(((f, getattr(self, f)) for f in fields))
-        obj['url'] = self.externalUrl
+        obj = {}
+        for f in fields:
+            val = getattr(self, f)
+            if val not in (None, ""):
+                obj[f] = val
+        if self.localCopy:
+            obj['url'] = self.localCopy.url
+        else:
+            obj['url'] = self.externalUrl
         obj['metaUrl'] = self.get_absolute_url()
         obj.setdefault('type', 'kml.KML')
         self.json = json.dumps(obj, sort_keys=True, indent=4)

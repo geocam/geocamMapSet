@@ -151,6 +151,7 @@ def importLayerForm(request):
 
 @csrf_exempt
 def layerJson(request, layerId):
+    layer = get_object_or_404(LibraryLayer, id=layerId)
     if request.method in ('PUT', 'POST'):
         layerObject = json.loads(request.raw_post_data)
         if 'id' in layerObject:
@@ -159,11 +160,14 @@ def layerJson(request, layerId):
             layerObject['id'] = layerId
         form = LibraryLayerMetaForm(layerObject)
         if form.is_valid():
-            layer = form.save(commit=False)
-            layer.complete = True
-            layer.setJson()
-            layer.save()
-            return jsonResponse(layer.json, raw=True)
+            updatedLayer = form.save(commit=False)
+            keepFields = ('id', 'externalUrl', 'localCopy')
+            for f in keepFields:
+                setattr(updatedLayer, f, getattr(layer, f))
+            updatedLayer.complete = True
+            updatedLayer.setJson()
+            updatedLayer.save()
+            return jsonResponse(updatedLayer.json, raw=True)
         else:
             return jsonFormErrorsResponse(form)
     elif request.method == 'GET':

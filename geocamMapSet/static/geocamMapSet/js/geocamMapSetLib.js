@@ -21,6 +21,12 @@ geocamMapSetLib.mapLibraryList = new Array();
 
 geocamMapSetLib.newLayer = null;
 
+geocamMapSetLib.qualifyUrl = function (url) {
+    var a = document.createElement('a');
+    a.href = url;
+    return a.href;
+}
+
 // MapSetManager(spec, map, editorDivId, opts)
 //
 // Constructor that creates and displays a map set. It returns a MapSetManager
@@ -466,7 +472,8 @@ function drawEditorDivAndMapCanvas() {
         // add map layer to global array for map management
         //
         if (!settings.GEOCAM_MAP_SET_DISABLE_MAPS) {
-            mapLayers[i] = new google.maps.KmlLayer(layer.url, {preserveViewport: true});
+            mapLayers[i] = new google.maps.KmlLayer(geocamMapSetLib.qualifyUrl(layer.url),
+                                                    {preserveViewport: true});
             
             // also load the layer on the map if it is enabled
             //

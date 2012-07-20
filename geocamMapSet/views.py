@@ -26,7 +26,7 @@ from geocamMapSet import settings
 # views for generic map set viewing and editing
 
 def jsonResponse(x, raw=False):
-    if raw:
+    if isinstance(x, basestring) or raw:
         text = x
     else:
         text = json.dumps(x, sort_keys=True, indent=4)
@@ -49,6 +49,9 @@ def mapSetView(request, userName, shortName):
 
 
 def mapSetIndex(request):
+    """
+    A JSON list of all Mapsets' JSON representations.
+    """
     json_str = []
     mapsets = MapSet.objects.all()
     for m in mapsets:
@@ -58,6 +61,10 @@ def mapSetIndex(request):
 
 @csrf_exempt
 def mapSetSave(request):
+    """
+    Update or create a new mapset from json properties.
+    (See MapSet.fromJSON for the schema)
+    """
     if request.method == 'POST':
         json_data = json.loads(request.raw_post_data)
 
@@ -68,7 +75,7 @@ def mapSetSave(request):
         #     extensions = json_data['extensions']
         #     for extension in extensions.keys():
         #         e = Extension(
-        #             name = extension,
+        at
         #             url = extensions[extension])
         #         mapset.extension_set.add(e)
         #         e.save()
@@ -84,7 +91,7 @@ def mapSetSave(request):
 
 
 def mapSetCreate(request):
-    return 'implement me'
+    raise NotImplementedError
 
 
 def libraryView(request, layer_id):

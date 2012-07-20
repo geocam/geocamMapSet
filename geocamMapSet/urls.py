@@ -23,38 +23,59 @@ from geocamMapSet import settings
 # library.json <- all layers, as map set
 # sets.json <- list of metadata about all map sets: username and set_id
 
+
+###
+# URLs that return or accept JSON
+
 urlpatterns = patterns(
     'geocamMapSet.views',
 
-    url(r'^home/$', 'mapSetDashboard', {},
-        'geocamMapSet_dashboard'),
-
-    url(r'^sets.json$', 'mapSetSetsJson', {},
-        'geocamMapSet_setsJson'),
-
-    url(r'^map/(?P<userName>[^/]+)/(?P<shortName>[^/]+).json$', 'mapSetSet', {},
-        'geocamMapSet_setJson'),
-
-    url(r'^createSet/$', 'mapSetCreate', {},
-        'geocamMapSet_create'),
-
-    url(r'^map/(?P<userName>[^/]+)/(?P<shortName>[^/]+)/$', 'mapSetView', {},
-        'geocamMapSet_view'),
-
-#    url(r'^(?P<user_name>[^/]+)/(?P<set_id>[^/]+)/edit/$', 'mapSetEdit', {},
-#        'geocamMapSet_edit'),
-
-    url(r'^sets/new$', 'mapSetSave', {},
-        'geocamMapSet_save'),
-
-    url(r'^sets/$', 'mapSetIndex', {},
-        'geocamMapSet_index'),
-
-    url(r'^library/(?P<layer_id>\d+)/$', 'libraryView'),
-
+    # Retrieve a list of all library layers (JSON), without ID
     url(r'^library.json$', 'libraryIndex', {},
         'geocamMapSet_libraryIndex'),
 
+    # Retrieve a specific library layer (JSON), without ID
+    url(r'^library/(?P<layer_id>\d+)/$', 'libraryView'),
+
+    # get returns json meta-data. ( identical to libraryView!!! )
+    # put/post updates json meta-data. ( requires an additional "acceptTerms": true field in the JSON )
+    url(r'^layer/(?P<layerId>[^/]+).json$', 'layerJson', {},
+        'geocamMapSet_layerJson'),
+
+    # A list of all mapset names and urls, e.g.:
+    # {"url": "/map/alice/hurricane-irene-2011.json", "viewUrl": "/map/alice/hurricane-irene-2011/", "name": "Hurricane Irene 2011", "author": "alice"}]
+    url(r'^sets.json$', 'mapSetSetsJson', {},
+        'geocamMapSet_setsJson'),
+
+    # Return a list of all MapSets as MapSetJSON objects, UTF-8 encoded.  e.g.:
+    #     [ "{ \"name\": \"Hurricane Irene 2011\", \"id\": \"1\", \"mapsetjson\": \"0.1\",\"type\": \"Document\",\"extensions\": {\"kml\": \"http://mapmixer.org/mapsetjson/ext/kml/0.1/\",\"geojson\": \"http://mapmixer.org/mapsetjson/ext/geojson/0.1/\"},\"children\": [{ \"type\": \"kml.KML\", \"name\": \"US Significant River Flood Outlook\", \"url\": \"http://www.hpc.ncep.noaa.gov/kml/fop/fopbody.kml\" } ]}" ]
+    url(r'^sets/$', 'mapSetIndex', {},
+        'geocamMapSet_index'),
+
+    # GET: Retreive mapset JSON for the MapSet with given userName and shortName
+    # POST: Create or update a mapset with this userName and shortName using submitted JSON
+    url(r'^map/(?P<userName>[^/]+)/(?P<shortName>[^/]+).json$', 'mapSetSet', {},
+        'geocamMapSet_setJson'),
+
+    # Create OR Update from a MapSetJSON representation
+    url(r'^sets/new$', 'mapSetSave', {},
+        'geocamMapSet_save'),
+
+    # Not implemented.  mapSetSave can create a set.  Remove this?
+    url(r'^createSet/$', 'mapSetCreate', {},
+        'geocamMapSet_create'),
+)
+
+###
+# Urls pertaining to new Layer form handling
+
+urlpatterns += patterns(
+    'geocamMapSet.views',
+
+
+    # GET renders the form as HTML
+    # POST accepts HTML form data, and returns a JSON representation of the new layer
+    # (It's not clear if POST is used by the original client)
     url(r'^importLayerForm/$', 'importLayerForm', {},
         'geocamMapSet_importLayerForm'),
 
@@ -74,10 +95,20 @@ urlpatterns = patterns(
     # post a file to create a new layer. response is json meta-data.
     url(r'^layer/new/upload/$', 'layerUpload', {},
         'geocamMapSet_layerUpload'),
+)
 
-    # get returns json meta-data. put/post updates json meta-data.
-    url(r'^layer/(?P<layerId>[^/]+).json$', 'layerJson', {},
-        'geocamMapSet_layerJson'),
+
+###
+# Urls that return HTML responses
+urlpatterns += patterns(
+    'geocamMapSet.views',
+
+    url(r'^home/$', 'mapSetDashboard', {},
+        'geocamMapSet_dashboard'),
+    # HTML view of the specified mapset.
+    # Remove trailing slash?
+    url(r'^map/(?P<userName>[^/]+)/(?P<shortName>[^/]+)/$', 'mapSetView', {},
+        'geocamMapSet_view'),
 
 )
 

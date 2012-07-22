@@ -13,7 +13,10 @@ from django.core.urlresolvers import reverse
 
 from geocamUtil import anyjson as json
 from geocamMapSet import settings
-
+storage_backend = getattr(settings, 'STORAGE_BACKEND', None)
+if not storage_backend:
+    from django.core.files.storage import default_storage
+    storage_backend = default_storage
 
 class LibraryLayer(models.Model):
     mtime = models.DateTimeField(null=True, blank=True, auto_now=True)
@@ -27,7 +30,8 @@ class LibraryLayer(models.Model):
     # created the layer by uploading a file, the externalUrl will be
     # unspecified.
     localCopy = models.FileField(null=True, blank=True,
-                                 upload_to=os.path.join('geocamMapSet', 'layers'))
+                                 upload_to=os.path.join('geocamMapSet', 'layers'),
+                                 storage=storage_backend)
     externalUrl = models.URLField(blank=True, verify_exists=False)
 
     # Layer creation is a 2-step process where a file must be selected

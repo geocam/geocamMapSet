@@ -4,7 +4,7 @@
 # All Rights Reserved.
 # __END_LICENSE__
 
-from django.conf.urls.defaults import url, patterns
+from django.conf.urls.defaults import url, patterns, include
 from geocamMapSet import settings
 
 # web pages:
@@ -27,7 +27,13 @@ from geocamMapSet import settings
 ###
 # URLs that return or accept JSON
 
+
 urlpatterns = patterns(
+    '',
+    url(r'^api/', include('geocamMapSet.api_urls')),
+)
+
+urlpatterns += patterns(
     'geocamMapSet.views',
 
     # Retrieve a list of all library layers (JSON), without ID

@@ -9,10 +9,14 @@ from geocamMapSet import settings
 from geocamMapSet.handlers import LayerHandler, MapSetHandler
 from piston.resource import Resource
 
+layer_handler = Resource(LayerHandler)
+mapset_handler = Resource(MapSetHandler)
+
 urlpatterns = patterns(
     '',
-    url(r'^layers/$', Resource(LayerHandler)),
-    url(r'^layer/(?P<id>\d+)$', Resource(LayerHandler)),
-    url(r'^mapsets/$', Resource(MapSetHandler)),
-    url(r'^mapset/(?P<id>\d+)$', Resource(MapSetHandler)),
+    url(r'^layers/$', layer_handler),
+    url(r'^layer/(?P<id>\d+)$', layer_handler),
+    url(r'^mapsets/$', mapset_handler),
+    #url(r'^mapset/(?P<id>\d+)$', mapset_handler),
+    url(r'^mapset/(?P<username>[^/]+)/(?P<shortname>[^/]+)$', mapset_handler),
 )

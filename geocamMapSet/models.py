@@ -60,7 +60,7 @@ class LibraryLayer(models.Model):
     morePermissions = models.TextField(blank=True,
                                        verbose_name='Other permissions')
     acceptTerms = models.BooleanField(verbose_name='Terms')
-    json = models.TextField()
+    #json = models.TextField()
 
     class Meta:
         ordering = ('-mtime',)
@@ -71,37 +71,63 @@ class LibraryLayer(models.Model):
     def get_absolute_url(self):
         return reverse('geocamMapSet_layerJson', args=[self.id])
 
+    @property
+    def url(self):
+        if self.localCopy:
+            return self.localCopy.url
+        else:
+            return self.externalUrl
+
+    @url.setter
+    def url(self, value):
+        if self.localCopy:
+            raise Exception("url was set on a library instance where url points to a local file.")
+        else:
+            self.externalUrl = value
+
+    json_fields = ('name',
+              'description',
+              'coverage',
+              'creator',
+              'contributors',
+              'publisher',
+              'rights',
+              'license',
+              'morePermissions',
+              'type',
+              'url'
+              )
+
+    @property
+    def json(self):
+        '''
+        A replacement for the old json TextField property that exists to hopefully allow backwards compatability, 
+        while eliminating the json blob being stored in the DB.
+        '''
+        obj = {}
+        for f in self.json_fields:
+            val = getattr(self, f)
+            if val not in (None, ""):
+                obj[f] = val
+        obj['metaUrl'] = self.get_absolute_url()
+        obj.setdefault('type', 'kml.KML')
+        return json.dumps(obj, sort_keys=True, indent=4)
+
+    @json.setter
+    def json(self, value):
+        obj = json.loads(value)
+        for k in obj.keys():
+            if k in self.json_fields:
+                setattr(self, k, obj[k])
+            else:
+                raise AttributeError("Tried to set a JSON value with a key (%s) not listed in LibaryLayer.json_fields" % k)
+
     @classmethod 
     def getAllLayersInJson(cls):
         return json.dumps([json.loads(layer.json)
                            for layer in LibraryLayer.objects.all()
                            if layer.complete],
                           indent=4)
-
-    def setJson(self):
-        fields = ('name',
-                  'description',
-                  'coverage',
-                  'creator',
-                  'contributors',
-                  'publisher',
-                  'rights',
-                  'license',
-                  'morePermissions',
-                  )
-        obj = {}
-        for f in fields:
-            val = getattr(self, f)
-            if val not in (None, ""):
-                obj[f] = val
-        if self.localCopy:
-            obj['url'] = self.localCopy.url
-        else:
-            obj['url'] = self.externalUrl
-        obj['metaUrl'] = self.get_absolute_url()
-        obj.setdefault('type', 'kml.KML')
-        self.json = json.dumps(obj, sort_keys=True, indent=4)
-
 
 class MapSet(models.Model):
     mtime = models.DateTimeField(null=True, blank=True, auto_now=True)
@@ -184,11 +210,20 @@ class MapSetLayer(models.Model):
     type = models.CharField(max_length=255)
     url = models.URLField()
     show = models.BooleanField(default=False)
-    json = models.TextField()
+    #json = models.TextField()
     mapset = models.ForeignKey(MapSet)
 
     def __unicode__(self):
         return self.name
+
+    @property
+    def json(self):
+        return json.dumps( dict( (k, getattr(self, k)) for k in ('name', 'type', 'url') ) )
+
+    @json.setter
+    def json(self, value):
+        for k,v in json.loads(value):
+            setattr(self, k, v)
 
     @classmethod     
     def fromJSON(cls, obj):

@@ -11,6 +11,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+
 from geocamUtil import anyjson as json
 from geocamMapSet import settings
 storage_backend = getattr(settings, 'STORAGE_BACKEND', None)
@@ -166,6 +169,15 @@ class MapSet(models.Model):
     class Meta:
         ordering = ['-mtime']
             
+@receiver(pre_save, sender=MapSet)
+def mapset_pre_save(sender, instance, raw, *args, **kwargs):
+    '''
+    Pre-save signal handler.
+    Ensure that a shortName is assigned before save.
+    '''
+    if not raw:
+        if not instance.shortName:
+            instance.shortName = sender.shortNameFromName(instance.name)
 
 class MapSetLayer(models.Model):
     name = models.CharField(primary_key=True, max_length=255)

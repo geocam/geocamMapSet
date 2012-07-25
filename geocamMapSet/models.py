@@ -134,6 +134,16 @@ class MapSet(models.Model):
         name = re.sub(' +', '-', name)
         # remove special characters
         name = re.sub('[^a-zA-Z0-9_-]', '', name)
+        
+        # check for existing similar shortnames
+        similar_names = set( ms.name for ms in cls.objects.filter(shortName__startswith=name).only('shortName') )
+        if similar_names:
+            root = name
+            i = 0
+            while name in similar_names:
+                i += 1
+                name = root + '-%d' % i
+
         return name
 
     @classmethod     

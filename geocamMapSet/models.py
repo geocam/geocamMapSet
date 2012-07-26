@@ -203,8 +203,15 @@ def mapset_pre_save(sender, instance, raw, *args, **kwargs):
     if not instance.shortName:
         instance.shortName = sender.shortNameFromName(instance.name)
 
+    # Set URL
     json_rep = json.loads(instance.json)
     json_rep['url'] = getattr(settings, 'BASE_URL', '') + reverse( 'mapset_resource', kwargs={'username':instance.author.username, 'shortname':instance.shortName} )
+
+    # Set some default values for MapSetJSON properties
+    json_rep.setdefault(u'extensions', {u'kml': u'http://mapmixer.org/mapsetjson/ext/kml/0.1/', u'geojson': u'http://mapmixer.org/mapsetjson/ext/geojson/0.1/'} )
+    json_rep.setdefault(u'mapsetjson', u'0.1')
+    json_rep.setdefault(u'type', u'Document')
+
     instance.json = json.dumps(json_rep)
 
 class MapSetLayer(models.Model):

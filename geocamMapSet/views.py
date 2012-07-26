@@ -147,7 +147,6 @@ def importLayerForm(request):
         print >> sys.stderr, request.raw_post_data
         if form.is_valid():
             layer = form.save(commit=False)
-            layer.setJson()
             layer.save()
             return jsonResponse(layer.json, raw=True)
     else:
@@ -172,7 +171,6 @@ def layerJson(request, layerId):
             for f in keepFields:
                 setattr(updatedLayer, f, getattr(layer, f))
             updatedLayer.complete = True
-            updatedLayer.setJson()
             updatedLayer.save()
             return jsonResponse(updatedLayer.json, raw=True)
         else:
@@ -206,7 +204,6 @@ def newLayer(request):
         else:
             print >> sys.stderr, request.raw_post_data
             return jsonErrorResponse('did not get expected fields')
-        layer.setJson()
         layer.save()
         return jsonResponse({'result': json.loads(layer.json)})
     else:

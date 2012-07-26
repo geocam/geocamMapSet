@@ -157,15 +157,12 @@ class MapSet(models.Model):
 
     @classmethod
     def shortNameFromName(cls, name):
-        # switch to lowercase
         name = name.lower()
-        # replaces spaces with hyphens
         name = re.sub(' +', '-', name)
-        # remove special characters
         name = re.sub('[^a-zA-Z0-9_-]', '', name)
         
         # check for existing similar shortnames
-        similar_names = set( ms.name for ms in cls.objects.filter(shortName__startswith=name).only('shortName') )
+        similar_names = set( ms.shortName for ms in cls.objects.filter(shortName__startswith=name).only('shortName') )
         if similar_names:
             root = name
             i = 0
@@ -189,8 +186,8 @@ class MapSet(models.Model):
             if val is not None:
                 vals[field] = val
         vals['author'] = User.objects.get(username=userName)
-        if shortName:
-            vals['shortName'] = shortName
+        requested_shortname = shortName or vals['name']
+        vals['shortName'] = cls.shortNameFromName(requested_shortname)
         return MapSet(**vals)
 
     class Meta:
@@ -201,10 +198,14 @@ def mapset_pre_save(sender, instance, raw, *args, **kwargs):
     '''
     Pre-save signal handler.
     Ensure that a shortName is assigned before save.
+    Add any boilerplate to the stored JSON representation.
     '''
-    if not raw:
-        if not instance.shortName:
-            instance.shortName = sender.shortNameFromName(instance.name)
+    if not instance.shortName:
+        instance.shortName = sender.shortNameFromName(instance.name)
+
+    json_rep = json.loads(instance.json)
+    json_rep['url'] = getattr(settings, 'BASE_URL', '') + reverse( 'mapset_resource', kwargs={'username':instance.author.username, 'shortname':instance.shortName} )
+    instance.json = json.dumps(json_rep)
 
 class MapSetLayer(models.Model):
     name = models.CharField(primary_key=True, max_length=255)

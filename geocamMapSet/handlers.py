@@ -21,7 +21,7 @@ class MapSetHandler(BaseHandler):
             except ObjectDoesNotExist:
                 return rc.NOT_FOUND
             except MultipleObjectsReturned:
-                return rc.BAD_REQUEST
+                return rc.DUPLICATE_ENTRY
         else:
             return self.model.objects.filter(*args, **kwargs)
 
@@ -29,6 +29,8 @@ class MapSetHandler(BaseHandler):
         if username and not shortname:
             return rc.BAD_REQUEST
         result = self._fetch(username, shortname)
+        if isinstance(result, HttpResponse):
+            return result
         if isinstance(result, QuerySet):    
             # it's a bit lame that we have to deserialize and reserialize again...
             return json.dumps( list(json.loads(inst.json) for inst in result) )
@@ -38,16 +40,9 @@ class MapSetHandler(BaseHandler):
     def create(self, request, username='alice', *args, **kwargs):
         # return super(MapSetHandler, self).create(request, *args, **kwargs)
         attrs = self.flatten_dict(request.data)
-
-        try:
-            inst = self.queryset(request).get(**attrs)
-            return rc.DUPLICATE_ENTRY
-        except self.model.DoesNotExist:
-            inst = self.model.fromJSON(username, None, attrs)
-            inst.save()
-            return inst
-        except self.model.MultipleObjectsReturned:
-            return rc.DUPLICATE_ENTRY
+        inst = self.model.fromJSON(username, None, attrs)
+        inst.save()
+        return inst.json
         
         
     def update(self, request, username=None, shortname=None):

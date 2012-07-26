@@ -176,7 +176,7 @@ class MapSet(models.Model):
         return name
 
     @classmethod     
-    def fromJSON(cls, userName, shortName, obj):
+    def fromJSON(cls, userName, shortName=None, obj={}):
         vals = {}
         vals['json'] = json.dumps(obj)
         copyFields = ('name',
@@ -189,7 +189,8 @@ class MapSet(models.Model):
             if val is not None:
                 vals[field] = val
         vals['author'] = User.objects.get(username=userName)
-        vals['shortName'] = shortName
+        if shortName:
+            vals['shortName'] = shortName
         return MapSet(**vals)
 
     class Meta:

@@ -39,6 +39,7 @@ class MapSetHandler(BaseHandler):
 
     def create(self, request, username='alice', *args, **kwargs):
         # return super(MapSetHandler, self).create(request, *args, **kwargs)
+        assert request.META['CONTENT_TYPE'] == 'application/json'
         attrs = self.flatten_dict(request.data)
         inst = self.model.fromJSON(username, None, attrs)
         inst.save()

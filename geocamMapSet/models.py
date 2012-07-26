@@ -59,7 +59,7 @@ class LibraryLayer(models.Model):
                               choices=settings.LICENSE_CHOICES)
     morePermissions = models.TextField(blank=True,
                                        verbose_name='Other permissions')
-    acceptTerms = models.BooleanField(verbose_name='Terms')
+    acceptTerms = models.BooleanField(verbose_name='Terms', default=True) # Since False values here shouldn't get past client-side form validation if this field isn't true, I'm not sure we actually need this in the DB.
     #json = models.TextField()
 
     class Meta:

@@ -172,6 +172,23 @@ class MapSet(models.Model):
 
         return name
 
+
+    def setJson(self, newdata):
+        if isinstance(newdata, basestring):
+            newdata = json.loads(newdata)
+        old_data = json.loads(self.json)
+        old_data.update(newdata)
+        self.json = json.dumps(old_data)
+        for k in (
+            'name',
+            'description',
+            'url',
+            'mapsetjson'
+        ):
+            if k in old_data:
+                setattr(self, k, old_data[k])
+        self.save()
+
     @classmethod     
     def fromJSON(cls, userName, shortName=None, obj={}):
         vals = {}

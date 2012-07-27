@@ -60,6 +60,7 @@ class MapSetHandler(BaseHandler):
         if username and shortname:
             return BadRequestResponse("Declining to create a resource because a username and slug were given in the URL.")
         assert request.META['CONTENT_TYPE'] == 'application/json'
+        assert request.data != None
         attrs = self.flatten_dict(request.data)
         inst = self.model.fromJSON(username, None, attrs)
         inst.save()
@@ -74,7 +75,9 @@ class MapSetHandler(BaseHandler):
             # Error condition
             return obj
         else:
-            return super(MapSetHandler, self).update(request, *args, id=obj.pk, **kwargs)
+            #return super(MapSetHandler, self).update(request, *args, id=obj.pk, **kwargs)
+            obj.setJson(request.data)
+            return obj.json
 
 
     def delete(self, request, username=None, shortname=None):

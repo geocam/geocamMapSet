@@ -133,7 +133,7 @@ class MapSet(models.Model):
     mtime = models.DateTimeField(null=True, blank=True, auto_now=True)
     author = models.ForeignKey(User, null=True, blank=True)
     # shortName: a version of the name suitable for embedding into a URL (no spaces or special chars)
-    shortName = models.CharField(max_length=255, blank=True)
+    shortName = models.CharField(max_length=255, blank=True, unique=True)
     name = models.CharField(max_length=255, blank=True)
     description = models.CharField(max_length=255, blank=True)
     url = models.URLField(blank=True)

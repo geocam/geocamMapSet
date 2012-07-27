@@ -66,7 +66,7 @@ class MapSetHandler(BaseHandler):
         return inst.json
         
         
-    def update(self, request, username=None, shortname=None):
+    def update(self, request, username=None, shortname=None, *args, **kwargs):
         if not (username and shortname):
             return BadRequestResponse("Username and slug are both required for update operation.") 
         obj = self._fetch(username, shortname)
@@ -74,7 +74,7 @@ class MapSetHandler(BaseHandler):
             # Error condition
             return obj
         else:
-            return super(MapSetHandler, self).update(request, *args, pk=obj.pk, **kwargs)
+            return super(MapSetHandler, self).update(request, *args, id=obj.pk, **kwargs)
 
 
     def delete(self, request, username=None, shortname=None):

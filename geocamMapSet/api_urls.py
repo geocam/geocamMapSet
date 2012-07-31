@@ -17,6 +17,7 @@ urlpatterns = patterns(
     url(r'^layers/$', layer_handler),
     url(r'^layer/(?P<id>\d+)$', layer_handler),
     url(r'^mapsets/$', mapset_handler),
+    url(r'^mapset/(?P<username>[^/]+)/?$', mapset_handler),
+    url(r'^mapset/(?P<username>[^/]+)/(?P<shortname>[^/]+)$', mapset_handler, name='mapset_resource'),
     #url(r'^mapset/(?P<id>\d+)$', mapset_handler),
-    url(r'^mapset/(?P<username>[^/]+)/(?P<shortname>[^/]+)$', mapset_handler),
 )

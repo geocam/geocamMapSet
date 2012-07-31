@@ -11,6 +11,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+
 from geocamUtil import anyjson as json
 from geocamMapSet import settings
 storage_backend = getattr(settings, 'STORAGE_BACKEND', None)
@@ -56,8 +59,8 @@ class LibraryLayer(models.Model):
                               choices=settings.LICENSE_CHOICES)
     morePermissions = models.TextField(blank=True,
                                        verbose_name='Other permissions')
-    acceptTerms = models.BooleanField(verbose_name='Terms')
-    json = models.TextField()
+    acceptTerms = models.BooleanField(verbose_name='Terms', default=True) # Since False values here shouldn't get past client-side form validation if this field isn't true, I'm not sure we actually need this in the DB.
+    #json = models.TextField()
 
     class Meta:
         ordering = ('-mtime',)
@@ -68,6 +71,57 @@ class LibraryLayer(models.Model):
     def get_absolute_url(self):
         return reverse('geocamMapSet_layerJson', args=[self.id])
 
+    @property
+    def url(self):
+        if self.localCopy:
+            return self.localCopy.url
+        else:
+            return self.externalUrl
+
+    @url.setter
+    def url(self, value):
+        if self.localCopy:
+            raise Exception("url was set on a library instance where url points to a local file.")
+        else:
+            self.externalUrl = value
+
+    json_fields = ('name',
+              'description',
+              'coverage',
+              'creator',
+              'contributors',
+              'publisher',
+              'rights',
+              'license',
+              'morePermissions',
+              'type',
+              'url'
+              )
+
+    @property
+    def json(self):
+        '''
+        A replacement for the old json TextField property that exists to hopefully allow backwards compatability, 
+        while eliminating the json blob being stored in the DB.
+        '''
+        obj = {}
+        for f in self.json_fields:
+            val = getattr(self, f)
+            if val not in (None, ""):
+                obj[f] = val
+        obj['metaUrl'] = self.get_absolute_url()
+        obj.setdefault('type', 'kml.KML')
+        return json.dumps(obj, sort_keys=True, indent=4)
+
+    @json.setter
+    def json(self, value):
+        obj = json.loads(value)
+        for k in obj.keys():
+            if k in self.json_fields:
+                setattr(self, k, obj[k])
+            else:
+                raise AttributeError("Tried to set a JSON value with a key (%s) not listed in LibaryLayer.json_fields" % k)
+
     @classmethod 
     def getAllLayersInJson(cls):
         return json.dumps([json.loads(layer.json)
@@ -75,36 +129,11 @@ class LibraryLayer(models.Model):
                            if layer.complete],
                           indent=4)
 
-    def setJson(self):
-        fields = ('name',
-                  'description',
-                  'coverage',
-                  'creator',
-                  'contributors',
-                  'publisher',
-                  'rights',
-                  'license',
-                  'morePermissions',
-                  )
-        obj = {}
-        for f in fields:
-            val = getattr(self, f)
-            if val not in (None, ""):
-                obj[f] = val
-        if self.localCopy:
-            obj['url'] = self.localCopy.url
-        else:
-            obj['url'] = self.externalUrl
-        obj['metaUrl'] = self.get_absolute_url()
-        obj.setdefault('type', 'kml.KML')
-        self.json = json.dumps(obj, sort_keys=True, indent=4)
-
-
 class MapSet(models.Model):
     mtime = models.DateTimeField(null=True, blank=True, auto_now=True)
     author = models.ForeignKey(User, null=True, blank=True)
     # shortName: a version of the name suitable for embedding into a URL (no spaces or special chars)
-    shortName = models.CharField(max_length=255, blank=True)
+    shortName = models.CharField(max_length=255, blank=True, unique=True)
     name = models.CharField(max_length=255, blank=True)
     description = models.CharField(max_length=255, blank=True)
     url = models.URLField(blank=True)
@@ -128,15 +157,12 @@ class MapSet(models.Model):
 
     @classmethod
     def shortNameFromName(cls, name):
-        # switch to lowercase
         name = name.lower()
-        # replaces spaces with hyphens
         name = re.sub(' +', '-', name)
-        # remove special characters
         name = re.sub('[^a-zA-Z0-9_-]', '', name)
         
         # check for existing similar shortnames
-        similar_names = set( ms.name for ms in cls.objects.filter(shortName__startswith=name).only('shortName') )
+        similar_names = set( ms.shortName for ms in cls.objects.filter(shortName__startswith=name).only('shortName') )
         if similar_names:
             root = name
             i = 0
@@ -146,8 +172,25 @@ class MapSet(models.Model):
 
         return name
 
+
+    def setJson(self, newdata):
+        if isinstance(newdata, basestring):
+            newdata = json.loads(newdata)
+        old_data = json.loads(self.json)
+        old_data.update(newdata)
+        self.json = json.dumps(old_data)
+        for k in (
+            'name',
+            'description',
+            'url',
+            'mapsetjson'
+        ):
+            if k in old_data:
+                setattr(self, k, old_data[k])
+        self.save()
+
     @classmethod     
-    def fromJSON(cls, userName, shortName, obj):
+    def fromJSON(cls, userName, shortName=None, obj={}):
         vals = {}
         vals['json'] = json.dumps(obj)
         copyFields = ('name',
@@ -160,23 +203,53 @@ class MapSet(models.Model):
             if val is not None:
                 vals[field] = val
         vals['author'] = User.objects.get(username=userName)
-        vals['shortName'] = shortName
+        requested_shortname = shortName or vals['name']
+        vals['shortName'] = cls.shortNameFromName(requested_shortname)
         return MapSet(**vals)
 
     class Meta:
         ordering = ['-mtime']
             
+@receiver(pre_save, sender=MapSet)
+def mapset_pre_save(sender, instance, raw, *args, **kwargs):
+    '''
+    Pre-save signal handler.
+    Ensure that a shortName is assigned before save.
+    Add any boilerplate to the stored JSON representation.
+    '''
+    if not instance.shortName:
+        instance.shortName = sender.shortNameFromName(instance.name)
+
+    # Set URL
+    json_rep = json.loads(instance.json)
+    json_rep['url'] = getattr(settings, 'BASE_URL', '') + reverse( 'mapset_resource', kwargs={'username':instance.author.username, 'shortname':instance.shortName} )
+
+    # Set some default values for MapSetJSON properties
+    json_rep.setdefault(u'extensions', {u'kml': u'http://mapmixer.org/mapsetjson/ext/kml/0.1/', u'geojson': u'http://mapmixer.org/mapsetjson/ext/geojson/0.1/'} )
+    json_rep.setdefault(u'mapsetjson', u'0.1')
+    json_rep.setdefault(u'type', u'Document')
+
+    instance.json = json.dumps(json_rep)
 
 class MapSetLayer(models.Model):
     name = models.CharField(primary_key=True, max_length=255)
     type = models.CharField(max_length=255)
     url = models.URLField()
     show = models.BooleanField(default=False)
-    json = models.TextField()
+    #json = models.TextField()
     mapset = models.ForeignKey(MapSet)
 
     def __unicode__(self):
         return self.name
+
+    @property
+    def json(self):
+        return json.dumps( dict( (k, getattr(self, k)) for k in ('name', 'type', 'url') ) )
+
+    @json.setter
+    def json(self, value):
+        for k,v in json.loads(value):
+            setattr(self, k, v)
 
     @classmethod     
     def fromJSON(cls, obj):

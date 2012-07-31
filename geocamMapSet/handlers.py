@@ -41,13 +41,16 @@ class LayerHandler(BaseHandler):
             return rc.DUPLICATE_ENTRY
         except self.model.DoesNotExist:
             form = LibraryLayerMetaForm(request.data, request.FILES)
-            inst = form.instance
-            if request.FILES.get("localCopy"):
-                #inst.localCopy = request.FILES['localCopy']
-                uploaded_file = request.FILES['localCopy']
-                inst.localCopy.save(uploaded_file.name, ContentFile(uploaded_file.read()) )
-            inst.save()
-            return inst
+            if form.is_valid():
+                form.save()
+                inst = form.instance
+                if request.FILES.get("localCopy"):
+                    uploaded_file = request.FILES['localCopy']
+                    inst.localCopy.save(uploaded_file.name, ContentFile(uploaded_file.read()) )
+                inst.save()
+                return inst
+            else:
+                return BadRequestResponse("Validation error: " + str(form.errors) )
         except self.model.MultipleObjectsReturned:
             return rc.DUPLICATE_ENTRY
     

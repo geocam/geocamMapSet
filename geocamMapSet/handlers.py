@@ -2,9 +2,11 @@ import json
 from piston.handler import BaseHandler
 from piston.utils import rc
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.core.files.base import ContentFile
 from django.http import HttpResponse
 from django.db.models.query import QuerySet
 from geocamMapSet.models import MapSet, LibraryLayer
+from geocamMapSet.forms import LibraryLayerMetaForm
 
 """
 HANDY REFERENCE:
@@ -27,6 +29,28 @@ def BadRequestResponse(msg):
 class LayerHandler(BaseHandler):
     model = LibraryLayer
     exclude = ()
+
+    def create(self, request, *args, **kwargs):
+        if not self.has_model():
+            return rc.NOT_IMPLEMENTED
+
+        attrs = self.flatten_dict(request.data)
+
+        try:
+            inst = self.queryset(request).get(**attrs)
+            return rc.DUPLICATE_ENTRY
+        except self.model.DoesNotExist:
+            form = LibraryLayerMetaForm(request.data, request.FILES)
+            inst = form.instance
+            if request.FILES.get("localCopy"):
+                #inst.localCopy = request.FILES['localCopy']
+                uploaded_file = request.FILES['localCopy']
+                inst.localCopy.save(uploaded_file.name, ContentFile(uploaded_file.read()) )
+            inst.save()
+            return inst
+        except self.model.MultipleObjectsReturned:
+            return rc.DUPLICATE_ENTRY
+    
 
 
 class MapSetHandler(BaseHandler):

@@ -47,4 +47,6 @@ class LibraryLayerMetaForm(forms.ModelForm):
                   'license',
                   'morePermissions',
                   'acceptTerms',
+				  'type',
+				  'complete'
                   )

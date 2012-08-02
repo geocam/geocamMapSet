@@ -95,7 +95,8 @@ class LibraryLayer(models.Model):
               'license',
               'morePermissions',
               'type',
-              'url'
+              'url',
+			  'complete'
               )
 
     @property

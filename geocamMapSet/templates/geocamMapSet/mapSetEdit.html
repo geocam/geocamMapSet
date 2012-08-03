@@ -8,9 +8,10 @@
 
 {% block style %}
 
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}external/css/smoothness/jquery-ui-1.8.21.custom.css"></link>
+    
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}mixer/css/styles.css">
 
-    {{ block.super }}
+    
 {% endblock style %}
 
 {% block scripts %}
@@ -21,14 +22,28 @@
 {% endif %}
     <script type="text/javascript" src="{{ STATIC_URL }}external/js/jquery-1.7.1.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}external/js/jquery-ui-1.8.18.custom.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}geocamMapSet/js/geocamMapSetLib.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}external/js/ember-0.9.8.1.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}geocamMapSet/js/geocamEdit.js"></script>
 {% endblock scripts %}
    
 {% block contents %}
-    <table id="mapSetTable">
+
+          <table id="mapSetTable">
       <tr>
         <td><div id="map_canvas"></div></td>
-        <td><div id="mapset_canvas"></div></td>
+        <td>
+        	<div>
+               	<div class="columnHeader">
+               	    <script type="text/x-handlebars">
+        				Map Set
+        			</script>
+               			<div id="mapSetName">
+               			</div>
+               	</div>
+
+        		
+          </div>
+        	<div id="mapset_canvas"></div></td>
         <td>
           <div>
             <div class="columnHeader">Layer Library</div>
@@ -37,9 +52,7 @@
           <div id="mapsetlib_canvas"></div>
         </td>
       </tr>
-    </table>    
-    <!-- <input type="button" value="ToggleEditingMode" onclick="testToggle(myMapSetManager)"> -->
-    <div id="dialogDiv" style="display: none;"></div>
+    </table> 
 {% endblock contents %}
 
 {% block jsInit %}
@@ -49,39 +62,4 @@
 
       var settings = {{ settingsJson|safe }};
 
-      var myMapSetManager;
-      function initialize() {
-          var spec = '{{ mapset.get_absolute_url }}';
-
-          if (settings.GEOCAM_MAP_SET_DISABLE_MAPS) {
-              $('#map_canvas').html('<div style="margin-top: 150px; align: center;">settings.GEOCAM_MAP_SET_DISABLE_MAPS == True</div>');
-          } else {
-              var myOptions = {
-                  center: new google.maps.LatLng(35, -95),
-                  zoom: 4,
-                  mapTypeId: google.maps.MapTypeId.ROADMAP
-              };
-              var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-          }
-          
-          myMapSetManager = geocamMapSetLib.MapSetManager(spec, map, '#mapset_canvas',
-          {
-              'libraryDiv': '#mapsetlib_canvas',
-              'libraryUrl': '{% url geocamMapSet_libraryIndex %}',
-              'newLayerUrl': '{% url geocamMapSet_newLayer %}',
-              'termsOfServiceUrl': '{% url termsOfService %}'
-          });
-                    
-      }
-     
-      function testToggle(myMapSetManager) {
-          var editable = myMapSetManager.isEditable();
-          if (editable) {
-              myMapSetManager.disableEditing();
-          } else {
-              myMapSetManager.enableEditing();
-          }
-      }
-
-      $(initialize());
 {% endblock jsInit %}

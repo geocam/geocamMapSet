@@ -1,0 +1,332 @@
+* {
+	font-family: 'tahoma', sans-serif;
+}
+[draggable] {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.DropHere {
+  background: #c0c0c0;
+  border-style: dashed;
+  border-color: #666666;
+  margin: 10px auto;
+  width: 370px;
+  padding: 0px 0px 0px 0px;
+  text-align: center;
+  /* border-radius */
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  /* box-shadow */
+  -webkit-box-shadow: rgba(0,0,0,0.2) 0px 1px 3px;
+  -moz-box-shadow: rgba(0,0,0,0.2) 0px 1px 3px;
+  box-shadow: rgba(0,0,0,0.2) 0px 1px 3px;
+}
+.DropHere h3{
+	font-size: 20px;
+	font-weight: bold;
+	color: #666666;
+}
+
+#alias {
+	overflow: hidden;
+	height: 20px;
+	width: 290px;
+	float: left;
+}
+.clearBoth { 
+	clear:both; 
+	width: 1px;
+	height: 1px;
+	}
+
+button, #fileUploadButton{
+	-moz-box-shadow:inset 0px 1px 0px 0px #ffffff;
+	-webkit-box-shadow:inset 0px 1px 0px 0px #ffffff;
+	box-shadow:inset 0px 1px 0px 0px #ffffff;
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ededed), color-stop(1, #dfdfdf) );
+	background:-moz-linear-gradient( center top, #ededed 5%, #dfdfdf 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#dfdfdf');
+	background-color:#ededed;
+	-moz-border-radius:6px;
+	-webkit-border-radius:6px;
+	border-radius:6px;
+	border:1px solid #dcdcdc;
+	display:inline-block;
+	color:#777777;
+	font-family:arial;
+	font-size:15px;
+	font-weight:bold;
+	padding:6px 14px;
+	text-decoration:none;
+	text-shadow:1px 1px 0px #ffffff;
+}
+button:hover {
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #dfdfdf), color-stop(1, #ededed) );
+	background:-moz-linear-gradient( center top, #dfdfdf 5%, #ededed 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#dfdfdf', endColorstr='#ededed');
+	background-color:#dfdfdf;
+}
+button:active {
+	position:relative;
+	top:1px;
+}
+.map{
+	width: 440px;
+    height: 400px;
+
+    
+}
+.nameContainer input[type='text'] {
+	width: 380px;
+	font-size: 14px;
+    font-family: Helvetica, sans-serif;
+    padding: 5px;
+    margin-left: 0px;
+    border: 1px solid #bbbbbb;
+    font-weight: 300; 
+}
+
+.mapsetdiv input[type='text'] {
+	width: 200px;
+}
+.library input[type='text'] {
+    width: 270px;
+    font-size: 14px;
+    font-family: Helvetica, sans-serif;
+    padding: 5px;
+    margin-left: 5px;
+    border: 1px solid #bbbbbb;
+    font-weight: 300; 
+    }
+
+
+.overlayContainer{
+	width: 400px;
+    height: 490px;
+	background: #6a6a6a;
+	-moz-border-radius:6px;
+	-webkit-border-radius:6px;
+	border-radius:6px;
+    
+}
+
+#pageHeader{
+	width: 100%;
+	height: 100px;
+	/*background: #6a6a6a;*/
+}
+
+#navBar{
+	width: 100%;
+	height: 25%;
+	background: #ababab;
+	clear:both;
+}
+#topBar{
+	width: 100%;
+	height: 75%;
+	/*background: #6a6a6a;*/
+}
+#mapSetTable{
+	width: 100%;
+    height: 500px;
+	
+    
+}
+body, html {
+	background: #eeeeee;
+	height: 99%;
+}
+
+
+.ulList{
+	width: 100%;
+	height: 440px;
+	padding: 0;
+	overflow: auto;
+}
+.map_set_bottom{
+	width: 100%;
+	height: 455px;
+	padding: 0;
+	margin-top: 0;
+	overflow: auto;
+}
+.mapsetdiv{
+	height: auto;
+}
+.checkBox {
+	width:30px; 
+	height:30px;
+	}
+
+
+			.ember-view ul li {
+				text-align: left;
+				margin-left: 0;
+				padding: 5px;
+				list-style: none;
+				border-bottom: 1px solid #999999;
+				min-height: 30px;
+				background: #eeeeee; /* Old browsers */
+				background: -moz-linear-gradient(top,  #eeeeee 0%, #dddddd 100%); /* FF3.6+ */
+				background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#eeeeee), color-stop(100%,#dddddd)); /* Chrome,Safari4+ */
+				background: -webkit-linear-gradient(top,  #eeeeee 0%,#dddddd 100%); /* Chrome10+,Safari5.1+ */
+				background: -o-linear-gradient(top,  #eeeeee 0%,#dddddd 100%); /* Opera 11.10+ */
+				background: -ms-linear-gradient(top,  #eeeeee 0%,#dddddd 100%); /* IE10+ */
+				background: linear-gradient(top,  #eeeeee 0%,#dddddd 100%); /* W3C */
+				filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#dddddd',GradientType=0 ); /* IE6-9 */
+			}
+				.ember-view ul li:hover {
+					background: #cfe7fa; /* Old browsers */
+					background: -moz-linear-gradient(top,  #cfe7fa 0%, #6393c1 100%); /* FF3.6+ */
+					background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#cfe7fa), color-stop(100%,#6393c1)); /* Chrome,Safari4+ */
+					background: -webkit-linear-gradient(top,  #cfe7fa 0%,#6393c1 100%); /* Chrome10+,Safari5.1+ */
+					background: -o-linear-gradient(top,  #cfe7fa 0%,#6393c1 100%); /* Opera 11.10+ */
+					background: -ms-linear-gradient(top,  #cfe7fa 0%,#6393c1 100%); /* IE10+ */
+					background: linear-gradient(top,  #cfe7fa 0%,#6393c1 100%); /* W3C */
+					filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cfe7fa', endColorstr='#6393c1',GradientType=0 ); /* IE6-9 */
+				}
+				.ember-view ul li span {
+					float: left;
+					font-size: 8pt;
+					color: #888888;
+				}
+				.ember-view ul li img {
+					float: right;
+					margin: 0 10px 0 0;
+					width: 25px;
+					height: 29px;
+					draggable: false;
+					
+				}
+				.ember-view ul li img:hover {
+					-webkit-transform: rotate(12deg);
+					-moz-transform: rotate(12deg);
+					-o-transform: rotate(12deg);
+					draggable: false;
+
+				}
+				.ember-view ul li h3 {
+					font-size: 11pt;
+					margin: 0;
+				}
+				.ember-view ul li p {
+					margin: 0;
+					font-size: 10pt;
+				}
+
+.slider {
+    
+    background-color: #dddddd;
+    padding:10px;
+    margin-top:10px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -o-border-radius: 5px;
+    -ms-border-radius: 5px;
+    -khtml-border-radius: 5px;
+    border-radius: 5px;
+    -moz-box-shadow: 0 0 10px -2px rgba(0, 0, 0, 0.6);
+    -webkit-box-shadow: 0 0 10px -2px rgba(0, 0, 0, 0.6);
+    -o-box-shadow: 0 0 10px -2px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 10px -2px rgba(0, 0, 0, 0.6);
+}
+
+body input[type='text'] {
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -o-border-radius: 5px;
+    -ms-border-radius: 5px;
+    -khtml-border-radius: 5px;
+    border-radius: 5px;
+    -moz-box-shadow: 0 0 10px -2px rgba(0, 0, 0, 0.6);
+    -webkit-box-shadow: 0 0 10px -2px rgba(0, 0, 0, 0.6);
+    -o-box-shadow: 0 0 10px -2px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 10px -2px rgba(0, 0, 0, 0.6);
+    color: #999;
+    background-color: #f0f0f0;
+    width: 400px;
+    font-size: 14px;
+    font-family: Helvetica, sans-serif;
+    padding: 5px;
+    border: 1px solid #bbbbbb;
+    font-weight: 300; 
+    }
+    
+    
+/**  Modal Window **/
+.divModalDialog  {
+    position: fixed;
+    top:0;
+    left:0;
+    width:800px;
+    height:900px;
+    /*! important !*/
+    display:none;
+    background-color:rgba(0,0,0,.5);
+    text-align:center;
+    z-index:101;
+}
+/*** ! target attribute does the job ! ***/
+.divModalDialog:target  { display:block; }
+
+
+.divModalDialog div {
+	/* rounded corners */
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	z-index:102;
+	background:#bbbbbb;
+}
+
+.divModalDialog #modalInner1 {
+	/* either absolute or fixed */
+	position:fixed;
+	top:30px;
+	right:25%;
+	width:700px;
+	height:300px;
+
+}
+
+.divModalDialog #modalInner2 {
+	/* either absolute or fixed */
+	position:fixed;
+	top:10px;
+	right:30%;
+	width:600px;
+	height:600px;
+
+}
+
+.divModalDialog a {font-size: 22px; text-decoration:none; padding: 5px; margin: 5px; font-weight:normal;} 
+.divModalDialog a:link {color:#000000;}      /* unvisited link */
+.divModalDialog a:visited {color:#000000;}  /* visited link */
+.divModalDialog a:hover {color:#000000;}  /* mouse over link */
+.divModalDialog a:active {color:#000000;}  /* selected link */
+.divModalDialog h6 {color:#CD3700; font-size: 22px; padding: 5px; margin: 5px; font-weight:normal;}
+
+#selectFileMethod{ float: left;  border-color: #600; border-width: 0 1px 0 0; border-style: solid; height:100%;}
+#selectFile {height:80%; width: 50%;}
+#selectFile .ember-view {position: fixed; left: 40%; top: 15%;}
+td {border: none; padding: 0px}
+h2 {font-size: 10px}
+
+/** MAP **/
+#map_canvas { width:500px; height:500px;}
+		
+		
+		#view-gm { background-image:url(google.gif); background-repeat:no-repeat;
+		}
+		
+		#download-kml {background-image:url(kml.png); background-repeat:no-repeat;
+		}
+		
+		#map_canvas div { font-weight:bold;}
+		#map_canvas #iwsw p { font-weight:normal !important;}

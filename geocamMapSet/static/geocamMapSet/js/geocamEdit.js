@@ -10,13 +10,12 @@ GeocamResponderMaps = Em.Application.create({
 	//
 	mapSetName: 'Untitled',
 	HOST: 'http://'+window.location.host+'/',
+	MAPSET: (window.location.pathname).slice(5,window.location.pathname.length-1),
 	ready: function(){
 			GeocamResponderMaps.MapController.showMap();
 		$.get(GeocamResponderMaps.HOST+'api/layers/', function(data){
-			GeocamResponderMaps.LibController.loadMapset('alice', 'hurricane-irene-2011');
+			GeocamResponderMaps.LibController.loadMapset();
 			GeocamResponderMaps.NewFileController.loadLibrary(data);
-			console.log(STATIC_URL);
-			console.log(settings);
     	});
 		
 	},
@@ -28,7 +27,6 @@ GeocamResponderMaps = Em.Application.create({
 
 });
 
-GeocamResponderMaps.ICONS = 'static/responderMaps/icons/';
 
 /**************************
 * Models
@@ -414,10 +412,6 @@ GeocamResponderMaps.FormDialog = Ember.View.create({
 }).appendTo('body');
 
 
-
-
-
-
 /*
  * Displays the name of the mapset. This name is stored in GeocamResponderMaps.mapSetName. When a map set is saved this name overwrites the mapsets name.
  */
@@ -646,6 +640,71 @@ GeocamResponderMaps.FileURLTextField = Em.TextField.extend({
 
     }
 });
+
+
+/*
+ * The 'Drop Here' box. Similar to the drop method in the mapset items. Always added to the end of the list if dropped here.
+ */
+GeocamResponderMaps.DropHere = Ember.View.create({
+    classNames: ['lastItem'],
+    attributeBindings: ['display', 'style'],
+	style: '',
+    dragEnter: function(event){
+        this.set('style', "border-top: 5px solid #CD3700");
+        event.preventDefault();
+    	},
+    dragLeave: function(event){
+    		this.set('style', "");
+            event.preventDefault();
+    	},
+    	//this does the same thing as dragEnter
+    dragOver: function(event){
+            this.set('style', "border-top: 5px solid #CD3700");
+            event.preventDefault();
+        	},
+        //where the item is being dragged from and its index is stored in the dataTransfer object
+    dragStart: function(event) {
+            var dataTransfer = event.originalEvent.dataTransfer;
+            dataTransfer.setData('index', this.get('contentIndex'));
+
+            dataTransfer.setData('origin', 'set');
+        },
+    drop: function(event){
+    	this.set('style', "");
+    	var indexFrom = parseInt(event.originalEvent.dataTransfer.getData('index'));
+        var origin = event.originalEvent.dataTransfer.getData('origin');
+        var indexTo =  GeocamResponderMaps.MapSets.content.length;
+        var obj;
+        var checked = false;
+        if(origin=='set'){
+        	obj = GeocamResponderMaps.MapSets.content.objectAt(indexFrom);
+        	checked = GeocamResponderMaps.MapSets.get('childViews').objectAt(GeocamResponderMaps.MapSets.content.indexOf(obj)).get('isChecked');
+        	GeocamResponderMaps.LibController.addToUndoStack('m'+(indexTo-1)+'-'+indexFrom, '');
+        	GeocamResponderMaps.MapSets.content.removeAt(indexFrom);
+         	indexTo = indexTo-1; //if just a move and not an add, removes the object from the content array and subtracts one from the index.
+         						 // since the item is always added to the end of the array, this is always needed when moving
+        }
+        else{
+        	obj = GeocamResponderMaps.MapSetsLib.content.objectAt(indexFrom).toMapSetOverlay();
+        	GeocamResponderMaps.LibController.addToUndoStack('a'+indexTo, obj);
+        }
+        
+        GeocamResponderMaps.MapSets.content.insertAt(indexTo, obj);
+        
+        GeocamResponderMaps.LibController.updateContentIndices(indexTo);
+        var that = GeocamResponderMaps.MapSets.get('childViews').objectAt(indexTo);
+    	that.set('alias', GeocamResponderMaps.MapSets.content.objectAt(that.get('contentIndex')).get('name'));
+    	that.set('isChecked', checked);
+
+        
+        event.preventDefault();
+       
+        
+    }
+    
+}).appendTo('.map_set_bottom');
+
+
 /*
  * The 'Drop Here' box. Similar to the drop method in the mapset items. Always added to the end of the list if dropped here.
  */
@@ -768,7 +827,7 @@ GeocamResponderMaps.LibController = Em.ArrayController.create({
 		}
 		$.ajax({
 			   type: "PUT",
-			   url: GeocamResponderMaps.HOST+'api/mapset/alice/hurricane-irene-2011', //currently hardcoded url
+			   url: GeocamResponderMaps.HOST+'api/mapset/'+GeocamResponderMaps.MAPSET,
 			   data: JSON.stringify(this.currentMapSet.getJson()),
 			   contentType: 'application/json',
 			   success: function(data) {
@@ -781,16 +840,16 @@ GeocamResponderMaps.LibController = Em.ArrayController.create({
 	 * sets the currentMapSet to the loaded mapset, then creates mapsetOverlays from the loaded mapset and
 	 * adds them to the mapset content array 
 	 */
-loadMapset: function(user, mapsetSlug){
+loadMapset: function(){
 		
 		//currently hardcoded url
-		$.get(GeocamResponderMaps.HOST+'api/mapset/'+user+'/'+mapsetSlug, function(data){
+		$.get(GeocamResponderMaps.HOST+'api/mapset/'+GeocamResponderMaps.MAPSET, function(data){
 			var mapset = $.parseJSON(data);
 			//console.log(mapset);
 			GeocamResponderMaps.LibController.currentMapSet = GeocamResponderMaps.MapSet.create({
 				children: mapset.children,
 				extensions: mapset.extensions,
-				url: user+'/'+mapsetSlug,
+				url: GeocamResponderMaps.MAPSET,
 				mapsetjson: mapset.mapsetjson,
 				name: mapset.name,
 				type: mapset.type

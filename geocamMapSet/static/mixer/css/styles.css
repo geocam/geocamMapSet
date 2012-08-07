@@ -8,6 +8,16 @@
   user-select: none;
 }
 
+.lastItem {
+  background: #6a6a6a;
+  margin: 0px auto;
+  width: 100%;
+  height: 30px;
+  padding: 0px 0px 0px 0px;
+  text-align: center;
+
+}
+
 .DropHere {
   background: #c0c0c0;
   border-style: dashed;
@@ -148,6 +158,8 @@ body, html {
 	height: 440px;
 	padding: 0;
 	overflow: auto;
+	margin-bottom: 0;
+	
 }
 .map_set_bottom{
 	width: 100%;
